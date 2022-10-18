@@ -7,22 +7,24 @@
     "build": "vue-cli-service build",
     "lint": "npm run lint:style && npm run lint:es && npm run lint:type",
     "commit": "git-cz",
+    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\"",
     "lint:es": "eslint \"src/**/*.{js,jsx,ts,tsx,vue}\" --config .eslintrc.js --fix --max-warnings=0",
     "lint:style": "stylelint \"src/**/*.{vue,scss,css}\" --config .stylelintrc.js --fix",
-    "lint:type": "vue-tsc -noEmit",
-    "postinstall": "lint-inject-vscode"
+    "lint:type": "vue-tsc -noEmit"
   },
   "dependencies": {
-    "@dao-style/core": "~0.0.1-beta.12",
-    "@dao-style/extend": "~0.1.1",
+    "@dao-style/core": "^0.5.2",
+    "@dao-style/extend": "^0.9.1",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
+    "vue-i18n": "^9.1.0",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.0.2",
     "@commitlint/config-conventional": "^16.0.0",
     "@commitlint/cz-commitlint": "^16.0.0",
+    "@intlify/vue-i18n-loader": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "@vue/cli-plugin-babel": "~5.0.0",
