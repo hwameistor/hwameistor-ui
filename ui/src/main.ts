@@ -1,8 +1,9 @@
-import type { App } from 'vue';
-import { createApp } from 'vue';
+import { createApp, type App } from 'vue';
+import { useLocalStorage } from '@vueuse/core';
 import router from '@/router';
 import pluginInstall, { loadLanguageAsync } from './plugins';
 import AppElement from './App.vue';
+import 'normalize.css/normalize.css';
 
 interface RenderProps {
   container?: HTMLElement;
@@ -16,7 +17,10 @@ async function render(props: RenderProps = {}) {
   app = createApp(AppElement);
   app.use(pluginInstall);
   app.use(router);
-  await loadLanguageAsync('en-US');
+
+  const store = useLocalStorage('hwameistor-locale', 'en-US');
+
+  await loadLanguageAsync(store.value);
   app.mount(container ? container.querySelector('#app') ?? '#app' : '#app');
 
   return app;

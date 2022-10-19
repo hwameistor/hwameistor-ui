@@ -1,6 +1,16 @@
 const { defineConfig } = require('@vue/cli-service');
 
 module.exports = defineConfig({
+  chainWebpack: (config) => {
+    config
+      .plugin('html')
+      .tap((args) => {
+        // eslint-disable-next-line no-param-reassign
+        args[0].title = 'HwameiStor';
+
+        return args;
+      });
+  },
   transpileDependencies: true,
 
   pluginOptions: {
@@ -12,6 +22,6 @@ module.exports = defineConfig({
       runtimeOnly: false,
       compositionOnly: false,
       fullInstall: false,
-    }
-  }
+    },
+  },
 });

@@ -1,0 +1,9 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "settings": "设置",
+    "lv": "本地卷",
+    "pool": "存储池",
+    "node": "存储节点"
+  }
+}

@@ -1,19 +1,39 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+import DashboardView from '@/views/dashboard/DashboardView.vue';
+import NodeIndex from '@/views/nodes/NodeIndex.vue';
+import PoolIndex from '@/views/pools/PoolIndex.vue';
+import LocalVolumeIndex from '@/views/local-volumes/LocalVolumeIndex.vue';
+import SettingsView from '@/views/settings/SettingsView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView,
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: DashboardView,
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+    path: '/nodes',
+    name: 'Node',
+    component: NodeIndex,
+  },
+  {
+    path: '/pools',
+    name: 'Pool',
+    component: PoolIndex,
+  },
+  {
+    path: '/local-volumes',
+    name: 'LocaleVolume',
+    component: LocalVolumeIndex,
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: SettingsView,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'Dashboard' },
   },
 ];
 
