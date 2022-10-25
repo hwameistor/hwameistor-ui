@@ -5,6 +5,7 @@ import (
 	"github.com/rancher/go-rancher/client"
 )
 
+// volume
 type Volume struct {
 	client.Resource
 
@@ -12,16 +13,19 @@ type Volume struct {
 	Size string `json:"size"`
 }
 
+// volumeList
 type VolumeList struct {
 	Volumes []Volume `json:"volumes"`
 }
 
+// node
 type Node struct {
 	client.Resource
 
 	Name string `json:"name"`
 }
 
+// nodeList
 type NodeList struct {
 	Nodes []Volume `json:"nodes"`
 }
