@@ -2,8 +2,8 @@
   "nav": {
     "dashboard": "Dashboard",
     "settings": "Settings",
-    "lv": "Locale Volume",
-    "pool": "Storage Pool",
-    "node": "Local Disk Node"
+    "lv": "Local Volumes",
+    "pool": "Storage Pools",
+    "node": "Storage Nodes"
   }
 }

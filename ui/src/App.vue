@@ -53,7 +53,7 @@ const navRoutes = computed<NavRouteType[]>(() => [
   {
     to: { name: 'Node' },
     display: t('App.nav.node'),
-    icon: 'icon-disc',
+    icon: 'icon-server',
   },
   {
     to: { name: 'Pool' },
@@ -74,6 +74,8 @@ const navRoutes = computed<NavRouteType[]>(() => [
 </script>
 
 <style lang="scss">
+@import '@/assets/tailwind.scss';
+
 * {
   box-sizing: border-box;
 }
@@ -91,6 +93,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: var(--dao-gray-blue-090);
 }
 
 .app {
@@ -110,6 +113,7 @@ html {
     &-content {
       flex: 1 1 0;
       overflow: hidden;
+      overflow: auto;
     }
   }
 }

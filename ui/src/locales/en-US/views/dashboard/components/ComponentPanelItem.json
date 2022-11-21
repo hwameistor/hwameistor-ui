@@ -1,0 +1,6 @@
+{
+  "statuses": {
+    "NotReady": "NotReady",
+    "Running": "Running"
+  }
+}

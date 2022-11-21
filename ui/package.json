@@ -15,17 +15,27 @@
   "dependencies": {
     "@dao-style/core": "^0.5.2",
     "@dao-style/extend": "^0.9.1",
-    "@vueuse/core": "^9.3.1",
+    "@dao-style/v-chart": "^0.0.7",
+    "@vueuse/core": "^9.5.0",
+    "autoprefixer": "^10",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.5",
     "normalize.css": "^8.0.1",
+    "portable-fetch": "^3.0.0",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "url": "^0.11.0",
+    "vee-validate": "^4.6.9",
     "vue": "^3.2.13",
     "vue-i18n": "^9.1.0",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.0.2",
     "@commitlint/config-conventional": "^16.0.0",
     "@commitlint/cz-commitlint": "^16.0.0",
+    "@dao-style/unplugin-extend": "^0.0.3",
     "@intlify/vue-i18n-loader": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
@@ -51,6 +61,7 @@
     "stylelint-config-recommended-vue": "^1.1.0",
     "stylelint-config-sass-guidelines": "^9.0.1",
     "typescript": "~4.5.5",
+    "vue-cli-plugin-tailwind": "~3.0.0",
     "vue-tsc": "~0.31.4",
     "yorkie": "^2.0.0"
   },

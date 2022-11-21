@@ -16,5 +16,12 @@ module.exports = {
     'scss/at-import-partial-extension-whitelist': ['scss'],
     'scss/at-import-partial-extension-blacklist': [''],
     // 'color-hex-length': 'long',
+    'at-rule-no-unknown': null,
+    'scss/at-rule-no-unknown': [
+        true,
+        {
+            'ignoreAtRules': ['tailwind']
+        }
+    ],
   },
 };

@@ -105,6 +105,7 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
     curly: 'error', // 强制if括号包裹，无效
+    "max-len": ["error", {"code": 150}],
   },
   overrides: [
     {
