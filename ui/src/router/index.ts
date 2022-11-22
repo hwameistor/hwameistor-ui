@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import DashboardView from '@/views/dashboard/DashboardView.vue';
-import NodeIndex from '@/views/nodes/NodeIndex.vue';
+import NodeList from '@/views/nodes/NodeList.vue';
 import PoolIndex from '@/views/pools/PoolIndex.vue';
 import LocalVolumeIndex from '@/views/local-volumes/LocalVolumeIndex.vue';
 import SettingsView from '@/views/settings/SettingsView.vue';
+import RouterContent from '@/views/RouterContent.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,7 +15,15 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/nodes',
     name: 'Node',
-    component: NodeIndex,
+    component: RouterContent,
+    redirect: { name: 'NodeList' },
+    children: [
+      {
+        path: '',
+        name: 'NodeList',
+        component: NodeList,
+      },
+    ],
   },
   {
     path: '/pools',
