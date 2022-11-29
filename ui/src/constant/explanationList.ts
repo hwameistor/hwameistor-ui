@@ -26,4 +26,11 @@ export const explanationsList = computed<Record<string, ExplanationItem[]>>(() =
       content: i18n.t('constant.explanationList.pool.content'),
     },
   ],
+  localVolume: [
+    {
+      key: 'localVolume',
+      title: i18n.t('constant.explanationList.localVolume.title'),
+      content: i18n.t('constant.explanationList.localVolume.content'),
+    },
+  ],
 }));

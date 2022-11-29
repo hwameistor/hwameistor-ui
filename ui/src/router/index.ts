@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import DashboardView from '@/views/dashboard/DashboardView.vue';
 import NodeList from '@/views/nodes/NodeList.vue';
-import LocalVolumeIndex from '@/views/local-volumes/LocalVolumeIndex.vue';
 import SettingsView from '@/views/settings/SettingsView.vue';
 import RouterContent from '@/views/RouterContent.vue';
 import NodeDetailIndex from '@/views/nodes/NodeDetailIndex.vue';
@@ -9,6 +8,8 @@ import NodeDetailLocalDisks from '@/views/nodes/NodeDetailLocalDisks.vue';
 import NodeDetailMigrates from '@/views/nodes/NodeDetailMigrates.vue';
 import PoolList from '@/views/pools/PoolList.vue';
 import PoolDetail from '@/views/pools/PoolDetail.vue';
+import LocalVolumeList from '@/views/local-volumes/LocalVolumeList.vue';
+import LocalVolumeDetail from '@/views/local-volumes/LocalVolumeDetail.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -68,7 +69,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/local-volumes',
     name: 'LocaleVolume',
-    component: LocalVolumeIndex,
+    component: RouterContent,
+    redirect: { name: 'LocalVolumeList' },
+    children: [
+      {
+        path: '',
+        name: 'LocalVolumeList',
+        component: LocalVolumeList,
+      },
+      {
+        path: ':name',
+        name: 'LocalVolumeDetail',
+        component: LocalVolumeDetail,
+      },
+    ],
   },
   {
     path: '/settings',

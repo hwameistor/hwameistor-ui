@@ -1,0 +1,15 @@
+{
+  "name": "名称",
+  "status": "状态",
+  "syncState": "同步状态",
+  "node": "节点",
+  "capacity": "容量",
+  "device": "设备",
+  "syncStates": {
+    "synced": "已同步",
+    "notSync": "未同步"
+  },
+  "actions": {
+    "viewYaml": "查看 YAML"
+  }
+}

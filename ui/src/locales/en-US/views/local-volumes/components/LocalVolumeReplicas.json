@@ -1,0 +1,15 @@
+{
+  "name": "Name",
+  "status": "Status",
+  "syncState": "Sync State",
+  "node": "Nod",
+  "capacity": "Capacity",
+  "device": "Device",
+  "syncStates": {
+    "synced": "Synced",
+    "notSync": "Not Synced"
+  },
+  "actions": {
+    "viewYaml": "View YAML"
+  }
+}
