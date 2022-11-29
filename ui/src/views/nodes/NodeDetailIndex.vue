@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n';
 import { DaoKeyValueLayout, DaoKeyValueLayoutItem } from '@dao-style/extend';
 import { type GetNodeResult, Node } from '@/services/NodeService';
 import { type RouteTab } from '@/types/tab';
-import NodeStatus from './components/NodeStatus.vue';
+import NodeStatus from '@/components/NodeStatus.vue';
 import DriverStatus from './components/DriverStatus.vue';
 
 const route = useRoute();

@@ -1,0 +1,12 @@
+{
+  "node": "节点",
+  "status": "状态",
+  "isRaid": "是否 Raid",
+  "disks": "磁盘数",
+  "availableCapacity": "可用容量",
+  "totalCapacity": "总容量",
+  "raid": {
+    "isRaid": "是",
+    "notRaid": "否"
+  }
+}

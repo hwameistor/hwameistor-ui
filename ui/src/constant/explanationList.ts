@@ -19,4 +19,11 @@ export const explanationsList = computed<Record<string, ExplanationItem[]>>(() =
       content: i18n.t('constant.explanationList.node.content'),
     },
   ],
+  pool: [
+    {
+      key: 'pool',
+      title: i18n.t('constant.explanationList.pool.title'),
+      content: i18n.t('constant.explanationList.pool.content'),
+    },
+  ],
 }));

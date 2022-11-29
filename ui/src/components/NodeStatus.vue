@@ -3,7 +3,7 @@
     v-if="status"
     :type="color"
   >
-    {{ $t(`views.nodes.components.NodeStatus.${status}`) }}
+    {{ $t(`components.NodeStatus.${status}`) }}
   </dao-state-icon>
 
   <span v-else>-</span>

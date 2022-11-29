@@ -74,7 +74,7 @@ import { useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
 import { Node } from '@/services/NodeService';
 import TdPercent from '@/components/TdPercent.vue';
-import NodeStatus from './components/NodeStatus.vue';
+import NodeStatus from '../../components/NodeStatus.vue';
 import DriverStatus from './components/DriverStatus.vue';
 
 const { t } = useI18n();

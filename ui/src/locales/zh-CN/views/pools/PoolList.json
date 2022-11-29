@@ -1,0 +1,7 @@
+{
+  "name": "存储池名称",
+  "diskType": "磁盘类型",
+  "nodes": "节点数",
+  "storageUsage": "存储使用量",
+  "createTime": "创建时间"
+}
