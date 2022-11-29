@@ -5,6 +5,9 @@ import PoolIndex from '@/views/pools/PoolIndex.vue';
 import LocalVolumeIndex from '@/views/local-volumes/LocalVolumeIndex.vue';
 import SettingsView from '@/views/settings/SettingsView.vue';
 import RouterContent from '@/views/RouterContent.vue';
+import NodeDetailIndex from '@/views/nodes/NodeDetailIndex.vue';
+import NodeDetailLocalDisks from '@/views/nodes/NodeDetailLocalDisks.vue';
+import NodeDetailMigrates from '@/views/nodes/NodeDetailMigrates.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,6 +25,24 @@ const routes: Array<RouteRecordRaw> = [
         path: '',
         name: 'NodeList',
         component: NodeList,
+      },
+      {
+        path: ':name',
+        name: 'NodeDetailIndex',
+        component: NodeDetailIndex,
+        redirect: { name: 'NodeDetailLocalDisks' },
+        children: [
+          {
+            path: 'disks',
+            name: 'NodeDetailLocalDisks',
+            component: NodeDetailLocalDisks,
+          },
+          {
+            path: 'migrates',
+            name: 'NodeDetailMigrates',
+            component: NodeDetailMigrates,
+          },
+        ],
       },
     ],
   },

@@ -26,12 +26,24 @@
         />
       </template>
 
+      <template #td-name="{value}">
+        <router-link
+          :to="{
+            name: 'NodeDetailIndex',
+            params: { name: value },
+          }"
+          class="list-name-link"
+        >
+          {{ value }}
+        </router-link>
+      </template>
+
       <template #td-driverStatus="{value}">
-        {{ $t(`views.nodes.NodeList.driverStatues.${value}`) }}
+        <driver-status :status="value" />
       </template>
 
       <template #td-nodeState="{value}">
-        {{ $t(`views.nodes.NodeList.nodeStates.${value}`) }}
+        <node-status :status="value" />
       </template>
 
       <template #td-hddUsage="{row}">
@@ -62,6 +74,8 @@ import { useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
 import { Node } from '@/services/NodeService';
 import TdPercent from '@/components/TdPercent.vue';
+import NodeStatus from './components/NodeStatus.vue';
+import DriverStatus from './components/DriverStatus.vue';
 
 const { t } = useI18n();
 

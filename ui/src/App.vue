@@ -28,6 +28,7 @@
       <router-view />
     </div>
   </div>
+  <dialog-wrapper />
 </template>
 
 <script setup lang="ts">
@@ -35,6 +36,7 @@ import { computed } from 'vue';
 import { type RouteLocationRaw } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import GlobalHeader from '@/components/GlobalHeader.vue';
+import { DialogWrapper } from '@dao-style/extend';
 
 type NavRouteType = {
   to: RouteLocationRaw;
@@ -75,6 +77,7 @@ const navRoutes = computed<NavRouteType[]>(() => [
 
 <style lang="scss">
 @import '@/assets/tailwind.scss';
+@import '@/assets/common.scss';
 
 * {
   box-sizing: border-box;

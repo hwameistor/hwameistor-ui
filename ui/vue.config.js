@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const daoStyleUnpluginExtend = require('@dao-style/unplugin-extend/webpack');
 
 module.exports = defineConfig({
@@ -16,6 +17,19 @@ module.exports = defineConfig({
 
   configureWebpack: {
     plugins: [
+      new MonacoWebpackPlugin({
+        languages: ['yaml'],
+        customLanguages: [
+          {
+            label: 'yaml',
+            entry: 'monaco-yaml',
+            worker: {
+              id: 'monaco-yaml/yamlWorker',
+              entry: 'monaco-yaml/yaml.worker',
+            },
+          },
+        ],
+      }),
       daoStyleUnpluginExtend({}),
     ],
   },

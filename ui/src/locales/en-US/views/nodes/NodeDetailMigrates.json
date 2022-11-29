@@ -1,0 +1,12 @@
+{
+  "name": "Name",
+  "state": "Status",
+  "volume": "Volume",
+  "sourceNode": "Source Node",
+  "targetNode": "Target Node",
+  "startTime": "Start Time",
+  "endTime": "End Time",
+  "actions": {
+    "viewYaml": "View YAML"
+  }
+}

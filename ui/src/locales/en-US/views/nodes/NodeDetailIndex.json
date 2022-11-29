@@ -1,0 +1,10 @@
+{
+  "nodeStatus": "Node Status",
+  "driverStatus": "Driver Status",
+  "HDDUsage": "HDD Utilization",
+  "SSDUsage": "SSD Utilization",
+  "usedDisk": "Bound/Total Disks",
+  "basicInfo": "Basic Info",
+  "migrateRecords": "Migrates",
+  "localDisk": "Disks"
+}
