@@ -45,7 +45,7 @@ func (n *NodeController) StorageNodeGet(ctx *gin.Context) {
 	}
 	sn, err := n.m.StorageNodeController().GetStorageNode(nodeName)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (n *NodeController) StorageNodeList(ctx *gin.Context) {
 
 	sns, err := n.m.StorageNodeController().StorageNodeList(int32(p), int32(ps))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -112,7 +112,7 @@ func (n *NodeController) StorageNodeMigrateGet(ctx *gin.Context) {
 
 	sns, err := n.m.StorageNodeController().GetStorageNodeMigrate(nodeName, int32(p), int32(ps))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -148,7 +148,7 @@ func (n *NodeController) StorageNodeDisksList(ctx *gin.Context) {
 
 	lds, err := n.m.StorageNodeController().LocalDiskListByNode(nodeName, int32(p), int32(ps))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -176,7 +176,7 @@ func (n *NodeController) StorageNodeVolumeOperationYamlGet(ctx *gin.Context) {
 	}
 	resourceYamlStr, err := n.m.StorageNodeController().GetStorageNodeVolumeMigrateYamlStr(name)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 

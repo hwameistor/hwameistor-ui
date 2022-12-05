@@ -49,7 +49,7 @@ func (v *VolumeController) VolumeGet(ctx *gin.Context) {
 	}
 	lv, err := v.m.VolumeController().GetLocalVolume(volumeName)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (v *VolumeController) VolumeList(ctx *gin.Context) {
 
 	lvs, err := v.m.VolumeController().ListLocalVolume(int32(p), int32(ps))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -105,7 +105,7 @@ func (v *VolumeController) VolumeReplicasGet(ctx *gin.Context) {
 	}
 	lvs, err := v.m.VolumeController().GetVolumeReplicas(volumeName)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -132,7 +132,7 @@ func (v *VolumeController) VolumeReplicaYamlGet(ctx *gin.Context) {
 	}
 	resourceYamlStr, err := v.m.VolumeController().GetLocalVolumeReplicaYamlStr(name)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -159,7 +159,7 @@ func (v *VolumeController) VolumeOperationGet(ctx *gin.Context) {
 	}
 	volumeOperation, err := v.m.VolumeController().GetVolumeOperation(volumeName)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
@@ -186,7 +186,7 @@ func (v *VolumeController) VolumeOperationYamlGet(ctx *gin.Context) {
 	}
 	resourceYamlStr, err := v.m.VolumeController().GetLocalVolumeMigrateYamlStr(name)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
