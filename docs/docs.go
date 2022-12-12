@@ -631,6 +631,134 @@ const docTemplate = `{
                 }
             }
         },
+        "/volumegroups/volumegroups/{name}": {
+            "get": {
+                "description": "get VolumeListByVolumeGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VolumeGroup"
+                ],
+                "summary": "摘要 获取指定数据卷组中包含数据卷名称列表基本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeGroup"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volume/{name}/yaml": {
+            "get": {
+                "description": "get VolumeYamlGet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 获取数据卷yaml信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/api.YamlData"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volumeoperation/{volumeName}/convert": {
+            "post": {
+                "description": "post VolumeConvertOperation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 指定数据卷转换操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "volumeName",
+                        "name": "volumeName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeConvertInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volumeoperation/{volumeName}/migrate": {
+            "get": {
+                "description": "post VolumeMigrateOperation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 指定数据卷迁移操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "volumeName",
+                        "name": "volumeName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeMigrateInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/volumes/volumeoperation/{volumeOperationName}/yaml": {
             "get": {
                 "description": "get VolumeOperationYamlGet",
@@ -683,6 +811,18 @@ const docTemplate = `{
                         "name": "volumeName",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "volumeMigrateName",
+                        "name": "volumeMigrateName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -747,6 +887,24 @@ const docTemplate = `{
                         "name": "volumeName",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "volumeReplicaName",
+                        "name": "volumeReplicaName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "synced",
+                        "name": "synced",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -792,6 +950,24 @@ const docTemplate = `{
                         "name": "pageSize",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "volumeName",
+                        "name": "volumeName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1308,6 +1484,33 @@ const docTemplate = `{
                 }
             }
         },
+        "api.VolumeConvertInfo": {
+            "type": "object",
+            "properties": {
+                "replicaNum": {
+                    "type": "integer"
+                },
+                "volumeName": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.VolumeGroup": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name",
+                    "type": "string"
+                },
+                "volumeNames": {
+                    "description": "VolumeNames",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "api.VolumeList": {
             "type": "object",
             "properties": {
@@ -1321,6 +1524,25 @@ const docTemplate = `{
                 "pagination": {
                     "description": "page 信息",
                     "$ref": "#/definitions/api.Pagination"
+                }
+            }
+        },
+        "api.VolumeMigrateInfo": {
+            "type": "object",
+            "required": [
+                "selectedNode",
+                "srcNode",
+                "volumeName"
+            ],
+            "properties": {
+                "selectedNode": {
+                    "type": "string"
+                },
+                "srcNode": {
+                    "type": "string"
+                },
+                "volumeName": {
+                    "type": "string"
                 }
             }
         },

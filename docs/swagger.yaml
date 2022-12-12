@@ -342,6 +342,24 @@ definitions:
           for the scheduling and allocating. 磁盘组
         type: string
     type: object
+  api.VolumeConvertInfo:
+    properties:
+      replicaNum:
+        type: integer
+      volumeName:
+        type: string
+    type: object
+  api.VolumeGroup:
+    properties:
+      name:
+        description: Name
+        type: string
+      volumeNames:
+        description: VolumeNames
+        items:
+          type: string
+        type: array
+    type: object
   api.VolumeList:
     properties:
       items:
@@ -352,6 +370,19 @@ definitions:
       pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
+    type: object
+  api.VolumeMigrateInfo:
+    properties:
+      selectedNode:
+        type: string
+      srcNode:
+        type: string
+      volumeName:
+        type: string
+    required:
+    - selectedNode
+    - srcNode
+    - volumeName
     type: object
   api.VolumeMigrateOperation:
     properties:
@@ -859,6 +890,90 @@ paths:
       summary: 摘要 高可用设置
       tags:
       - Setting
+  /volumegroups/volumegroups/{name}:
+    get:
+      consumes:
+      - application/json
+      description: get VolumeListByVolumeGroup
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.VolumeGroup'
+      summary: 摘要 获取指定数据卷组中包含数据卷名称列表基本信息
+      tags:
+      - VolumeGroup
+  /volumes/volume/{name}/yaml:
+    get:
+      consumes:
+      - application/json
+      description: get VolumeYamlGet
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.YamlData'
+      summary: 摘要 获取数据卷yaml信息
+      tags:
+      - Volume
+  /volumes/volumeoperation/{volumeName}/convert:
+    post:
+      consumes:
+      - application/json
+      description: post VolumeConvertOperation
+      parameters:
+      - description: volumeName
+        in: path
+        name: volumeName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.VolumeConvertInfo'
+      summary: 摘要 指定数据卷转换操作
+      tags:
+      - Volume
+  /volumes/volumeoperation/{volumeName}/migrate:
+    get:
+      consumes:
+      - application/json
+      description: post VolumeMigrateOperation
+      parameters:
+      - description: volumeName
+        in: path
+        name: volumeName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.VolumeMigrateInfo'
+      summary: 摘要 指定数据卷迁移操作
+      tags:
+      - Volume
   /volumes/volumeoperation/{volumeOperationName}/yaml:
     get:
       consumes:
@@ -890,6 +1005,14 @@ paths:
         in: path
         name: volumeName
         required: true
+        type: string
+      - description: volumeMigrateName
+        in: query
+        name: volumeMigrateName
+        type: string
+      - description: state
+        in: query
+        name: state
         type: string
       produces:
       - application/json
@@ -933,6 +1056,18 @@ paths:
         name: volumeName
         required: true
         type: string
+      - description: volumeReplicaName
+        in: query
+        name: volumeReplicaName
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
+      - description: synced
+        in: query
+        name: synced
+        type: string
       produces:
       - application/json
       responses:
@@ -963,6 +1098,18 @@ paths:
         name: pageSize
         required: true
         type: integer
+      - description: volumeName
+        in: query
+        name: volumeName
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
+      - description: namespace
+        in: query
+        name: namespace
+        type: string
       produces:
       - application/json
       responses:

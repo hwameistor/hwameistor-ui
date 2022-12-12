@@ -43,12 +43,20 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	volumeRoutes := v1.Group("/volumes")
 	volumeRoutes.GET("/volumes", volumeController.VolumeList)
 	volumeRoutes.GET("/volumes/:name", volumeController.VolumeGet)
+	volumeRoutes.GET("/volume/:name/yaml", volumeController.VolumeYamlGet)
 
 	volumeRoutes.GET("/volumereplicas/:volumeName", volumeController.VolumeReplicasGet)
 	volumeRoutes.GET("/volumereplica/:volumeReplicaName/yaml", volumeController.VolumeReplicaYamlGet)
 
 	volumeRoutes.GET("/volumeoperations/:volumeName", volumeController.VolumeOperationGet)
 	volumeRoutes.GET("/volumeoperation/:volumeOperationName/yaml", volumeController.VolumeOperationYamlGet)
+
+	volumeRoutes.POST("/volumeoperation/:volumeName/migrate", volumeController.VolumeMigrateOperation)
+	volumeRoutes.POST("/volumeoperation/:volumeName/convert", volumeController.VolumeConvertOperation)
+
+	volumeGroupController := controller.NewVolumeGroupController(m)
+	volumeGroupRoutes := v1.Group("/volumegroups")
+	volumeGroupRoutes.GET("/volumegroups/:name", volumeGroupController.VolumeListByVolumeGroup)
 
 	nodeController := controller.NewNodeController(m)
 	nodeRoutes := v1.Group("/nodes")
@@ -125,7 +133,7 @@ func BuildServerMgr() *manager.ServerManager {
 
 	uiClientset, err := kubernetes.NewForConfig(cfg)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to create client set")
+		log.WithError(err).Error("Failed to create client set")
 	}
 
 	// Create a new manager to provide shared dependencies and start components

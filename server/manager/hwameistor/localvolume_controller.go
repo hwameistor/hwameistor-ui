@@ -9,17 +9,26 @@ import (
 	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/cli-runtime/pkg/printers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/record"
 	"math"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 )
 
 const (
 	groupName   = "hwameistor.io"
 	versionName = "v1"
+
+	APIVersion                   = "v1alpha1"
+	LocalVolumeMigrateKind       = "LocalVolumeMigrate"
+	LocalVolumeConvertKind       = "LocalVolumeConvert"
+	LocalVolumeMigrateAPIVersion = "hwameistor.io" + "/" + APIVersion
+	LocalVolumeConvertAPIVersion = "hwameistor.io" + "/" + APIVersion
+	ConvertReplicaNum            = 2
 )
 
 // LocalVolumeController
@@ -40,24 +49,29 @@ func NewLocalVolumeController(client client.Client, clientset *kubernetes.Client
 }
 
 // ListLocalVolume
-func (lvController *LocalVolumeController) ListLocalVolume(page, pageSize int32) (*hwameistorapi.VolumeList, error) {
+func (lvController *LocalVolumeController) ListLocalVolume(queryPage hwameistorapi.QueryPage) (*hwameistorapi.VolumeList, error) {
 	var volList = &hwameistorapi.VolumeList{}
-	vols, err := lvController.listLocalVolume()
+	vols, err := lvController.listLocalVolume(queryPage)
 	fmt.Println("ListLocalVolume vols = %v", vols)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to listLocalVolume")
+		log.WithError(err).Error("Failed to listLocalVolume")
 		return nil, err
 	}
-	volList.Volumes = utils.DataPatination(vols, page, pageSize)
+
+	if len(vols) == 0 {
+		return volList, nil
+	}
+
+	volList.Volumes = utils.DataPatination(vols, queryPage.Page, queryPage.PageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
-	pagination.Page = page
-	pagination.PageSize = pageSize
+	pagination.Page = queryPage.Page
+	pagination.PageSize = queryPage.PageSize
 	pagination.Total = uint32(len(vols))
 	if len(vols) == 0 {
 		pagination.Pages = 0
 	} else {
-		pagination.Pages = int32(math.Ceil(float64(len(vols)) / float64(pageSize)))
+		pagination.Pages = int32(math.Ceil(float64(len(vols)) / float64(queryPage.PageSize)))
 	}
 	volList.Page = pagination
 
@@ -65,13 +79,13 @@ func (lvController *LocalVolumeController) ListLocalVolume(page, pageSize int32)
 }
 
 // listLocalVolume
-func (lvController *LocalVolumeController) listLocalVolume() ([]*hwameistorapi.Volume, error) {
+func (lvController *LocalVolumeController) listLocalVolume(queryPage hwameistorapi.QueryPage) ([]*hwameistorapi.Volume, error) {
 	lvList := &apisv1alpha1.LocalVolumeList{}
 	if err := lvController.Client.List(context.TODO(), lvList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalVolumes")
+		log.WithError(err).Error("Failed to list LocalVolumes")
 		return nil, err
 	}
-	fmt.Println("listLocalVolume lvList = %v", lvList)
+	fmt.Println("listLocalVolume queryPage = %v, queryPage.State = %v", queryPage, queryPage.State)
 
 	var vols []*hwameistorapi.Volume
 	for _, lv := range lvList.Items {
@@ -85,7 +99,32 @@ func (lvController *LocalVolumeController) listLocalVolume() ([]*hwameistorapi.V
 		vol.State = hwameistorapi.StateConvert(lv.Status.State)
 		vol.VolumeGroup = lv.Spec.VolumeGroup
 		vol.CreateTime = lv.CreationTimestamp.Time
-		vols = append(vols, vol)
+
+		if (queryPage.VolumeName == "") && (queryPage.State == hwameistorapi.VolumeStateEmpty) && (queryPage.NameSpace == "") {
+			vols = append(vols, vol)
+		} else if (queryPage.VolumeName != "" && strings.Contains(vol.Name, queryPage.VolumeName)) &&
+			(queryPage.State == hwameistorapi.VolumeStateEmpty) && (queryPage.NameSpace == "") {
+			vols = append(vols, vol)
+		} else if (queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == vol.State) &&
+			(queryPage.VolumeName == "") && (queryPage.NameSpace == "") {
+			vols = append(vols, vol)
+		} else if (queryPage.NameSpace != "" && (queryPage.NameSpace == vol.PersistentVolumeClaimNamespace)) &&
+			(queryPage.VolumeName == "") && (queryPage.State == hwameistorapi.VolumeStateEmpty) {
+			vols = append(vols, vol)
+		} else if (queryPage.VolumeName != "" && strings.Contains(vol.Name, queryPage.VolumeName)) &&
+			(queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == vol.State) && (queryPage.NameSpace == "") {
+			vols = append(vols, vol)
+		} else if (queryPage.VolumeName != "" && strings.Contains(vol.Name, queryPage.VolumeName)) &&
+			(queryPage.NameSpace != "" && (queryPage.NameSpace == vol.PersistentVolumeClaimNamespace)) && (queryPage.State == hwameistorapi.VolumeStateEmpty) {
+			vols = append(vols, vol)
+		} else if (queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == vol.State) &&
+			(queryPage.VolumeName == "") && (queryPage.NameSpace != "" && (queryPage.NameSpace == vol.PersistentVolumeClaimNamespace)) {
+			vols = append(vols, vol)
+		} else if (queryPage.VolumeName != "" && strings.Contains(vol.Name, queryPage.VolumeName)) &&
+			(queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == vol.State) &&
+			(queryPage.NameSpace != "" && (queryPage.NameSpace == vol.PersistentVolumeClaimNamespace)) {
+			vols = append(vols, vol)
+		}
 	}
 
 	return vols, nil
@@ -93,9 +132,12 @@ func (lvController *LocalVolumeController) listLocalVolume() ([]*hwameistorapi.V
 
 // GetLocalVolume
 func (lvController *LocalVolumeController) GetLocalVolume(lvname string) (*hwameistorapi.Volume, error) {
-	lvs, err := lvController.listLocalVolume()
+	var queryPage hwameistorapi.QueryPage
+	queryPage.VolumeName = lvname
+
+	lvs, err := lvController.listLocalVolume(queryPage)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to listLocalVolume")
+		log.WithError(err).Error("Failed to listLocalVolume")
 		return nil, err
 	}
 
@@ -108,7 +150,7 @@ func (lvController *LocalVolumeController) GetLocalVolume(lvname string) (*hwame
 	return nil, nil
 }
 
-// GetLocalVolumeReplicas
+// getLocalVolumeReplicas
 func (lvController *LocalVolumeController) getLocalVolumeReplicas(lvname string) ([]*apisv1alpha1.LocalVolumeReplica, error) {
 	lv := &apisv1alpha1.LocalVolume{}
 	if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: lvname}, lv); err != nil {
@@ -139,10 +181,10 @@ func (lvController *LocalVolumeController) getLocalVolumeReplicas(lvname string)
 }
 
 // GetVolumeReplicas
-func (lvController *LocalVolumeController) GetVolumeReplicas(lvname string) (*hwameistorapi.VolumeReplicaList, error) {
-	lvrs, err := lvController.getLocalVolumeReplicas(lvname)
+func (lvController *LocalVolumeController) GetVolumeReplicas(queryPage hwameistorapi.QueryPage) (*hwameistorapi.VolumeReplicaList, error) {
+	lvrs, err := lvController.getLocalVolumeReplicas(queryPage.VolumeName)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to getLocalVolumeReplicas")
+		log.WithError(err).Error("Failed to getLocalVolumeReplicas")
 		return nil, err
 	}
 
@@ -157,16 +199,44 @@ func (lvController *LocalVolumeController) GetVolumeReplicas(lvname string) (*hw
 		vr.StoragePath = lvr.Status.StoragePath
 		vr.Synced = lvr.Status.Synced
 		vr.State = hwameistorapi.StateConvert(lvr.Status.State)
-		vrs = append(vrs, vr)
+
+		var convertedSynced bool
+		if strings.Contains("true", queryPage.Synced) || strings.Contains("True", queryPage.Synced) {
+			convertedSynced = true
+		} else if strings.Contains("false", queryPage.Synced) || strings.Contains("False", queryPage.Synced) {
+			convertedSynced = false
+		}
+
+		if queryPage.VolumeReplicaName == "" && queryPage.State == hwameistorapi.VolumeStateEmpty && queryPage.Synced == "" {
+			vrs = append(vrs, vr)
+		} else if (queryPage.VolumeReplicaName != "" && strings.Contains(vr.Name, queryPage.VolumeReplicaName)) &&
+			queryPage.State == hwameistorapi.VolumeStateEmpty && queryPage.Synced == "" {
+			vrs = append(vrs, vr)
+		} else if (queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == vr.State) && (queryPage.VolumeReplicaName == "") && (queryPage.Synced == "") {
+			vrs = append(vrs, vr)
+		} else if (queryPage.Synced != "" && convertedSynced == vr.Synced) && (queryPage.VolumeReplicaName == "") && (queryPage.State == hwameistorapi.VolumeStateEmpty) {
+			vrs = append(vrs, vr)
+		} else if (queryPage.Synced != "" && convertedSynced == vr.Synced) && (queryPage.VolumeReplicaName != "" && strings.Contains(vr.Name, queryPage.VolumeReplicaName)) && (queryPage.State == hwameistorapi.VolumeStateEmpty) {
+			vrs = append(vrs, vr)
+		} else if (queryPage.Synced != "" && convertedSynced == vr.Synced) && (queryPage.State != hwameistorapi.VolumeStateUnknown) && (queryPage.VolumeReplicaName == "") {
+			vrs = append(vrs, vr)
+		} else if (queryPage.VolumeReplicaName != "" && strings.Contains(vr.Name, queryPage.VolumeReplicaName)) && (queryPage.State != hwameistorapi.VolumeStateUnknown) && (queryPage.Synced == "") {
+			vrs = append(vrs, vr)
+		} else if (queryPage.VolumeReplicaName != "" && strings.Contains(vr.Name, queryPage.VolumeReplicaName)) &&
+			(queryPage.State != hwameistorapi.VolumeStateUnknown && vr.State == queryPage.State) &&
+			(queryPage.Synced != "" && convertedSynced == vr.Synced) {
+			vrs = append(vrs, vr)
+		}
+
 	}
 	vrList.VolumeReplicas = vrs
-	vrList.VolumeName = lvname
+	vrList.VolumeName = queryPage.VolumeName
 
 	return vrList, nil
 }
 
 // GetVolumeOperation
-func (lvController *LocalVolumeController) GetVolumeOperation(volumeName string) (*hwameistorapi.VolumeOperationByVolume, error) {
+func (lvController *LocalVolumeController) GetVolumeOperation(queryPage hwameistorapi.QueryPage) (*hwameistorapi.VolumeOperationByVolume, error) {
 
 	var volumeOperation = &hwameistorapi.VolumeOperationByVolume{}
 	var volumeMigrateOperations []*hwameistorapi.VolumeMigrateOperation
@@ -176,7 +246,7 @@ func (lvController *LocalVolumeController) GetVolumeOperation(volumeName string)
 	}
 
 	for _, item := range lvmList.Items {
-		if item.Spec.VolumeName == volumeName {
+		if item.Spec.VolumeName == queryPage.VolumeName {
 			var volumeMigrateOperation = &hwameistorapi.VolumeMigrateOperation{}
 			volumeMigrateOperation.VolumeName = item.Spec.VolumeName
 			volumeMigrateOperation.Name = item.Name
@@ -186,12 +256,24 @@ func (lvController *LocalVolumeController) GetVolumeOperation(volumeName string)
 			}
 			volumeMigrateOperation.State = hwameistorapi.StateConvert(item.Status.State)
 			volumeMigrateOperation.StartTime = item.CreationTimestamp.Time
-			volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+
+			if queryPage.VolumeMigrateName == "" && queryPage.State == hwameistorapi.VolumeStateEmpty {
+				volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+			} else if (queryPage.VolumeMigrateName != "" && strings.Contains(volumeMigrateOperation.Name, queryPage.VolumeMigrateName)) &&
+				queryPage.State == hwameistorapi.VolumeStateEmpty {
+				volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+			} else if (queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == volumeMigrateOperation.State) && (queryPage.VolumeMigrateName == "") {
+				volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+			} else if (queryPage.VolumeMigrateName != "" && strings.Contains(volumeMigrateOperation.Name, queryPage.VolumeMigrateName)) && (queryPage.State == hwameistorapi.VolumeStateEmpty) {
+				volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+			} else if (queryPage.VolumeMigrateName != "" && strings.Contains(volumeMigrateOperation.Name, queryPage.VolumeMigrateName)) && (queryPage.State != hwameistorapi.VolumeStateUnknown && queryPage.State == volumeMigrateOperation.State) {
+				volumeMigrateOperations = append(volumeMigrateOperations, volumeMigrateOperation)
+			}
 		}
 	}
 
 	volumeOperation.VolumeMigrateOperations = volumeMigrateOperations
-	volumeOperation.VolumeName = volumeName
+	volumeOperation.VolumeName = queryPage.VolumeName
 	return volumeOperation, nil
 }
 
@@ -241,6 +323,29 @@ func (lvController *LocalVolumeController) GetLocalVolumeReplicaYamlStr(resource
 	return yamlData, nil
 }
 
+// GetLocalVolumeYamlStr
+func (lvController *LocalVolumeController) GetLocalVolumeYamlStr(resourceName string) (*hwameistorapi.YamlData, error) {
+	lv := &apisv1alpha1.LocalVolume{}
+	if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: resourceName}, lv); err != nil {
+		if !errors.IsNotFound(err) {
+			log.WithError(err).Error("Failed to query localVolume")
+		} else {
+			log.Info("Not found the localVolume")
+		}
+		return nil, err
+	}
+
+	resourceYamlStr, err := lvController.getLVResourceYaml(lv)
+	if err != nil {
+		log.WithError(err).Error("Failed to getLVRResourceYaml")
+		return nil, err
+	}
+	var yamlData = &hwameistorapi.YamlData{}
+	yamlData.Data = resourceYamlStr
+
+	return yamlData, nil
+}
+
 // getLVMResourceYaml
 func (lvController *LocalVolumeController) getLVMResourceYaml(lvm *apisv1alpha1.LocalVolumeMigrate) (string, error) {
 
@@ -277,4 +382,97 @@ func (lvController *LocalVolumeController) getLVRResourceYaml(lvr *apisv1alpha1.
 	}
 
 	return buf.String(), nil
+}
+
+// getLVResourceYaml
+func (lvController *LocalVolumeController) getLVResourceYaml(lv *apisv1alpha1.LocalVolume) (string, error) {
+
+	buf := new(bytes.Buffer)
+
+	lv.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   groupName,
+		Version: versionName,
+		Kind:    lv.Kind,
+	})
+	y := printers.YAMLPrinter{}
+	err := y.PrintObj(lv, buf)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String(), nil
+}
+
+// CreateVolumeMigrate
+func (lvController *LocalVolumeController) CreateVolumeMigrate(volName string, srcNode string, selectedNode string) (*hwameistorapi.VolumeMigrateInfo, error) {
+
+	lvmName := fmt.Sprintf("migrate-%s", volName)
+	lvm := &apisv1alpha1.LocalVolumeMigrate{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: lvmName,
+		},
+		TypeMeta: metav1.TypeMeta{
+			Kind:       LocalVolumeMigrateKind,
+			APIVersion: LocalVolumeMigrateAPIVersion,
+		},
+		Spec: apisv1alpha1.LocalVolumeMigrateSpec{
+			VolumeName: volName,
+			SourceNode: srcNode,
+			// don't specify the target nodes, so the scheduler will select from the avaliables
+			TargetNodesSuggested: []string{selectedNode},
+			MigrateAllVols:       true,
+		},
+	}
+	if err := lvController.Client.Create(context.Background(), lvm); err != nil {
+		log.WithField("migrate", lvm.Name).WithError(err).Error("Failed to submit a migrate job")
+		return nil, err
+	}
+
+	var vmi = &hwameistorapi.VolumeMigrateInfo{}
+	vmi.VolumeName = volName
+	vmi.SrcNode = srcNode
+	vmi.SelectedNode = selectedNode
+
+	return vmi, nil
+}
+
+// CreateVolumeConvert
+func (lvController *LocalVolumeController) CreateVolumeConvert(volName string) (*hwameistorapi.VolumeConvertInfo, error) {
+	lvmName := fmt.Sprintf("convert-%s", volName)
+
+	var vci = &hwameistorapi.VolumeConvertInfo{}
+	vci.VolumeName = volName
+	vci.ReplicaNum = ConvertReplicaNum
+
+	lv, err := lvController.GetLocalVolume(volName)
+	if err != nil {
+		return vci, nil
+	}
+	if lv.Convertible == false || lv.ReplicaNumber == 1 {
+		return vci, errors.NewBadRequest("Cannot create convert crd: check convertible is false or replicanumber == 1")
+	}
+
+	lvc := &apisv1alpha1.LocalVolumeConvert{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: lvmName,
+		},
+		TypeMeta: metav1.TypeMeta{
+			Kind:       LocalVolumeConvertKind,
+			APIVersion: LocalVolumeConvertAPIVersion,
+		},
+		Spec: apisv1alpha1.LocalVolumeConvertSpec{
+			VolumeName:    volName,
+			ReplicaNumber: ConvertReplicaNum,
+		},
+	}
+
+	if err := lvController.Client.Create(context.Background(), lvc); err != nil {
+		log.WithField("convert", lvc.Name).WithError(err).Error("Failed to submit a convert job")
+		if errors.IsAlreadyExists(err) {
+			return vci, nil
+		}
+		return nil, err
+	}
+
+	return vci, nil
 }

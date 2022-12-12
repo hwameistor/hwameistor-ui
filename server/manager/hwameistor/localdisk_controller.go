@@ -28,7 +28,7 @@ func NewLocalDiskController(client client.Client, recorder record.EventRecorder)
 func (ldController *LocalDiskController) ListLocalDisk() (*apisv1alpha1.LocalDiskList, error) {
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := ldController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 	}
 	return diskList, nil
 }

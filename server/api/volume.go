@@ -2,8 +2,6 @@ package api
 
 import (
 	"time"
-
-	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
 )
 
 // LocalPool is storage pool struct
@@ -133,6 +131,27 @@ type VolumeMigrateOperation struct {
 	EndTime time.Time `json:"endTime,omitempty"`
 }
 
+// VolumeConvertOperation
+type VolumeConvertOperation struct {
+	// VolumeConvert Name 转换CRD名称
+	Name string `json:"name"`
+
+	// State 转换状态
+	State State `json:"state,omitempty"`
+
+	// VolumeName 转换卷名称
+	VolumeName string `json:"volumeName"`
+
+	// ReplicaNumber 副本数
+	ReplicaNumber string `json:"replicaNumber"`
+
+	// StartTime 转换开始时间
+	StartTime time.Time `json:"startTime,omitempty"`
+
+	// EndTime 转换结束时间
+	EndTime time.Time `json:"endTime,omitempty"`
+}
+
 // LocalVolumeMigrateSpec defines the desired state of LocalVolumeMigrate
 type LocalVolumeMigrateSpec struct {
 	// volumeName
@@ -240,37 +259,22 @@ type HAState struct {
 	Reason string `json:"reason,omitempty"`
 }
 
-func ToVolumeResource(lv apisv1alpha1.LocalVolume) *Volume {
-	tmplv := &Volume{}
-	tmplv.Name = lv.Name
-	tmplv.RequiredCapacityBytes = lv.Spec.RequiredCapacityBytes
-	tmplv.VolumeGroup = lv.Spec.VolumeGroup
-	tmplv.State = State(lv.Status.State)
-	tmplv.PersistentVolumeClaimName = lv.Spec.PersistentVolumeClaimName
-	tmplv.PersistentVolumeClaimNamespace = lv.Spec.PersistentVolumeClaimNamespace
-	tmplv.RequiredCapacityBytes = lv.Spec.RequiredCapacityBytes
-	tmplv.ReplicaNumber = lv.Spec.ReplicaNumber
-	tmplv.CreateTime = lv.CreationTimestamp.Time
+// VolumeGroup defines the observed state of VolumeGroup
+type VolumeGroup struct {
+	// Name
+	Name string `json:"name"`
 
-	return tmplv
+	// VolumeNames
+	VolumeNames []string `json:"volumeNames,omitempty"`
 }
 
-func ToVolumeReplicaResource(lvr apisv1alpha1.LocalVolumeReplica) *VolumeReplica {
-	r := &VolumeReplica{}
-	r.Name = lvr.Name
-	return r
+type VolumeMigrateInfo struct {
+	VolumeName   string `form:"volumeName" json:"volumeName" binding:"required"`
+	SrcNode      string `form:"srcNode" json:"srcNode" binding:"required"`
+	SelectedNode string `form:"selectedNode" json:"selectedNode" binding:"required"`
 }
 
-//func ToVolumeOperationResource(lvm apisv1alpha1.VolumeOperation) *VolumeOperation {
-//	r := &VolumeOperation{}
-//
-//	r.Name = lvm.Name
-//	r.VolumeName = lvm.Spec.VolumeName
-//	r.SourceNode = lvm.Spec.SourceNodesNames[0]
-//	r.TargetNode = lvm.Spec.TargetNodesNames[0]
-//	r.State = State(lvm.Status.State)
-//	r.StartTime = lvm.CreationTimestamp.Time
-//	// todo r.EndTime
-//
-//	return r
-//}
+type VolumeConvertInfo struct {
+	VolumeName string `json:"volumeName"`
+	ReplicaNum int64  `json:"replicaNum"`
+}

@@ -45,7 +45,7 @@ func (settingController *SettingController) GetDRBDSetting() (*hwameistorapi.Drb
 
 	jobs, err := settingController.getDrbdJobListByNS()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to getJobListByNS")
+		log.WithError(err).Error("Failed to getJobListByNS")
 		return nil, err
 	}
 	var drbdSetting = &hwameistorapi.DrbdEnableSetting{}

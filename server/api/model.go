@@ -1,6 +1,9 @@
 package api
 
-import apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
+import (
+	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
+	"strings"
+)
 
 type State string
 
@@ -25,6 +28,8 @@ const (
 	VolumeStateNotReady    State = "NotReady"
 	VolumeStateToBeDeleted State = "ToBeDeleted"
 	VolumeStateDeleted     State = "Deleted"
+
+	VolumeStateUnknown State = "Unknown"
 
 	VolumeReplicaStateInvalid     State = "Invalid"
 	VolumeReplicaStateCreating    State = "Creating"
@@ -168,4 +173,47 @@ func StateConvert(state apisv1alpha1.State) State {
 		//	return LocalDiskUnknown
 	}
 	return ""
+}
+
+// VolumeStatefuzzyConvert
+func VolumeStatefuzzyConvert(state string) State {
+
+	if state == "" {
+		return VolumeStateEmpty
+	}
+	if strings.Contains("ToBeMounted", state) {
+		return VolumeStateToBeUnmount
+	}
+	if strings.Contains("Created", state) {
+		return VolumeStateCreated
+	}
+	if strings.Contains("Creating", state) {
+		return VolumeStateCreating
+	}
+	if strings.Contains("Ready", state) {
+		return VolumeStateReady
+	}
+	if strings.Contains("NotReady", state) {
+		return VolumeStateNotReady
+	}
+	if strings.Contains("ToBeDeleted", state) {
+		return VolumeStateToBeDeleted
+	}
+	if strings.Contains("Deleted", state) {
+		return VolumeStateDeleted
+	}
+	return VolumeStateUnknown
+}
+
+type QueryPage struct {
+	Page              int32
+	Pages             int32
+	PageSize          int32
+	Name              string
+	NameSpace         string
+	State             State
+	VolumeName        string
+	VolumeReplicaName string
+	VolumeMigrateName string
+	Synced            string
 }

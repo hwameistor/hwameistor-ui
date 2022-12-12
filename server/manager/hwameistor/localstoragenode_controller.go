@@ -57,9 +57,14 @@ func (lsnController *LocalStorageNodeController) StorageNodeList(page, pageSize 
 	var storageNodeList = &hwameistorapi.StorageNodeList{}
 	sns, err := lsnController.ListLocalStorageNode()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to list ListLocalStorageNode")
+		log.WithError(err).Error("Failed to list ListLocalStorageNode")
 		return nil, err
 	}
+
+	if len(sns) == 0 {
+		return storageNodeList, nil
+	}
+
 	storageNodeList.StorageNodes = utils.DataPatination(sns, page, pageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
@@ -82,7 +87,7 @@ func (lsnController *LocalStorageNodeController) ListLocalStorageNode() ([]*hwam
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := lsnController.Client.List(context.TODO(), lsnList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalStorageNodes")
+		log.WithError(err).Error("Failed to list LocalStorageNodes")
 		return nil, err
 	}
 
@@ -90,12 +95,12 @@ func (lsnController *LocalStorageNodeController) ListLocalStorageNode() ([]*hwam
 	for i := range lsnList.Items {
 		claimedLocaldisks, err := lsnController.listClaimedLocalDiskByNode(lsnList.Items[i].Name)
 		if err != nil {
-			log.WithError(err).Fatal("Failed to list listClaimedLocalDiskByNode")
+			log.WithError(err).Error("Failed to list listClaimedLocalDiskByNode")
 			return nil, err
 		}
 		localdisks, err := lsnController.ListStorageNodeDisks(lsnList.Items[i].Name)
 		if err != nil {
-			log.WithError(err).Fatal("Failed to ListStorageNodeDisks")
+			log.WithError(err).Error("Failed to ListStorageNodeDisks")
 			return nil, err
 		}
 		sn := lsnController.convertStorageNode(lsnList.Items[i])
@@ -113,7 +118,7 @@ func (lsnController *LocalStorageNodeController) getK8SNodeStatus(nodeName strin
 	// list K8S nodes
 	nodes, err := lsnController.clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		log.WithError(err).Fatal("Failed to list k8s nodes")
+		log.WithError(err).Error("Failed to list k8s nodes")
 		return hwameistorapi.NodeStateNotReady
 	}
 	for _, node := range nodes.Items {
@@ -152,7 +157,7 @@ func (lsnController *LocalStorageNodeController) convertStorageNode(lsn apisv1al
 func (lsnController *LocalStorageNodeController) GetStorageNode(nodeName string) (*hwameistorapi.StorageNode, error) {
 	sns, err := lsnController.ListLocalStorageNode()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to ListLocalStorageNode")
+		log.WithError(err).Error("Failed to ListLocalStorageNode")
 		return nil, err
 	}
 
@@ -170,8 +175,12 @@ func (lsnController *LocalStorageNodeController) GetStorageNodeMigrate(nodeName 
 
 	volumeMigrateOperations, err := lsnController.getStorageNodeMigrateOperations(nodeName)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to getStorageNodeMigrateOperations")
+		log.WithError(err).Error("Failed to getStorageNodeMigrateOperations")
 		return nil, err
+	}
+
+	if len(volumeMigrateOperations) == 0 {
+		return volumeOperationListByNode, nil
 	}
 
 	volumeOperationListByNode.VolumeMigrateOperations = utils.DataPatination(volumeMigrateOperations, page, pageSize)
@@ -222,7 +231,7 @@ func (lsnController *LocalStorageNodeController) getStorageNodeMigrateOperations
 func (lsnController *LocalStorageNodeController) listClaimedLocalDiskByNode(nodeName string) ([]apisv1alpha1.LocalDisk, error) {
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := lsnController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 		return nil, err
 	}
 
@@ -267,7 +276,7 @@ func (lsnController *LocalStorageNodeController) LocalDiskListByNode(nodeName st
 
 	disks, err := lsnController.ListStorageNodeDisks(nodeName)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to ListStorageNodeDisks")
+		log.WithError(err).Error("Failed to ListStorageNodeDisks")
 		return nil, err
 	}
 
@@ -275,11 +284,13 @@ func (lsnController *LocalStorageNodeController) LocalDiskListByNode(nodeName st
 	pagination.Page = page
 	pagination.PageSize = pageSize
 	pagination.Total = uint32(len(disks))
+
 	if len(disks) == 0 {
-		pagination.Pages = 0
+		return localDiskList, nil
 	} else {
 		pagination.Pages = int32(math.Ceil(float64(len(disks)) / float64(pageSize)))
 	}
+
 	localDiskList.Page = pagination
 	localDiskList.LocalDisks = utils.DataPatination(disks, page, pageSize)
 	localDiskList.NodeName = nodeName
@@ -292,7 +303,7 @@ func (lsnController *LocalStorageNodeController) ListStorageNodeDisks(nodeName s
 
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := lsnController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 		return nil, err
 	}
 

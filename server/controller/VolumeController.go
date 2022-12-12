@@ -2,20 +2,23 @@ package controller
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	hwameistorapi "github.com/hwameistor/hwameistor-ui/server/api"
+	"github.com/hwameistor/hwameistor-ui/server/manager"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-	"github.com/hwameistor/hwameistor-ui/server/manager"
 )
 
 type IVolumeController interface {
 	//RestController
 	VolumeGet(ctx *gin.Context)
 	VolumeList(ctx *gin.Context)
+	VolumeYamlGet(ctx *gin.Context)
 	VolumeReplicasGet(ctx *gin.Context)
 	VolumeReplicaYamlGet(ctx *gin.Context)
 	VolumeOperationGet(ctx *gin.Context)
+	VolumeMigrateOperation(ctx *gin.Context)
+	VolumeConvertOperation(ctx *gin.Context)
 	VolumeOperationYamlGet(ctx *gin.Context)
 }
 
@@ -63,6 +66,9 @@ func (v *VolumeController) VolumeGet(ctx *gin.Context) {
 // @Param       name query string false "name"
 // @Param       page query int32 true "page"
 // @Param       pageSize query int32 true "pageSize"
+// @Param       volumeName query string false "volumeName"
+// @Param       state query string false "state"
+// @Param       namespace query string false "namespace"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeList   "成功"
@@ -73,11 +79,25 @@ func (v *VolumeController) VolumeList(ctx *gin.Context) {
 	page := ctx.Query("page")
 	// 获取path中的pageSize
 	pageSize := ctx.Query("pageSize")
+	// 获取path中的volumeName
+	volumeName := ctx.Query("volumeName")
+	fmt.Println("VolumeList volumeName = %v", volumeName)
+	// 获取path中的state
+	state := ctx.Query("state")
+	// 获取path中的namespace
+	namespace := ctx.Query("namespace")
 
 	p, _ := strconv.ParseInt(page, 10, 32)
 	ps, _ := strconv.ParseInt(pageSize, 10, 32)
 
-	lvs, err := v.m.VolumeController().ListLocalVolume(int32(p), int32(ps))
+	var queryPage hwameistorapi.QueryPage
+	queryPage.Page = int32(p)
+	queryPage.PageSize = int32(ps)
+	queryPage.VolumeName = volumeName
+	queryPage.State = hwameistorapi.VolumeStatefuzzyConvert(state)
+	queryPage.NameSpace = namespace
+
+	lvs, err := v.m.VolumeController().ListLocalVolume(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
@@ -86,11 +106,41 @@ func (v *VolumeController) VolumeList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, lvs)
 }
 
+// VolumeYamlGet godoc
+// @Summary 摘要 获取数据卷yaml信息
+// @Description get VolumeYamlGet
+// @Tags        Volume
+// @Param       name path string true "name"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object}  api.YamlData  "成功"
+// @Router      /volumes/volume/{name}/yaml [get]
+func (v *VolumeController) VolumeYamlGet(ctx *gin.Context) {
+
+	// 获取path中的name
+	name := ctx.Param("name")
+
+	if name == "" {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	resourceYamlStr, err := v.m.VolumeController().GetLocalVolumeYamlStr(name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resourceYamlStr)
+}
+
 // VolumeReplicasGet godoc
 // @Summary 摘要 获取指定数据卷的副本列表信息
 // @Description list volumes
 // @Tags        Volume
 // @Param       volumeName path string true "volumeName"
+// @Param       volumeReplicaName query string false "volumeReplicaName"
+// @Param       state query string false "state"
+// @Param       synced query string false "synced"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeReplicaList  "成功"
@@ -99,11 +149,25 @@ func (v *VolumeController) VolumeReplicasGet(ctx *gin.Context) {
 	// 获取path中的name
 	volumeName := ctx.Param("volumeName")
 
+	// 获取path中的volumeReplicaName
+	volumeReplicaName := ctx.Query("volumeReplicaName")
+	// 获取path中的state
+	state := ctx.Query("state")
+	// 获取path中的synced
+	synced := ctx.Query("synced")
+
 	if volumeName == "" {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
-	lvs, err := v.m.VolumeController().GetVolumeReplicas(volumeName)
+
+	var queryPage hwameistorapi.QueryPage
+	queryPage.VolumeReplicaName = volumeReplicaName
+	queryPage.State = hwameistorapi.VolumeStatefuzzyConvert(state)
+	queryPage.VolumeName = volumeName
+	queryPage.Synced = synced
+
+	lvs, err := v.m.VolumeController().GetVolumeReplicas(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
@@ -144,6 +208,8 @@ func (v *VolumeController) VolumeReplicaYamlGet(ctx *gin.Context) {
 // @Description get VolumeOperation
 // @Tags        Volume
 // @Param       volumeName path string true "volumeName"
+// @Param       volumeMigrateName query string false "volumeMigrateName"
+// @Param       state query string false "state"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeOperationByVolume      "成功"
@@ -157,7 +223,18 @@ func (v *VolumeController) VolumeOperationGet(ctx *gin.Context) {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
-	volumeOperation, err := v.m.VolumeController().GetVolumeOperation(volumeName)
+
+	// 获取path中的volumeMigrateName
+	volumeMigrateName := ctx.Query("volumeMigrateName")
+	// 获取path中的state
+	state := ctx.Query("state")
+
+	var queryPage hwameistorapi.QueryPage
+	queryPage.VolumeMigrateName = volumeMigrateName
+	queryPage.State = hwameistorapi.VolumeStatefuzzyConvert(state)
+	queryPage.VolumeName = volumeName
+
+	volumeOperation, err := v.m.VolumeController().GetVolumeOperation(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
@@ -191,4 +268,65 @@ func (v *VolumeController) VolumeOperationYamlGet(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, resourceYamlStr)
+}
+
+// VolumeMigrateOperation godoc
+// @Summary 摘要 指定数据卷迁移操作
+// @Description post VolumeMigrateOperation
+// @Tags        Volume
+// @Param       volumeName path string true "volumeName"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object}  api.VolumeMigrateInfo      "成功"
+// @Router      /volumes/volumeoperation/{volumeName}/migrate [get]
+func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
+	var volumeMigrateInfo hwameistorapi.VolumeMigrateInfo
+	ctx.ShouldBind(&volumeMigrateInfo)
+
+	srcNode := volumeMigrateInfo.SrcNode
+	selectedNode := volumeMigrateInfo.SelectedNode
+	// 获取path中的name
+	name := ctx.Param("volumeName")
+	fmt.Println("VolumeMigrateOperation name = %v", name)
+
+	if name == "" {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+
+	volumeMigrate, err := v.m.VolumeController().CreateVolumeMigrate(name, srcNode, selectedNode)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	ctx.JSON(http.StatusOK, volumeMigrate)
+}
+
+// VolumeConvertOperation godoc
+// @Summary 摘要 指定数据卷转换操作
+// @Description post VolumeConvertOperation
+// @Tags        Volume
+// @Param       volumeName path string true "volumeName"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object}  api.VolumeConvertInfo      "成功"
+// @Router      /volumes/volumeoperation/{volumeName}/convert [post]
+func (v *VolumeController) VolumeConvertOperation(ctx *gin.Context) {
+
+	// 获取path中的name
+	name := ctx.Param("volumeName")
+
+	fmt.Println("VolumeConvertOperation name = %v", name)
+	if name == "" {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+
+	volumeConvert, err := v.m.VolumeController().CreateVolumeConvert(name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, volumeConvert)
 }

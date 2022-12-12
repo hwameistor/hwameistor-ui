@@ -24,6 +24,8 @@ type ServerManager struct {
 
 	lvController *hwameistorctr.LocalVolumeController
 
+	vgController *hwameistorctr.VolumeGroupController
+
 	mController *hwameistorctr.MetricController
 
 	lspController *hwameistorctr.LocalStoragePoolController
@@ -48,6 +50,7 @@ func NewServerManager(mgr mgrpkg.Manager, clientset *kubernetes.Clientset) (*Ser
 		mController:       hwameistorctr.NewMetricController(mgr.GetClient(), clientset, recorder),
 		lspController:     hwameistorctr.NewLocalStoragePoolController(mgr.GetClient(), clientset, recorder),
 		settingController: hwameistorctr.NewSettingController(mgr.GetClient(), clientset, recorder),
+		vgController:      hwameistorctr.NewVolumeGroupController(mgr.GetClient(), clientset, recorder),
 		mgr:               mgr,
 		logger:            log.WithField("Module", "ServerManager"),
 	}, nil
@@ -94,4 +97,13 @@ func (m *ServerManager) SettingController() *hwameistorctr.SettingController {
 		m.settingController = hwameistorctr.NewSettingController(m.mgr.GetClient(), m.clientset, recorder)
 	}
 	return m.settingController
+}
+
+func (m *ServerManager) VolumeGroupController() *hwameistorctr.VolumeGroupController {
+
+	var recorder record.EventRecorder
+	if m.vgController == nil {
+		m.vgController = hwameistorctr.NewVolumeGroupController(m.mgr.GetClient(), m.clientset, recorder)
+	}
+	return m.vgController
 }

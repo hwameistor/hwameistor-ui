@@ -70,19 +70,19 @@ func NewMetricController(client client.Client, clientset *kubernetes.Clientset, 
 func (mController *MetricController) GetBaseMetric() (*hwameistorapi.BaseMetric, error) {
 
 	if err := mController.getBaseCapacityMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getBaseCapacityMetric")
+		log.WithError(err).Error("Failed to getBaseCapacityMetric")
 		return nil, err
 	}
 	if err := mController.getBaseVolumeMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getBaseVolumeMetric")
+		log.WithError(err).Error("Failed to getBaseVolumeMetric")
 		return nil, err
 	}
 	if err := mController.getBaseDiskMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getBaseDiskMetric")
+		log.WithError(err).Error("Failed to getBaseDiskMetric")
 		return nil, err
 	}
 	if err := mController.getBaseNodeMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getBaseNodeMetric")
+		log.WithError(err).Error("Failed to getBaseNodeMetric")
 		return nil, err
 	}
 
@@ -95,12 +95,12 @@ func (mController *MetricController) GetBaseMetric() (*hwameistorapi.BaseMetric,
 func (mController *MetricController) GetModuleStatusMetric() (*hwameistorapi.ModuleStatusMetric, error) {
 
 	if err := mController.getHwameistorDaemonsetStatusMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getHwameistorDaemonsetStatusMetric")
+		log.WithError(err).Error("Failed to getHwameistorDaemonsetStatusMetric")
 		return nil, err
 	}
 
 	if err := mController.getHwameistorDeploymentStatusMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to getHwameistorDeploymentStatusMetric")
+		log.WithError(err).Error("Failed to getHwameistorDeploymentStatusMetric")
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func (mController *MetricController) GetModuleStatusMetric() (*hwameistorapi.Mod
 func (mController *MetricController) GetStoragePoolUseMetric() (*hwameistorapi.StoragePoolUseMetric, error) {
 
 	if err := mController.addStoragePoolUseMetric(); err != nil {
-		log.WithError(err).Fatal("Failed to addStoragePoolUseMetric")
+		log.WithError(err).Error("Failed to addStoragePoolUseMetric")
 		return nil, err
 	}
 	storagePoolUseMetric := mController.convertStoragePoolUseMetric()
@@ -125,7 +125,7 @@ func (mController *MetricController) GetStoragePoolUseMetric() (*hwameistorapi.S
 func (mController *MetricController) GetNodeStorageUseMetric(storagepoolclass string) (*hwameistorapi.NodeStorageUseMetric, error) {
 
 	if err := mController.addNodeStorageUseMetric(storagepoolclass); err != nil {
-		log.WithError(err).Fatal("Failed to addNodeStorageUseMetric")
+		log.WithError(err).Error("Failed to addNodeStorageUseMetric")
 		return nil, err
 	}
 	nodeStorageUseMetric := mController.convertNodeStorageUseMetric(storagepoolclass)
@@ -210,7 +210,7 @@ func (mController *MetricController) getBaseCapacityMetric() error {
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := mController.Client.List(context.TODO(), lsnList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalStorageNodes")
+		log.WithError(err).Error("Failed to list LocalStorageNodes")
 		return err
 	}
 
@@ -228,7 +228,7 @@ func (mController *MetricController) getBaseVolumeMetric() error {
 
 	volList := &apisv1alpha1.LocalVolumeList{}
 	if err := mController.Client.List(context.TODO(), volList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalVolumes")
+		log.WithError(err).Error("Failed to list LocalVolumes")
 		return err
 	}
 
@@ -250,7 +250,7 @@ func (mController *MetricController) getBaseVolumeMetric() error {
 func (mController *MetricController) getBaseDiskMetric() error {
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := mController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 		return err
 	}
 	// 纳管 claimed
@@ -381,7 +381,7 @@ func (mController *MetricController) addNodeReservedCapacityMetric() error {
 
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := mController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 		return err
 	}
 	for i := range diskList.Items {
@@ -408,7 +408,7 @@ func (mController *MetricController) getHwameistorDaemonsetStatusMetric() error 
 	// 获取daemonset的资源名字
 	daemonsets, err := mController.clientset.AppsV1().DaemonSets(mController.nameSpace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		log.WithError(err).Fatal("Failed to list daemonsets")
+		log.WithError(err).Error("Failed to list daemonsets")
 		return err
 	}
 	for _, ds := range daemonsets.Items {
@@ -433,7 +433,7 @@ func (mController *MetricController) getHwameistorDeploymentStatusMetric() error
 	// 获取deployments的资源名字
 	deployments, err := mController.clientset.AppsV1().Deployments(mController.nameSpace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		log.WithError(err).Fatal("Failed to list daemonsets")
+		log.WithError(err).Error("Failed to list daemonsets")
 		return err
 	}
 	for _, deployment := range deployments.Items {
@@ -459,7 +459,7 @@ func (mController *MetricController) addStoragePoolUseMetric() error {
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := mController.Client.List(context.TODO(), lsnList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalStorageNodes")
+		log.WithError(err).Error("Failed to list LocalStorageNodes")
 		return err
 	}
 
@@ -489,7 +489,7 @@ func (mController *MetricController) addNodeStorageUseMetric(storagepoolclass st
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := mController.Client.List(context.TODO(), lsnList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalStorageNodes")
+		log.WithError(err).Error("Failed to list LocalStorageNodes")
 		return err
 	}
 

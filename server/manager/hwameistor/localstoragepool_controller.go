@@ -37,9 +37,14 @@ func (lspController *LocalStoragePoolController) StoragePoolList(page, pageSize 
 	var storagePoolList = &hwameistorapi.StoragePoolList{}
 	sps, err := lspController.listLocalStoragePools()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to listLocalStoragePool")
+		log.WithError(err).Error("Failed to listLocalStoragePool")
 		return nil, err
 	}
+
+	if len(sps) == 0 {
+		return storagePoolList, nil
+	}
+
 	storagePoolList.StoragePools = utils.DataPatination(sps, page, pageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
@@ -58,7 +63,7 @@ func (lspController *LocalStoragePoolController) listLocalStoragePools() ([]*hwa
 
 	storagePoolNodesCollectionMap, err := lspController.makeStoragePoolNodesCollectionMap()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to makeStoragePoolNodesCollectionMap")
+		log.WithError(err).Error("Failed to makeStoragePoolNodesCollectionMap")
 		return nil, err
 	}
 	var sps []*hwameistorapi.StoragePool
@@ -81,7 +86,7 @@ func (lspController *LocalStoragePoolController) makeStoragePoolNodesCollectionM
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := lspController.Client.List(context.TODO(), lsnList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalStorageNodes")
+		log.WithError(err).Error("Failed to list LocalStorageNodes")
 		return nil, err
 	}
 
@@ -116,7 +121,7 @@ func (lspController *LocalStoragePoolController) makeStoragePoolNodesCollectionM
 func (lspController *LocalStoragePoolController) GetStoragePool(poolName string) (*hwameistorapi.StoragePool, error) {
 	sps, err := lspController.listLocalStoragePools()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to listLocalStoragePools")
+		log.WithError(err).Error("Failed to listLocalStoragePools")
 		return nil, err
 	}
 
@@ -134,10 +139,15 @@ func (lspController *LocalStoragePoolController) GetStorageNodeByPoolName(poolNa
 
 	snlist, err := lspController.getStorageNodeByPoolName(poolName)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to getStorageNodeByPoolName")
+		log.WithError(err).Error("Failed to getStorageNodeByPoolName")
 		return nil, err
 	}
 	var snlistByPool = &hwameistorapi.StorageNodeListByPool{}
+
+	if len(snlist) == 0 {
+		return snlistByPool, nil
+	}
+
 	snlistByPool.StorageNodes = utils.DataPatination(snlist, page, pageSize)
 	snlistByPool.StoragePoolName = poolName
 
@@ -155,7 +165,7 @@ func (lspController *LocalStoragePoolController) GetStorageNodeByPoolName(poolNa
 func (lspController *LocalStoragePoolController) getStorageNodeByPoolName(poolName string) ([]*hwameistorapi.StorageNode, error) {
 	storagePoolNodesCollectionMap, err := lspController.makeStoragePoolNodesCollectionMap()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to makeStoragePoolNodesCollectionMap")
+		log.WithError(err).Error("Failed to makeStoragePoolNodesCollectionMap")
 		return nil, err
 	}
 
@@ -165,7 +175,7 @@ func (lspController *LocalStoragePoolController) getStorageNodeByPoolName(poolNa
 		for _, nodeName := range spnc.ManagedNodeNames {
 			sn, err := lsnController.GetStorageNode(nodeName)
 			if err != nil {
-				log.WithError(err).Fatal("Failed to GetStorageNode")
+				log.WithError(err).Error("Failed to GetStorageNode")
 				return nil, err
 			}
 			sns = append(sns, sn)
@@ -179,7 +189,7 @@ func (lspController *LocalStoragePoolController) getStorageNodeByPoolName(poolNa
 func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(poolName, nodeName string, page, pageSize int32) (*hwameistorapi.NodeDiskListByPool, error) {
 	storagePoolNodesCollectionMap, err := lspController.makeStoragePoolNodesCollectionMap()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to makeStoragePoolNodesCollectionMap")
+		log.WithError(err).Error("Failed to makeStoragePoolNodesCollectionMap")
 		return nil, err
 	}
 
@@ -191,7 +201,7 @@ func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(p
 			if nn == nodeName {
 				tmplds, err := lsnController.ListStorageNodeDisks(nodeName)
 				if err != nil {
-					log.WithError(err).Fatal("Failed to ListStorageNodeDisks")
+					log.WithError(err).Error("Failed to ListStorageNodeDisks")
 					return nil, err
 				}
 				for _, ld := range tmplds {
@@ -204,6 +214,11 @@ func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(p
 	}
 	nodeDiskListByPool.StoragePoolName = poolName
 	nodeDiskListByPool.NodeName = nodeName
+
+	if len(lds) == 0 {
+		return nodeDiskListByPool, nil
+	}
+
 	nodeDiskListByPool.LocalDisks = utils.DataPatination(lds, page, pageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
@@ -220,7 +235,7 @@ func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(p
 func (lspController *LocalStoragePoolController) listClaimedLocalDiskByNode(nodeName string) ([]apisv1alpha1.LocalDisk, error) {
 	diskList := &apisv1alpha1.LocalDiskList{}
 	if err := lspController.Client.List(context.TODO(), diskList); err != nil {
-		log.WithError(err).Fatal("Failed to list LocalDisks")
+		log.WithError(err).Error("Failed to list LocalDisks")
 		return nil, err
 	}
 
@@ -243,7 +258,7 @@ func (lspController *LocalStoragePoolController) LocalDiskListByNode(nodeName st
 
 	disks, err := lspController.ListStorageNodeDisks(nodeName)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to ListStorageNodeDisks")
+		log.WithError(err).Error("Failed to ListStorageNodeDisks")
 		return nil, err
 	}
 
@@ -253,6 +268,10 @@ func (lspController *LocalStoragePoolController) LocalDiskListByNode(nodeName st
 	pagination.Total = uint32(len(disks))
 	pagination.Pages = int32(math.Ceil(float64(len(disks)) / float64(pageSize)))
 	localDiskList.Page = pagination
+
+	if len(disks) == 0 {
+		return localDiskList, nil
+	}
 
 	localDiskList.LocalDisks = utils.DataPatination(disks, page, pageSize)
 	localDiskList.NodeName = nodeName
@@ -265,7 +284,7 @@ func (lspController *LocalStoragePoolController) ListStorageNodeDisks(nodeName s
 
 	//diskList := &apisv1alpha1.LocalDiskList{}
 	//if err := lspController.Client.List(context.TODO(), diskList); err != nil {
-	//	log.WithError(err).Fatal("Failed to list LocalDisks")
+	//	log.WithError(err).Error("Failed to list LocalDisks")
 	//	return nil, err
 	//}
 	//
