@@ -38,12 +38,21 @@ const (
 	VolumeReplicaStateToBeDeleted State = "ToBeDeleted"
 	VolumeReplicaStateDeleted     State = "Deleted"
 
-	NodeStateReady    State = "Ready"
-	NodeStateMaintain State = "Maintain"
-	NodeStateOffline  State = "Offline"
+	NodeStateReady            State = "Ready"
+	NodeStateMaintain         State = "Maintain"
+	NodeStateOffline          State = "Offline"
+	NodeStateEmpty            State = ""
+	NodeStateUnknown          State = "Unknown"
+	NodeStateReadyAndNotReady State = "ReadyAndNotReady"
 
 	NodeStateHealthy  State = "Healthy"
 	NodeStateNotReady State = "NotReady"
+
+	DriverStateEmpty    State = ""
+	DriverStateReady    State = "Ready"
+	DriverStateMaintain State = "Maintain"
+	DriverStateOffline  State = "Offline"
+	DriverStateUnknown  State = "Unknown"
 
 	// LocalDiskUnclaimed represents that the disk is not bound to any LDC,
 	// and is available for claiming.
@@ -56,6 +65,18 @@ const (
 	LocalDiskInUse State = "Inuse"
 	// LocalDiskReserved represents that the disk will be used in the feature
 	LocalDiskReserved State = "Reserved"
+	// LocalDiskRemoveReserved
+	LocalDiskRemoveReserved State = "RemoveReserved"
+	// LocalDiskEmpty
+	LocalDiskEmpty State = ""
+	// LocalDiskClaimedAndUnclaimed
+	LocalDiskClaimedAndUnclaimed State = "ClaimedAndUnclaimed"
+	// LocalDiskPending
+	LocalDiskPending State = "Pending"
+	// LocalDiskBound
+	LocalDiskBound State = "Bound"
+	// LocalDiskAvailable
+	LocalDiskAvailable State = "Available"
 
 	// LocalDiskActive is the state for the disk that is connected
 	LocalDiskActive State = "Active"
@@ -70,6 +91,9 @@ const (
 
 	DrbdModuleStatusEnabled  State = "Enabled"
 	DrbdModuleStatusDisabled State = "Disabled"
+
+	ReservedSucceedState State = "Succeed"
+	ReservedFailedState  State = "Failed"
 )
 
 type Pagination struct {
@@ -205,13 +229,98 @@ func VolumeStatefuzzyConvert(state string) State {
 	return VolumeStateUnknown
 }
 
+// NodeStatefuzzyConvert
+func NodeStatefuzzyConvert(state string) State {
+
+	if state == "" {
+		return NodeStateEmpty
+	}
+	if strings.Contains("Offline", state) {
+		return NodeStateOffline
+	}
+	if strings.Contains("Healthy", state) {
+		return NodeStateHealthy
+	}
+	// todo
+	if strings.Contains("Ready", state) {
+		return NodeStateReadyAndNotReady
+	}
+	if strings.Contains("NotReady", state) {
+		return NodeStateNotReady
+	}
+	if strings.Contains("Maintain", state) {
+		return NodeStateMaintain
+	}
+
+	return NodeStateUnknown
+}
+
+// DriverStatefuzzyConvert
+func DriverStatefuzzyConvert(state string) State {
+
+	if state == "" {
+		return DriverStateEmpty
+	}
+	if strings.Contains("Ready", state) {
+		return DriverStateReady
+	}
+	if strings.Contains("Offline", state) {
+		return DriverStateOffline
+	}
+	if strings.Contains("Maintain", state) {
+		return DriverStateMaintain
+	}
+
+	return DriverStateUnknown
+}
+
+// DiskStatefuzzyConvert
+func DiskStatefuzzyConvert(state string) State {
+
+	if state == "" {
+		return LocalDiskEmpty
+	}
+	if strings.Contains("Claimed", state) {
+		return LocalDiskClaimedAndUnclaimed
+	}
+	if strings.Contains("Unclaimed", state) {
+		return LocalDiskUnclaimed
+	}
+	if strings.Contains("Released", state) {
+		return LocalDiskReleased
+	}
+	if strings.Contains("InUse", state) {
+		return LocalDiskInUse
+	}
+	if strings.Contains("Reserved", state) {
+		return LocalDiskReserved
+	}
+	if strings.Contains("Bound", state) {
+		return LocalDiskBound
+	}
+	if strings.Contains("Available", state) {
+		return LocalDiskAvailable
+	}
+	if strings.Contains("Pending", state) {
+		return LocalDiskPending
+	}
+
+	return LocalDiskUnknown
+}
+
 type QueryPage struct {
 	Page              int32
 	Pages             int32
 	PageSize          int32
 	Name              string
+	PoolName          string
+	NodeName          string
+	DiskName          string
 	NameSpace         string
-	State             State
+	VolumeState       State
+	NodeState         State
+	DriverState       State
+	DiskState         State
 	VolumeName        string
 	VolumeReplicaName string
 	VolumeMigrateName string

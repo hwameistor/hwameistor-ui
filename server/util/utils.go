@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // GetNodeName gets the node name from env, else
@@ -70,4 +71,9 @@ func DataPatination[T any](origin []T, page, pageSize int32) []T {
 	}
 
 	return origin[start:end]
+}
+
+// ConvertNodeName e.g.(10.23.10.12 => 10-23-10-12)
+func ConvertNodeName(node string) string {
+	return strings.Replace(node, ".", "-", -1)
 }

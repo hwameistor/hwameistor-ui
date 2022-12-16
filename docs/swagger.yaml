@@ -41,13 +41,30 @@ definitions:
         description: 错误磁盘
         type: integer
     type: object
+  api.DiskRemoveReservedRsp:
+    properties:
+      diskName:
+        description: DiskName
+        type: string
+      removeReservedRsp:
+        description: RemoveReservedRsp
+        type: string
+    type: object
+  api.DiskReservedRsp:
+    properties:
+      diskName:
+        description: DiskName
+        type: string
+      reservedRsp:
+        description: ReservedRsp
+        type: string
+    type: object
   api.DrbdEnableSetting:
     properties:
       enabledrbd:
         type: boolean
       state:
-        description: 'Possible state: Claimed, UnClaimed, Inuse, Released, Reserved
-          状态'
+        description: RemoveReservedRsp
         type: string
       version:
         type: string
@@ -80,16 +97,25 @@ definitions:
   api.LocalDiskListByNode:
     properties:
       items:
-        description: localDisks 节点磁盘列表
-        items:
-          $ref: '#/definitions/api.LocalDisk'
-        type: array
+        $ref: '#/definitions/api.LocalDisksItemsList'
+        description: |-
+          // localDisks 节点磁盘列表
+          LocalDisks []*LocalDisk `json:"items,omitempty"`
+          localDisks 节点磁盘列表
       nodeName:
         description: nodeName 节点名称
         type: string
       pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
+    type: object
+  api.LocalDisksItemsList:
+    properties:
+      localDisks:
+        description: localDisks 节点磁盘列表
+        items:
+          $ref: '#/definitions/api.LocalDisk'
+        type: array
     type: object
   api.ModuleStatus:
     properties:
@@ -237,10 +263,11 @@ definitions:
   api.StorageNodeList:
     properties:
       items:
-        description: StorageNodes
-        items:
-          $ref: '#/definitions/api.StorageNode'
-        type: array
+        $ref: '#/definitions/api.StorageNodesItemsList'
+        description: |-
+          // StorageNodes
+          StorageNodes []*StorageNode `json:"items,omitempty"`
+          StorageNodesItemsList
       pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
@@ -258,6 +285,14 @@ definitions:
       storagePoolName:
         description: StoragePoolName 存储池名称
         type: string
+    type: object
+  api.StorageNodesItemsList:
+    properties:
+      storageNodes:
+        description: localDisks 节点磁盘列表
+        items:
+          $ref: '#/definitions/api.StorageNode'
+        type: array
     type: object
   api.StoragePool:
     properties:
@@ -310,6 +345,17 @@ definitions:
           $ref: '#/definitions/api.StoragePoolUse'
         type: array
     type: object
+  api.TargetNodeList:
+    properties:
+      targetNodeType:
+        description: TargetNodeType
+        type: string
+      targetNodes:
+        description: TargetNodes
+        items:
+          type: string
+        type: array
+    type: object
   api.Volume:
     properties:
       convertible:
@@ -354,19 +400,30 @@ definitions:
       name:
         description: Name
         type: string
+      nodeNames:
+        description: NodeNames
+        items:
+          type: string
+        type: array
       volumeNames:
         description: VolumeNames
         items:
           type: string
         type: array
     type: object
-  api.VolumeList:
+  api.VolumeItemsList:
     properties:
-      items:
+      volumes:
         description: volumes
         items:
           $ref: '#/definitions/api.Volume'
         type: array
+    type: object
+  api.VolumeList:
+    properties:
+      items:
+        $ref: '#/definitions/api.VolumeItemsList'
+        description: volumes
       pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
@@ -408,13 +465,19 @@ definitions:
         description: VolumeName 迁移卷名称
         type: string
     type: object
-  api.VolumeOperationByVolume:
+  api.VolumeMigrateOperationItemsList:
     properties:
-      items:
+      volumeMigrateOperations:
         description: VolumeMigrateOperations
         items:
           $ref: '#/definitions/api.VolumeMigrateOperation'
         type: array
+    type: object
+  api.VolumeOperationByVolume:
+    properties:
+      items:
+        $ref: '#/definitions/api.VolumeMigrateOperationItemsList'
+        description: VolumeMigrateOperationItemsList
       volumeName:
         description: VolumeName
         type: string
@@ -422,10 +485,11 @@ definitions:
   api.VolumeOperationListByNode:
     properties:
       items:
-        description: VolumeOperations
-        items:
-          $ref: '#/definitions/api.VolumeMigrateOperation'
-        type: array
+        $ref: '#/definitions/api.VolumeMigrateOperationItemsList'
+        description: |-
+          // VolumeOperations
+          VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
+          VolumeMigrateOperationItemsList
       nodeName:
         description: node name
         type: string
@@ -617,6 +681,10 @@ paths:
         name: pageSize
         required: true
         type: integer
+      - description: state
+        in: query
+        name: state
+        type: string
       produces:
       - application/json
       responses:
@@ -625,6 +693,58 @@ paths:
           schema:
             $ref: '#/definitions/api.LocalDiskListByNode'
       summary: 摘要 获取指定存储节点磁盘列表
+      tags:
+      - Node
+  /nodes/storagenode/{nodeName}/disks/{diskName}/removereserve:
+    post:
+      consumes:
+      - application/json
+      description: post RemoveReserveStorageNodeDisk
+      parameters:
+      - description: nodeName
+        in: path
+        name: nodeName
+        required: true
+        type: string
+      - description: diskName
+        in: path
+        name: diskName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.DiskRemoveReservedRsp'
+      summary: 摘要 解除磁盘预留
+      tags:
+      - Node
+  /nodes/storagenode/{nodeName}/disks/{diskName}/reserve:
+    post:
+      consumes:
+      - application/json
+      description: post ReserveStorageNodeDisk
+      parameters:
+      - description: nodeName
+        in: path
+        name: nodeName
+        required: true
+        type: string
+      - description: diskName
+        in: path
+        name: diskName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.DiskReservedRsp'
+      summary: 摘要 预留磁盘
       tags:
       - Node
   /nodes/storagenode/{nodeName}/migrates:
@@ -700,6 +820,14 @@ paths:
         name: pageSize
         required: true
         type: integer
+      - description: nodeState
+        in: query
+        name: nodeState
+        type: string
+      - description: driverState
+        in: query
+        name: driverState
+        type: string
       produces:
       - application/json
       responses:
@@ -932,6 +1060,33 @@ paths:
       summary: 摘要 获取数据卷yaml信息
       tags:
       - Volume
+  /volumes/volumemigrateoperation/{targetNodeType}/targetNodes:
+    get:
+      consumes:
+      - application/json
+      description: get GetTargetNodesByTargetNodeType  targetNodeType "AutoSelect"
+        "ManualSelect"
+      parameters:
+      - description: targetNodeType
+        in: path
+        name: targetNodeType
+        required: true
+        type: string
+      - description: sourceNodeName
+        in: query
+        name: sourceNodeName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.TargetNodeList'
+      summary: 摘要 获取指定目标节点类型节点列表
+      tags:
+      - Volume
   /volumes/volumeoperation/{volumeName}/convert:
     post:
       consumes:
@@ -954,7 +1109,7 @@ paths:
       tags:
       - Volume
   /volumes/volumeoperation/{volumeName}/migrate:
-    get:
+    post:
       consumes:
       - application/json
       description: post VolumeMigrateOperation
@@ -962,6 +1117,16 @@ paths:
       - description: volumeName
         in: path
         name: volumeName
+        required: true
+        type: string
+      - description: sourceNodeName
+        in: query
+        name: sourceNodeName
+        required: true
+        type: string
+      - description: targetNodeName
+        in: query
+        name: targetNodeName
         required: true
         type: string
       produces:
@@ -1084,10 +1249,6 @@ paths:
       - application/json
       description: list Volume
       parameters:
-      - description: name
-        in: query
-        name: name
-        type: string
       - description: page
         in: query
         name: page

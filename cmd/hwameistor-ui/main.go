@@ -40,8 +40,8 @@ func InitConfig() {
 	fmt.Printf("InitConfig start ... ")
 	workDir, _ := os.Getwd()
 	viper.SetConfigName("application")
-	viper.SetConfigType("yml")
-	//viper.AddConfigPath(workDir + "/server/config")
+	//viper.SetConfigType("yml")
+	viper.AddConfigPath(workDir + "/server/config")
 	viper.AddConfigPath(workDir)
 	err := viper.ReadInConfig()
 	if err != nil {

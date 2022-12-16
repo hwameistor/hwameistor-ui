@@ -385,7 +385,7 @@ func (mController *MetricController) addNodeReservedCapacityMetric() error {
 		return err
 	}
 	for i := range diskList.Items {
-		if diskList.Items[i].Status.State == apisv1alpha1.LocalDiskReserved {
+		if diskList.Items[i].Spec.Reserved == true {
 			mController.storageCapacityCollection.ReservedCapacityBytes += diskList.Items[i].Spec.Capacity
 		}
 	}

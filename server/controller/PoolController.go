@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	hwameistorapi "github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
 	"net/http"
 	"strconv"
@@ -154,7 +155,13 @@ func (n *PoolController) StorageNodeDisksGetByPoolName(ctx *gin.Context) {
 	p, _ := strconv.ParseInt(page, 10, 32)
 	ps, _ := strconv.ParseInt(pageSize, 10, 32)
 
-	sndisksByPoolName, err := n.m.StoragePoolController().StorageNodeDisksGetByPoolName(storagePoolName, nodeName, int32(p), int32(ps))
+	var queryPage hwameistorapi.QueryPage
+	queryPage.Page = int32(p)
+	queryPage.PageSize = int32(ps)
+	queryPage.NodeName = nodeName
+	queryPage.PoolName = storagePoolName
+
+	sndisksByPoolName, err := n.m.StoragePoolController().StorageNodeDisksGetByPoolName(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

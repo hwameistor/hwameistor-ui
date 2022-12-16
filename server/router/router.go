@@ -27,10 +27,10 @@ var (
 func CollectRoute(r *gin.Engine) *gin.Engine {
 	fmt.Println("CollectRoute start ...")
 
-	m := BuildServerMgr()
+	sm, m := BuildServerMgr()
 
 	v1 := r.Group("/apis/hwameistor.io/v1alpha1")
-	metricsController := controller.NewMetricsController(m)
+	metricsController := controller.NewMetricsController(sm)
 	metricsRoutes := v1.Group("/metrics")
 	metricsRoutes.GET("/basemetric", metricsController.BaseMetric)
 	metricsRoutes.GET("/storagepoolusemetric", metricsController.StoragePoolUseMetric)
@@ -38,7 +38,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	metricsRoutes.GET("/modulestatusmetric", metricsController.ModuleStatusMetric)
 	metricsRoutes.GET("/operations", metricsController.OperationList)
 
-	volumeController := controller.NewVolumeController(m)
+	volumeController := controller.NewVolumeController(sm)
 
 	volumeRoutes := v1.Group("/volumes")
 	volumeRoutes.GET("/volumes", volumeController.VolumeList)
@@ -54,11 +54,13 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	volumeRoutes.POST("/volumeoperation/:volumeName/migrate", volumeController.VolumeMigrateOperation)
 	volumeRoutes.POST("/volumeoperation/:volumeName/convert", volumeController.VolumeConvertOperation)
 
-	volumeGroupController := controller.NewVolumeGroupController(m)
+	volumeRoutes.GET("/volumemigrateoperation/:targetNodeType/targetNodes", volumeController.GetTargetNodesByTargetNodeType)
+
+	volumeGroupController := controller.NewVolumeGroupController(sm)
 	volumeGroupRoutes := v1.Group("/volumegroups")
 	volumeGroupRoutes.GET("/volumegroups/:name", volumeGroupController.VolumeListByVolumeGroup)
 
-	nodeController := controller.NewNodeController(m)
+	nodeController := controller.NewNodeController(sm, m)
 	nodeRoutes := v1.Group("/nodes")
 	nodeRoutes.GET("/storagenodes", nodeController.StorageNodeList)
 	nodeRoutes.GET("/storagenodes/:name", nodeController.StorageNodeGet)
@@ -67,16 +69,19 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	nodeRoutes.GET("/storagenode/:nodeName/disks", nodeController.StorageNodeDisksList)
 	nodeRoutes.GET("/storagenodeoperations/:migrateOperationName/yaml", nodeController.StorageNodeVolumeOperationYamlGet)
 
-	poolController := controller.NewPoolController(m)
+	nodeRoutes.POST("/storagenode/:nodeName/disks/:diskName/reserve", nodeController.ReserveStorageNodeDisk)
+	nodeRoutes.POST("/storagenode/:nodeName/disks/:diskName/removereserve", nodeController.RemoveReserveStorageNodeDisk)
+
+	poolController := controller.NewPoolController(sm)
 	poolRoutes := v1.Group("/pools")
 	poolRoutes.GET("/storagepools", poolController.StoragePoolList)
 	poolRoutes.GET("/storagepools/:name", poolController.StoragePoolGet)
 	poolRoutes.GET("/storagepool/:storagePoolName/nodes/:nodeName/disks", poolController.StorageNodeDisksGetByPoolName)
 	poolRoutes.GET("/storagepool/:storagePoolName/nodes", poolController.StorageNodesGetByPoolName)
 
-	settingController := controller.NewSettingController(m)
+	settingController := controller.NewSettingController(sm)
 	settingRoutes := v1.Group("/settings")
-	//settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
+	settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
 	settingRoutes.GET("/highavailabilitysetting", settingController.DRBDSettingGet)
 
 	fmt.Println("CollectRoute end ...")
@@ -84,7 +89,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	return r
 }
 
-func BuildServerMgr() *manager.ServerManager {
+func BuildServerMgr() (*manager.ServerManager, mgrpkg.Manager) {
 	fmt.Println("buildServerMgr start ...")
 
 	// Get a config to talk to the apiserver
@@ -142,5 +147,5 @@ func BuildServerMgr() *manager.ServerManager {
 		log.Error(err, "")
 		os.Exit(1)
 	}
-	return smgr
+	return smgr, mgr
 }

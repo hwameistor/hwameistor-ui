@@ -32,20 +32,35 @@ type StorageNode struct {
 	IsRAID bool `json:"isRaid,omitempty"`
 }
 
+type LocalDisksItemsList struct {
+	// localDisks 节点磁盘列表
+	LocalDisks []*LocalDisk `json:"localDisks,omitempty"`
+}
+
 // LocalDiskListByNode
 type LocalDiskListByNode struct {
 	// nodeName 节点名称
 	NodeName string `json:"nodeName,omitempty"`
+	//// localDisks 节点磁盘列表
+	//LocalDisks []*LocalDisk `json:"items,omitempty"`
 	// localDisks 节点磁盘列表
-	LocalDisks []*LocalDisk `json:"items,omitempty"`
+	LocalDisksItemsList LocalDisksItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
 }
 
+// StorageNodesItemsList
+type StorageNodesItemsList struct {
+	// localDisks 节点磁盘列表
+	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
+}
+
 // StorageNodeList
 type StorageNodeList struct {
-	// StorageNodes
-	StorageNodes []*StorageNode `json:"items,omitempty"`
+	//// StorageNodes
+	//StorageNodes []*StorageNode `json:"items,omitempty"`
+	// StorageNodesItemsList
+	StorageNodesItemsList StorageNodesItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
 }
@@ -54,6 +69,14 @@ type StorageNodeList struct {
 type YamlData struct {
 	// yaml data
 	Data string `json:"data,omitempty"`
+}
+
+// TargetNodeList
+type TargetNodeList struct {
+	// TargetNodeType
+	TargetNodeType string `json:"targetNodeType,omitempty"`
+	// TargetNodes
+	TargetNodes []string `json:"targetNodes,omitempty"`
 }
 
 func ToStorageNodeResource(lsn apisv1alpha1.LocalStorageNode) *StorageNode {

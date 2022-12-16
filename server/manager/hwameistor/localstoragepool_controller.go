@@ -41,10 +41,6 @@ func (lspController *LocalStoragePoolController) StoragePoolList(page, pageSize 
 		return nil, err
 	}
 
-	if len(sps) == 0 {
-		return storagePoolList, nil
-	}
-
 	storagePoolList.StoragePools = utils.DataPatination(sps, page, pageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
@@ -144,10 +140,6 @@ func (lspController *LocalStoragePoolController) GetStorageNodeByPoolName(poolNa
 	}
 	var snlistByPool = &hwameistorapi.StorageNodeListByPool{}
 
-	if len(snlist) == 0 {
-		return snlistByPool, nil
-	}
-
 	snlistByPool.StorageNodes = utils.DataPatination(snlist, page, pageSize)
 	snlistByPool.StoragePoolName = poolName
 
@@ -186,7 +178,7 @@ func (lspController *LocalStoragePoolController) getStorageNodeByPoolName(poolNa
 }
 
 // StorageNodeDisksGetByPoolName
-func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(poolName, nodeName string, page, pageSize int32) (*hwameistorapi.NodeDiskListByPool, error) {
+func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(queryPage hwameistorapi.QueryPage) (*hwameistorapi.NodeDiskListByPool, error) {
 	storagePoolNodesCollectionMap, err := lspController.makeStoragePoolNodesCollectionMap()
 	if err != nil {
 		log.WithError(err).Error("Failed to makeStoragePoolNodesCollectionMap")
@@ -196,36 +188,32 @@ func (lspController *LocalStoragePoolController) StorageNodeDisksGetByPoolName(p
 	var nodeDiskListByPool = &hwameistorapi.NodeDiskListByPool{}
 	var lds []*hwameistorapi.LocalDisk
 	lsnController := NewLocalStorageNodeController(lspController.Client, lspController.clientset, lspController.EventRecorder)
-	if spnc, exists := storagePoolNodesCollectionMap[poolName]; exists {
+	if spnc, exists := storagePoolNodesCollectionMap[queryPage.PoolName]; exists {
 		for _, nn := range spnc.ManagedNodeNames {
-			if nn == nodeName {
-				tmplds, err := lsnController.ListStorageNodeDisks(nodeName)
+			if nn == queryPage.NodeName {
+				tmplds, err := lsnController.ListStorageNodeDisks(queryPage)
 				if err != nil {
 					log.WithError(err).Error("Failed to ListStorageNodeDisks")
 					return nil, err
 				}
 				for _, ld := range tmplds {
-					if ld.LocalStoragePooLName == poolName {
+					if ld.LocalStoragePooLName == queryPage.PoolName {
 						lds = append(lds, ld)
 					}
 				}
 			}
 		}
 	}
-	nodeDiskListByPool.StoragePoolName = poolName
-	nodeDiskListByPool.NodeName = nodeName
+	nodeDiskListByPool.StoragePoolName = queryPage.PoolName
+	nodeDiskListByPool.NodeName = queryPage.NodeName
 
-	if len(lds) == 0 {
-		return nodeDiskListByPool, nil
-	}
-
-	nodeDiskListByPool.LocalDisks = utils.DataPatination(lds, page, pageSize)
+	nodeDiskListByPool.LocalDisks = utils.DataPatination(lds, queryPage.Page, queryPage.PageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
-	pagination.Page = page
-	pagination.PageSize = pageSize
+	pagination.Page = queryPage.Page
+	pagination.PageSize = queryPage.PageSize
 	pagination.Total = uint32(len(lds))
-	pagination.Pages = int32(math.Ceil(float64(len(lds)) / float64(pageSize)))
+	pagination.Pages = int32(math.Ceil(float64(len(lds)) / float64(queryPage.PageSize)))
 	nodeDiskListByPool.Page = pagination
 
 	return nodeDiskListByPool, nil
@@ -242,7 +230,7 @@ func (lspController *LocalStoragePoolController) listClaimedLocalDiskByNode(node
 	var claimedLocalDisks []apisv1alpha1.LocalDisk
 	for i := range diskList.Items {
 		if diskList.Items[i].Spec.NodeName == nodeName {
-			if diskList.Items[i].Status.State == apisv1alpha1.LocalDiskClaimed {
+			if diskList.Items[i].Status.State == apisv1alpha1.LocalDiskBound {
 				claimedLocalDisks = append(claimedLocalDisks, diskList.Items[i])
 			}
 		}
@@ -252,61 +240,57 @@ func (lspController *LocalStoragePoolController) listClaimedLocalDiskByNode(node
 }
 
 // LocalDiskListByNode
-func (lspController *LocalStoragePoolController) LocalDiskListByNode(nodeName string, page, pageSize int32) (*hwameistorapi.LocalDiskListByNode, error) {
-
-	var localDiskList = &hwameistorapi.LocalDiskListByNode{}
-
-	disks, err := lspController.ListStorageNodeDisks(nodeName)
-	if err != nil {
-		log.WithError(err).Error("Failed to ListStorageNodeDisks")
-		return nil, err
-	}
-
-	var pagination = &hwameistorapi.Pagination{}
-	pagination.Page = page
-	pagination.PageSize = pageSize
-	pagination.Total = uint32(len(disks))
-	pagination.Pages = int32(math.Ceil(float64(len(disks)) / float64(pageSize)))
-	localDiskList.Page = pagination
-
-	if len(disks) == 0 {
-		return localDiskList, nil
-	}
-
-	localDiskList.LocalDisks = utils.DataPatination(disks, page, pageSize)
-	localDiskList.NodeName = nodeName
-
-	return localDiskList, nil
-}
+//func (lspController *LocalStoragePoolController) LocalDiskListByNode(nodeName string, page, pageSize int32) (*hwameistorapi.LocalDiskListByNode, error) {
+//
+//	var localDiskList = &hwameistorapi.LocalDiskListByNode{}
+//
+//	disks, err := lspController.ListStorageNodeDisks(nodeName)
+//	if err != nil {
+//		log.WithError(err).Error("Failed to ListStorageNodeDisks")
+//		return nil, err
+//	}
+//
+//	var pagination = &hwameistorapi.Pagination{}
+//	pagination.Page = page
+//	pagination.PageSize = pageSize
+//	pagination.Total = uint32(len(disks))
+//	pagination.Pages = int32(math.Ceil(float64(len(disks)) / float64(pageSize)))
+//	localDiskList.Page = pagination
+//
+//	localDiskList.LocalDisksItemsList.LocalDisks = utils.DataPatination(disks, page, pageSize)
+//	localDiskList.NodeName = nodeName
+//
+//	return localDiskList, nil
+//}
 
 // ListStorageNodeDisks
-func (lspController *LocalStoragePoolController) ListStorageNodeDisks(nodeName string) ([]*hwameistorapi.LocalDisk, error) {
+//func (lspController *LocalStoragePoolController) ListStorageNodeDisks(nodeName string) ([]*hwameistorapi.LocalDisk, error) {
 
-	//diskList := &apisv1alpha1.LocalDiskList{}
-	//if err := lspController.Client.List(context.TODO(), diskList); err != nil {
-	//	log.WithError(err).Error("Failed to list LocalDisks")
-	//	return nil, err
-	//}
-	//
-	//var disks []*hwameistorapi.LocalDisk
-	//for i := range diskList.Items {
-	//	if diskList.Items[i].Spec.NodeName == nodeName {
-	//		var disk = &hwameistorapi.LocalDisk{}
-	//		disk.DevPath = diskList.Items[i].Spec.DevicePath
-	//		disk.State = lspController.convertLocalDiskState(diskList.Items[i].Status.State)
-	//		if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameHDD {
-	//			disk.LocalStoragePooLName = hwameistorapi.PoolNameForHDD
-	//		} else if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameSSD {
-	//			disk.LocalStoragePooLName = hwameistorapi.PoolNameForSSD
-	//		}
-	//		disk.Class = diskList.Items[i].Spec.DiskAttributes.Type
-	//		disk.HasRAID = diskList.Items[i].Spec.HasRAID
-	//		disk.TotalCapacityBytes = diskList.Items[i].Spec.Capacity
-	//		availableCapacityBytes := lspController.getAvailableDiskCapacity(nodeName, diskList.Items[i].Spec.DevicePath, diskList.Items[i].Spec.DiskAttributes.Type)
-	//		disk.AvailableCapacityBytes = availableCapacityBytes
-	//		disks = append(disks, disk)
-	//	}
-	//}
+//diskList := &apisv1alpha1.LocalDiskList{}
+//if err := lspController.Client.List(context.TODO(), diskList); err != nil {
+//	log.WithError(err).Error("Failed to list LocalDisks")
+//	return nil, err
+//}
+//
+//var disks []*hwameistorapi.LocalDisk
+//for i := range diskList.Items {
+//	if diskList.Items[i].Spec.NodeName == nodeName {
+//		var disk = &hwameistorapi.LocalDisk{}
+//		disk.DevPath = diskList.Items[i].Spec.DevicePath
+//		disk.State = lspController.convertLocalDiskState(diskList.Items[i].Status.State)
+//		if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameHDD {
+//			disk.LocalStoragePooLName = hwameistorapi.PoolNameForHDD
+//		} else if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameSSD {
+//			disk.LocalStoragePooLName = hwameistorapi.PoolNameForSSD
+//		}
+//		disk.Class = diskList.Items[i].Spec.DiskAttributes.Type
+//		disk.HasRAID = diskList.Items[i].Spec.HasRAID
+//		disk.TotalCapacityBytes = diskList.Items[i].Spec.Capacity
+//		availableCapacityBytes := lspController.getAvailableDiskCapacity(nodeName, diskList.Items[i].Spec.DevicePath, diskList.Items[i].Spec.DiskAttributes.Type)
+//		disk.AvailableCapacityBytes = availableCapacityBytes
+//		disks = append(disks, disk)
+//	}
+//}
 
-	return nil, nil
-}
+//	return nil, nil
+//}

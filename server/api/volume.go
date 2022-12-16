@@ -40,10 +40,15 @@ type Volume struct {
 	CreateTime time.Time `json:"createTime,omitempty"`
 }
 
+type VolumeItemsList struct {
+	// volumes
+	Volumes []*Volume `json:"volumes,omitempty"`
+}
+
 // VolumeList
 type VolumeList struct {
 	// volumes
-	Volumes []*Volume `json:"items,omitempty"`
+	VolumeItemsList VolumeItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
 }
@@ -85,18 +90,28 @@ type VolumeReplicaList struct {
 type VolumeOperationListByNode struct {
 	// node name
 	NodeName string `json:"nodeName,omitempty"`
-	// VolumeOperations
-	VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
+	//// VolumeOperations
+	//VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
+	// VolumeMigrateOperationItemsList
+	VolumeMigrateOperationItemsList VolumeMigrateOperationItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
+}
+
+// VolumeMigrateOperationItemsList
+type VolumeMigrateOperationItemsList struct {
+	// VolumeMigrateOperations
+	VolumeMigrateOperations []*VolumeMigrateOperation `json:"volumeMigrateOperations,omitempty"`
 }
 
 // VolumeOperationByVolume
 type VolumeOperationByVolume struct {
 	// VolumeName
 	VolumeName string `json:"volumeName,omitempty"`
-	// VolumeMigrateOperations
-	VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
+	// VolumeMigrateOperationItemsList
+	VolumeMigrateOperationItemsList VolumeMigrateOperationItemsList `json:"items,omitempty"`
+	//// VolumeMigrateOperations
+	//VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
 }
 
 // VolumeOperationByMigrate
@@ -266,6 +281,9 @@ type VolumeGroup struct {
 
 	// VolumeNames
 	VolumeNames []string `json:"volumeNames,omitempty"`
+
+	// NodeNames
+	NodeNames []string `json:"nodeNames,omitempty"`
 }
 
 type VolumeMigrateInfo struct {
