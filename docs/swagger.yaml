@@ -405,11 +405,25 @@ definitions:
         items:
           type: string
         type: array
-      volumeNames:
-        description: VolumeNames
+      volumeGroupVolumeInfos:
+        description: VolumeGroupVolumeInfo
+        items:
+          $ref: '#/definitions/api.VolumeGroupVolumeInfo'
+        type: array
+    type: object
+  api.VolumeGroupVolumeInfo:
+    properties:
+      nodeNames:
+        description: NodeNames
         items:
           type: string
         type: array
+      state:
+        description: State
+        type: string
+      volumeName:
+        description: VolumeName
+        type: string
     type: object
   api.VolumeItemsList:
     properties:

@@ -274,16 +274,24 @@ type HAState struct {
 	Reason string `json:"reason,omitempty"`
 }
 
+// VolumeGroupVolumeInfo defines the observed volume state of VolumeGroup
+type VolumeGroupVolumeInfo struct {
+	// VolumeName
+	VolumeName string `json:"volumeName,omitempty"`
+	// NodeNames
+	NodeNames []string `json:"nodeNames,omitempty"`
+	// State
+	State State `json:"state,omitempty"`
+}
+
 // VolumeGroup defines the observed state of VolumeGroup
 type VolumeGroup struct {
 	// Name
 	Name string `json:"name"`
-
-	// VolumeNames
-	VolumeNames []string `json:"volumeNames,omitempty"`
-
 	// NodeNames
 	NodeNames []string `json:"nodeNames,omitempty"`
+	// VolumeGroupVolumeInfo
+	VolumeGroupVolumeInfos []VolumeGroupVolumeInfo `json:"volumeGroupVolumeInfos,omitempty"`
 }
 
 type VolumeMigrateInfo struct {

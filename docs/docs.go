@@ -1712,12 +1712,32 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "volumeNames": {
-                    "description": "VolumeNames",
+                "volumeGroupVolumeInfos": {
+                    "description": "VolumeGroupVolumeInfo",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.VolumeGroupVolumeInfo"
+                    }
+                }
+            }
+        },
+        "api.VolumeGroupVolumeInfo": {
+            "type": "object",
+            "properties": {
+                "nodeNames": {
+                    "description": "NodeNames",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "state": {
+                    "description": "State",
+                    "type": "string"
+                },
+                "volumeName": {
+                    "description": "VolumeName",
+                    "type": "string"
                 }
             }
         },

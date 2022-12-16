@@ -40,11 +40,11 @@ func (v *VolumeGroupController) VolumeListByVolumeGroup(ctx *gin.Context) {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
-	vols, err := v.m.VolumeGroupController().ListVolumesByVolumeGroup(volumeGroupName)
+	vginfos, err := v.m.VolumeGroupController().ListVolumesByVolumeGroup(volumeGroupName)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, vols)
+	ctx.JSON(http.StatusOK, vginfos)
 }
