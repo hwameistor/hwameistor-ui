@@ -228,13 +228,14 @@ func (n *NodeController) StorageNodeVolumeOperationYamlGet(ctx *gin.Context) {
 
 // ReserveStorageNodeDisk godoc
 // @Summary 摘要 预留磁盘
-// @Description post ReserveStorageNodeDisk
+// @Description post ReserveStorageNodeDisk diskname i.g sdb sdc ...
 // @Tags        Node
 // @Param       nodeName path string true "nodeName"
 // @Param       diskName path string true "diskName"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.DiskReservedRsp  "成功"
+// @Success     200 {object}  api.DiskReservedRspBody  "成功"
+// @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /nodes/storagenode/{nodeName}/disks/{diskName}/reserve [post]
 func (n *NodeController) ReserveStorageNodeDisk(ctx *gin.Context) {
 	// 获取path中的nodeName
@@ -256,7 +257,10 @@ func (n *NodeController) ReserveStorageNodeDisk(ctx *gin.Context) {
 
 	diskReservedRsp, err := n.m.StorageNodeController().ReserveStorageNodeDisk(queryPage, n.diskHandler)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		var failRsp hwameistorapi.RspFailBody
+		failRsp.ErrCode = 500
+		failRsp.Desc = "ReserveStorageNodeDisk Failed:" + err.Error()
+		ctx.JSON(http.StatusInternalServerError, failRsp)
 		return
 	}
 
@@ -271,7 +275,8 @@ func (n *NodeController) ReserveStorageNodeDisk(ctx *gin.Context) {
 // @Param       diskName path string true "diskName"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.DiskRemoveReservedRsp  "成功"
+// @Success     200 {object}  api.DiskRemoveReservedRspBody  "成功"
+// @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /nodes/storagenode/{nodeName}/disks/{diskName}/removereserve [post]
 func (n *NodeController) RemoveReserveStorageNodeDisk(ctx *gin.Context) {
 	// 获取path中的nodeName
@@ -291,7 +296,10 @@ func (n *NodeController) RemoveReserveStorageNodeDisk(ctx *gin.Context) {
 
 	removeDiskReservedRsp, err := n.m.StorageNodeController().RemoveReserveStorageNodeDisk(queryPage, n.diskHandler)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		var failRsp hwameistorapi.RspFailBody
+		failRsp.ErrCode = 500
+		failRsp.Desc = "ReserveStorageNodeDisk Failed:" + err.Error()
+		ctx.JSON(http.StatusInternalServerError, failRsp)
 		return
 	}
 

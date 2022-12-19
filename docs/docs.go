@@ -277,7 +277,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.DiskRemoveReservedRsp"
+                            "$ref": "#/definitions/api.DiskRemoveReservedRspBody"
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.RspFailBody"
                         }
                     }
                 }
@@ -285,7 +291,7 @@ const docTemplate = `{
         },
         "/nodes/storagenode/{nodeName}/disks/{diskName}/reserve": {
             "post": {
-                "description": "post ReserveStorageNodeDisk",
+                "description": "post ReserveStorageNodeDisk diskname i.g sdb sdc ...",
                 "consumes": [
                     "application/json"
                 ],
@@ -316,7 +322,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.DiskReservedRsp"
+                            "$ref": "#/definitions/api.DiskReservedRspBody"
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.RspFailBody"
                         }
                     }
                 }
@@ -721,7 +733,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.DrbdEnableSetting"
+                            "$ref": "#/definitions/api.DrbdEnableSettingRspBody"
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.RspFailBody"
                         }
                     }
                 }
@@ -856,7 +874,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.VolumeConvertInfo"
+                            "$ref": "#/definitions/api.VolumeConvertRspBody"
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.RspFailBody"
                         }
                     }
                 }
@@ -902,7 +926,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.VolumeMigrateInfo"
+                            "$ref": "#/definitions/api.VolumeMigrateRspBody"
+                        }
+                    },
+                    "500": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.RspFailBody"
                         }
                     }
                 }
@@ -1227,6 +1257,14 @@ const docTemplate = `{
                 }
             }
         },
+        "api.DiskRemoveReservedRspBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/api.DiskRemoveReservedRsp"
+                }
+            }
+        },
         "api.DiskReservedRsp": {
             "type": "object",
             "properties": {
@@ -1237,6 +1275,14 @@ const docTemplate = `{
                 "reservedRsp": {
                     "description": "ReservedRsp",
                     "type": "string"
+                }
+            }
+        },
+        "api.DiskReservedRspBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/api.DiskReservedRsp"
                 }
             }
         },
@@ -1252,6 +1298,14 @@ const docTemplate = `{
                 },
                 "version": {
                     "type": "string"
+                }
+            }
+        },
+        "api.DrbdEnableSettingRspBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/api.DrbdEnableSetting"
                 }
             }
         },
@@ -1459,6 +1513,17 @@ const docTemplate = `{
                 },
                 "total": {
                     "description": "总共有多少条目，请求时可以不用传递",
+                    "type": "integer"
+                }
+            }
+        },
+        "api.RspFailBody": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "errcode": {
                     "type": "integer"
                 }
             }
@@ -1698,6 +1763,14 @@ const docTemplate = `{
                 }
             }
         },
+        "api.VolumeConvertRspBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/api.VolumeConvertInfo"
+                }
+            }
+        },
         "api.VolumeGroup": {
             "type": "object",
             "properties": {
@@ -1768,11 +1841,6 @@ const docTemplate = `{
         },
         "api.VolumeMigrateInfo": {
             "type": "object",
-            "required": [
-                "selectedNode",
-                "srcNode",
-                "volumeName"
-            ],
             "properties": {
                 "selectedNode": {
                     "type": "string"
@@ -1827,6 +1895,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/api.VolumeMigrateOperation"
                     }
+                }
+            }
+        },
+        "api.VolumeMigrateRspBody": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/api.VolumeMigrateInfo"
                 }
             }
         },

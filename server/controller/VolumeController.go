@@ -279,7 +279,8 @@ func (v *VolumeController) VolumeOperationYamlGet(ctx *gin.Context) {
 // @Param       targetNodeName query string true "targetNodeName"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.VolumeMigrateInfo      "成功"
+// @Success     200 {object}  api.VolumeMigrateRspBody      "成功"
+// @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /volumes/volumeoperation/{volumeName}/migrate [post]
 func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 	//var volumeMigrateInfo hwameistorapi.VolumeMigrateInfo
@@ -305,7 +306,10 @@ func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 
 	volumeMigrate, err := v.m.VolumeController().CreateVolumeMigrate(name, sourceNodeName, targetNodeName)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		var failRsp hwameistorapi.RspFailBody
+		failRsp.ErrCode = 500
+		failRsp.Desc = "VolumeMigrateOperation Failed: " + err.Error()
+		ctx.JSON(http.StatusInternalServerError, failRsp)
 		return
 	}
 	ctx.JSON(http.StatusOK, volumeMigrate)
@@ -318,7 +322,8 @@ func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 // @Param       volumeName path string true "volumeName"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.VolumeConvertInfo      "成功"
+// @Success     200 {object}  api.VolumeConvertRspBody      "成功"
+// @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /volumes/volumeoperation/{volumeName}/convert [post]
 func (v *VolumeController) VolumeConvertOperation(ctx *gin.Context) {
 
@@ -333,7 +338,10 @@ func (v *VolumeController) VolumeConvertOperation(ctx *gin.Context) {
 
 	volumeConvert, err := v.m.VolumeController().CreateVolumeConvert(name)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		var failRsp hwameistorapi.RspFailBody
+		failRsp.ErrCode = 500
+		failRsp.Desc = "VolumeConvertOperation Failed: " + err.Error()
+		ctx.JSON(http.StatusInternalServerError, failRsp)
 		return
 	}
 

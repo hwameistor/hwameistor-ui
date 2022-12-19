@@ -294,10 +294,24 @@ type VolumeGroup struct {
 	VolumeGroupVolumeInfos []VolumeGroupVolumeInfo `json:"volumeGroupVolumeInfos,omitempty"`
 }
 
+type VolumeMigrateRspBody struct {
+	VolumeMigrateInfo *VolumeMigrateInfo `json:"data,omitempty"`
+}
+
 type VolumeMigrateInfo struct {
-	VolumeName   string `form:"volumeName" json:"volumeName" binding:"required"`
-	SrcNode      string `form:"srcNode" json:"srcNode" binding:"required"`
-	SelectedNode string `form:"selectedNode" json:"selectedNode" binding:"required"`
+	VolumeName   string `json:"volumeName,omitempty"`
+	SrcNode      string `json:"srcNode,omitempty"`
+	SelectedNode string `json:"selectedNode,omitempty"`
+}
+
+//type VolumeMigrateInfo struct {
+//	VolumeName   string `form:"volumeName" json:"volumeName" binding:"required"`
+//	SrcNode      string `form:"srcNode" json:"srcNode" binding:"required"`
+//	SelectedNode string `form:"selectedNode" json:"selectedNode" binding:"required"`
+//}
+
+type VolumeConvertRspBody struct {
+	VolumeConvertInfo *VolumeConvertInfo `json:"data,omitempty"`
 }
 
 type VolumeConvertInfo struct {

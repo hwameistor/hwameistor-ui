@@ -31,6 +31,11 @@ type LocalDisk struct {
 type ReservedStatus struct {
 }
 
+// DiskReservedRspBody
+type DiskReservedRspBody struct {
+	DiskReservedRsp DiskReservedRsp `json:"data,omitempty"`
+}
+
 // DiskReservedRsp
 type DiskReservedRsp struct {
 	// DiskName
@@ -45,6 +50,11 @@ type DiskRemoveReservedRsp struct {
 	DiskName string `json:"diskName,omitempty"`
 	// RemoveReservedRsp
 	RemoveReservedRsp State `json:"removeReservedRsp,omitempty"`
+}
+
+// DiskRemoveReservedRspBody
+type DiskRemoveReservedRspBody struct {
+	DiskRemoveReservedRsp DiskRemoveReservedRsp `json:"data,omitempty"`
 }
 
 func ToLocalDiskResource(ld apisv1alpha1.LocalDisk) *LocalDisk {

@@ -50,6 +50,11 @@ definitions:
         description: RemoveReservedRsp
         type: string
     type: object
+  api.DiskRemoveReservedRspBody:
+    properties:
+      data:
+        $ref: '#/definitions/api.DiskRemoveReservedRsp'
+    type: object
   api.DiskReservedRsp:
     properties:
       diskName:
@@ -58,6 +63,11 @@ definitions:
       reservedRsp:
         description: ReservedRsp
         type: string
+    type: object
+  api.DiskReservedRspBody:
+    properties:
+      data:
+        $ref: '#/definitions/api.DiskReservedRsp'
     type: object
   api.DrbdEnableSetting:
     properties:
@@ -68,6 +78,11 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  api.DrbdEnableSettingRspBody:
+    properties:
+      data:
+        $ref: '#/definitions/api.DrbdEnableSetting'
     type: object
   api.LocalDisk:
     properties:
@@ -219,6 +234,13 @@ definitions:
         type: integer
       total:
         description: 总共有多少条目，请求时可以不用传递
+        type: integer
+    type: object
+  api.RspFailBody:
+    properties:
+      description:
+        type: string
+      errcode:
         type: integer
     type: object
   api.StorageNode:
@@ -395,6 +417,11 @@ definitions:
       volumeName:
         type: string
     type: object
+  api.VolumeConvertRspBody:
+    properties:
+      data:
+        $ref: '#/definitions/api.VolumeConvertInfo'
+    type: object
   api.VolumeGroup:
     properties:
       name:
@@ -450,10 +477,6 @@ definitions:
         type: string
       volumeName:
         type: string
-    required:
-    - selectedNode
-    - srcNode
-    - volumeName
     type: object
   api.VolumeMigrateOperation:
     properties:
@@ -486,6 +509,11 @@ definitions:
         items:
           $ref: '#/definitions/api.VolumeMigrateOperation'
         type: array
+    type: object
+  api.VolumeMigrateRspBody:
+    properties:
+      data:
+        $ref: '#/definitions/api.VolumeMigrateInfo'
     type: object
   api.VolumeOperationByVolume:
     properties:
@@ -731,7 +759,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.DiskRemoveReservedRsp'
+            $ref: '#/definitions/api.DiskRemoveReservedRspBody'
+        "500":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.RspFailBody'
       summary: 摘要 解除磁盘预留
       tags:
       - Node
@@ -739,7 +771,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: post ReserveStorageNodeDisk
+      description: post ReserveStorageNodeDisk diskname i.g sdb sdc ...
       parameters:
       - description: nodeName
         in: path
@@ -757,7 +789,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.DiskReservedRsp'
+            $ref: '#/definitions/api.DiskReservedRspBody'
+        "500":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.RspFailBody'
       summary: 摘要 预留磁盘
       tags:
       - Node
@@ -1028,7 +1064,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.DrbdEnableSetting'
+            $ref: '#/definitions/api.DrbdEnableSettingRspBody'
+        "500":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.RspFailBody'
       summary: 摘要 高可用设置
       tags:
       - Setting
@@ -1118,7 +1158,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.VolumeConvertInfo'
+            $ref: '#/definitions/api.VolumeConvertRspBody'
+        "500":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.RspFailBody'
       summary: 摘要 指定数据卷转换操作
       tags:
       - Volume
@@ -1149,7 +1193,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.VolumeMigrateInfo'
+            $ref: '#/definitions/api.VolumeMigrateRspBody'
+        "500":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.RspFailBody'
       summary: 摘要 指定数据卷迁移操作
       tags:
       - Volume

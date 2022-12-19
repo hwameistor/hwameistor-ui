@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
 	"net/http"
 )
@@ -28,7 +29,8 @@ func NewSettingController(m *manager.ServerManager) ISettingController {
 // @Param       enabledrbd path string true "enabledrbd"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.DrbdEnableSetting
+// @Success     200 {object}  api.DrbdEnableSettingRspBody
+// @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /settings/highavailabilitysetting/{enabledrbd} [post]
 func (n *SettingController) EnableDRBDSetting(ctx *gin.Context) {
 	// 获取path中的name
@@ -41,7 +43,10 @@ func (n *SettingController) EnableDRBDSetting(ctx *gin.Context) {
 
 	setting, err := n.m.SettingController().EnableHighAvailability()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		var failRsp api.RspFailBody
+		failRsp.ErrCode = 500
+		failRsp.Desc = "EnableDRBDSetting Failed" + err.Error()
+		ctx.JSON(http.StatusInternalServerError, failRsp)
 		return
 	}
 

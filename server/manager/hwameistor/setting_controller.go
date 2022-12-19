@@ -36,12 +36,14 @@ func NewSettingController(client client.Client, clientset *kubernetes.Clientset,
 }
 
 // EnableHighAvailability
-func (settingController *SettingController) EnableHighAvailability() (*hwameistorapi.DrbdEnableSetting, error) {
+func (settingController *SettingController) EnableHighAvailability() (*hwameistorapi.DrbdEnableSettingRspBody, error) {
+	var RspBody = &hwameistorapi.DrbdEnableSettingRspBody{}
 	var drbdEnableSetting = &hwameistorapi.DrbdEnableSetting{}
 	drbdEnableSetting.Enabledrbd = true
 	drbdEnableSetting.State = hwameistorapi.DrbdModuleStatusEnabled
 	drbdEnableSetting.Version = "v0.0.1"
-	return drbdEnableSetting, nil
+	RspBody.DrbdEnableSetting = drbdEnableSetting
+	return RspBody, nil
 }
 
 // GetDRBDSetting

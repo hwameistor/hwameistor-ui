@@ -400,7 +400,7 @@ func (lvController *LocalVolumeController) getLVResourceYaml(lv *apisv1alpha1.Lo
 }
 
 // CreateVolumeMigrate
-func (lvController *LocalVolumeController) CreateVolumeMigrate(volName string, srcNode string, selectedNode string) (*hwameistorapi.VolumeMigrateInfo, error) {
+func (lvController *LocalVolumeController) CreateVolumeMigrate(volName string, srcNode string, selectedNode string) (*hwameistorapi.VolumeMigrateRspBody, error) {
 
 	lvmName := fmt.Sprintf("migrate-%s", volName)
 	lvm := &apisv1alpha1.LocalVolumeMigrate{
@@ -424,28 +424,33 @@ func (lvController *LocalVolumeController) CreateVolumeMigrate(volName string, s
 		return nil, err
 	}
 
+	var RspBody = &hwameistorapi.VolumeMigrateRspBody{}
 	var vmi = &hwameistorapi.VolumeMigrateInfo{}
 	vmi.VolumeName = volName
 	vmi.SrcNode = srcNode
 	vmi.SelectedNode = selectedNode
 
-	return vmi, nil
+	RspBody.VolumeMigrateInfo = vmi
+
+	return RspBody, nil
 }
 
 // CreateVolumeConvert
-func (lvController *LocalVolumeController) CreateVolumeConvert(volName string) (*hwameistorapi.VolumeConvertInfo, error) {
+func (lvController *LocalVolumeController) CreateVolumeConvert(volName string) (*hwameistorapi.VolumeConvertRspBody, error) {
 	lvmName := fmt.Sprintf("convert-%s", volName)
 
+	var RspBody = &hwameistorapi.VolumeConvertRspBody{}
 	var vci = &hwameistorapi.VolumeConvertInfo{}
 	vci.VolumeName = volName
 	vci.ReplicaNum = ConvertReplicaNum
+	RspBody.VolumeConvertInfo = vci
 
 	lv, err := lvController.GetLocalVolume(volName)
 	if err != nil {
-		return vci, nil
+		return RspBody, nil
 	}
 	if lv.Convertible == false || lv.ReplicaNumber == 1 {
-		return vci, errors.NewBadRequest("Cannot create convert crd: check convertible is false or replicanumber == 1")
+		return RspBody, errors.NewBadRequest("Cannot create convert crd: check convertible is false or replicanumber == 1")
 	}
 
 	lvc := &apisv1alpha1.LocalVolumeConvert{
@@ -465,12 +470,13 @@ func (lvController *LocalVolumeController) CreateVolumeConvert(volName string) (
 	if err := lvController.Client.Create(context.Background(), lvc); err != nil {
 		log.WithField("convert", lvc.Name).WithError(err).Error("Failed to submit a convert job")
 		if errors.IsAlreadyExists(err) {
-			return vci, nil
+			return RspBody, nil
 		}
 		return nil, err
 	}
 
-	return vci, nil
+	RspBody.VolumeConvertInfo = vci
+	return RspBody, nil
 }
 
 // GetTargetNodesByTargetNodeType

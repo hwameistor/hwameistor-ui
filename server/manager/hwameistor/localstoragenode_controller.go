@@ -461,11 +461,13 @@ func (lsnController *LocalStorageNodeController) getResourceYaml(res *apisv1alph
 }
 
 // ReserveStorageNodeDisk
-func (lsnController *LocalStorageNodeController) ReserveStorageNodeDisk(queryPage hwameistorapi.QueryPage, diskHandler *localdisk.Handler) (hwameistorapi.DiskReservedRsp, error) {
+func (lsnController *LocalStorageNodeController) ReserveStorageNodeDisk(queryPage hwameistorapi.QueryPage, diskHandler *localdisk.Handler) (*hwameistorapi.DiskReservedRspBody, error) {
 
+	var RspBody = &hwameistorapi.DiskReservedRspBody{}
 	var diskReservedRsp hwameistorapi.DiskReservedRsp
 	nodeName := queryPage.NodeName
 	diskName := queryPage.DiskName
+	RspBody.DiskReservedRsp = diskReservedRsp
 
 	//diskShortName := strings.Split(diskName, "/dev/")[1]
 	localDiskName := utils.ConvertNodeName(nodeName) + "-" + diskName
@@ -473,7 +475,7 @@ func (lsnController *LocalStorageNodeController) ReserveStorageNodeDisk(queryPag
 	ld, err := diskHandler.GetLocalDisk(client.ObjectKey{Name: localDiskName})
 	if err != nil {
 		log.Errorf("failed to get localDisk %s", err.Error())
-		return diskReservedRsp, err
+		return RspBody, err
 	}
 	fmt.Println("ReserveStorageNodeDisk ld = %v", ld)
 	diskHandler = diskHandler.For(ld)
@@ -481,21 +483,25 @@ func (lsnController *LocalStorageNodeController) ReserveStorageNodeDisk(queryPag
 
 	err = diskHandler.Update()
 	if err != nil {
-		return diskReservedRsp, err
+		return RspBody, err
 	}
 
 	diskReservedRsp.ReservedRsp = hwameistorapi.LocalDiskReserved
 	diskReservedRsp.DiskName = diskName
-	return diskReservedRsp, nil
 
+	RspBody.DiskReservedRsp = diskReservedRsp
+
+	return RspBody, nil
 }
 
 // RemoveReserveStorageNodeDisk
-func (lsnController *LocalStorageNodeController) RemoveReserveStorageNodeDisk(queryPage hwameistorapi.QueryPage, diskHandler *localdisk.Handler) (hwameistorapi.DiskRemoveReservedRsp, error) {
+func (lsnController *LocalStorageNodeController) RemoveReserveStorageNodeDisk(queryPage hwameistorapi.QueryPage, diskHandler *localdisk.Handler) (*hwameistorapi.DiskRemoveReservedRspBody, error) {
 
+	var RspBody = &hwameistorapi.DiskRemoveReservedRspBody{}
 	var diskRemoveReservedRsp hwameistorapi.DiskRemoveReservedRsp
 	nodeName := queryPage.NodeName
 	diskName := queryPage.DiskName
+	RspBody.DiskRemoveReservedRsp = diskRemoveReservedRsp
 
 	//diskShortName := strings.Split(diskName, "/dev/")[1]
 	localDiskName := utils.ConvertNodeName(nodeName) + "-" + diskName
@@ -503,18 +509,19 @@ func (lsnController *LocalStorageNodeController) RemoveReserveStorageNodeDisk(qu
 	ld, err := diskHandler.GetLocalDisk(client.ObjectKey{Name: localDiskName})
 	if err != nil {
 		log.Errorf("failed to get localDisk %s", err.Error())
-		return diskRemoveReservedRsp, err
+		return RspBody, err
 	}
 	ld.Spec.Reserved = false
 	diskHandler = diskHandler.For(ld)
 
 	err = diskHandler.Update()
 	if err != nil {
-		return diskRemoveReservedRsp, err
+		return RspBody, err
 	}
 
 	diskRemoveReservedRsp.RemoveReservedRsp = hwameistorapi.LocalDiskRemoveReserved
 	diskRemoveReservedRsp.DiskName = diskName
-	return diskRemoveReservedRsp, nil
 
+	RspBody.DiskRemoveReservedRsp = diskRemoveReservedRsp
+	return RspBody, nil
 }
