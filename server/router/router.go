@@ -54,11 +54,13 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	volumeRoutes.POST("/volumeoperation/:volumeName/migrate", volumeController.VolumeMigrateOperation)
 	volumeRoutes.POST("/volumeoperation/:volumeName/convert", volumeController.VolumeConvertOperation)
 
-	volumeRoutes.GET("/volumemigrateoperation/:targetNodeType/targetNodes", volumeController.GetTargetNodesByTargetNodeType)
+	volumeRoutes.GET("/volumemigrateoperation/targetnodes", volumeController.GetTargetNodesByManualTargetNodeType)
+	volumeRoutes.GET("/volumemigrateoperation/:volumeName/volumelist", volumeController.VolumeListWithSameVolumeGroup)
 
 	volumeGroupController := controller.NewVolumeGroupController(sm)
 	volumeGroupRoutes := v1.Group("/volumegroups")
 	volumeGroupRoutes.GET("/volumegroups/:name", volumeGroupController.VolumeListByVolumeGroup)
+	volumeGroupRoutes.GET("/volumegroups", volumeGroupController.VolumeGroupList)
 
 	nodeController := controller.NewNodeController(sm, m)
 	nodeRoutes := v1.Group("/nodes")
@@ -81,7 +83,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 
 	settingController := controller.NewSettingController(sm)
 	settingRoutes := v1.Group("/settings")
-	settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
+	settingRoutes.POST("/highavailabilitysetting/drbd", settingController.EnableDRBDSetting)
 	settingRoutes.GET("/highavailabilitysetting", settingController.DRBDSettingGet)
 
 	fmt.Println("CollectRoute end ...")

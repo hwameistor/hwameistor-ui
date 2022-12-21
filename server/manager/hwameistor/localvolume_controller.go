@@ -58,7 +58,7 @@ func (lvController *LocalVolumeController) ListLocalVolume(queryPage hwameistora
 		return nil, err
 	}
 
-	volList.VolumeItemsList.Volumes = utils.DataPatination(vols, queryPage.Page, queryPage.PageSize)
+	volList.Volumes = utils.DataPatination(vols, queryPage.Page, queryPage.PageSize)
 
 	var pagination = &hwameistorapi.Pagination{}
 	pagination.Page = queryPage.Page
@@ -235,7 +235,7 @@ func (lvController *LocalVolumeController) GetVolumeReplicas(queryPage hwameisto
 func (lvController *LocalVolumeController) GetVolumeOperation(queryPage hwameistorapi.QueryPage) (*hwameistorapi.VolumeOperationByVolume, error) {
 
 	var volumeOperation = &hwameistorapi.VolumeOperationByVolume{}
-	var volumeMigrateOperations []*hwameistorapi.VolumeMigrateOperation
+	var volumeMigrateOperations = []*hwameistorapi.VolumeMigrateOperation{}
 	lvmList := apisv1alpha1.LocalVolumeMigrateList{}
 	if err := lvController.Client.List(context.Background(), &lvmList, &client.ListOptions{}); err != nil {
 		return nil, err
@@ -268,7 +268,7 @@ func (lvController *LocalVolumeController) GetVolumeOperation(queryPage hwameist
 		}
 	}
 
-	volumeOperation.VolumeMigrateOperationItemsList.VolumeMigrateOperations = volumeMigrateOperations
+	volumeOperation.VolumeMigrateOperations = volumeMigrateOperations
 	volumeOperation.VolumeName = queryPage.VolumeName
 	return volumeOperation, nil
 }
@@ -479,8 +479,8 @@ func (lvController *LocalVolumeController) CreateVolumeConvert(volName string) (
 	return RspBody, nil
 }
 
-// GetTargetNodesByTargetNodeType
-func (lvController *LocalVolumeController) GetTargetNodesByTargetNodeType(sourceNodeName, targetNodeType string) ([]string, error) {
+// GetTargetNodesByManualTargetNodeType
+func (lvController *LocalVolumeController) GetTargetNodesByManualTargetNodeType() ([]string, error) {
 
 	lsnList := &apisv1alpha1.LocalStorageNodeList{}
 	if err := lvController.Client.List(context.TODO(), lsnList); err != nil {
@@ -489,14 +489,70 @@ func (lvController *LocalVolumeController) GetTargetNodesByTargetNodeType(source
 	}
 
 	var nodeNames []string
-	// "AutoSelect" "ManualSelect"
-	if targetNodeType == "AutoSelect" {
-		for _, lsn := range lsnList.Items {
-			if lsn.Name != sourceNodeName {
-				nodeNames = append(nodeNames, lsn.Name)
-			}
+	for _, lsn := range lsnList.Items {
+		if lsn.Status.State == apisv1alpha1.NodeStateReady {
+			nodeNames = append(nodeNames, lsn.Name)
 		}
 	}
 
 	return nodeNames, nil
+}
+
+// VolumeListWithSameVolumeGroup
+func (lvController *LocalVolumeController) VolumeListWithSameVolumeGroup(volumeName string) (*hwameistorapi.MigrateVolumeGroupVolumeInfos, error) {
+	var mvgvis = &hwameistorapi.MigrateVolumeGroupVolumeInfos{}
+	var vgvis = []hwameistorapi.VolumeGroupVolumeInfo{}
+	lvg := &apisv1alpha1.LocalVolumeGroup{}
+
+	mvgvis.VolumeName = volumeName
+
+	lv := &apisv1alpha1.LocalVolume{}
+	if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: volumeName}, lv); err != nil {
+		if !errors.IsNotFound(err) {
+			log.WithError(err).Error("Failed to query localvolume")
+		} else {
+			log.Info("Not found the localvolume")
+		}
+		return mvgvis, err
+	}
+
+	vgName := lv.Spec.VolumeGroup
+	if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: vgName}, lvg); err != nil {
+		if !errors.IsNotFound(err) {
+			log.WithError(err).Error("Failed to query LocalVolumeGroup")
+		} else {
+			log.Info("Not found the LocalVolumeGroup")
+		}
+		return mvgvis, err
+	}
+
+	fmt.Println("VolumeListWithSameVolumeGroup lvg.Name = %v, lvg.Spec.Volumes = %v", lvg.Name, lvg.Spec.Volumes)
+
+	for _, volumeinfo := range lvg.Spec.Volumes {
+		var vgvi = hwameistorapi.VolumeGroupVolumeInfo{}
+
+		vgvi.VolumeName = volumeinfo.LocalVolumeName
+		if vgvi.VolumeName == "" {
+			vgvi.VolumeName = volumeinfo.LocalVolumeName
+		}
+		fmt.Println("ListVolumesByVolumeGroup vgvi.VolumeName = %v", vgvi.VolumeName)
+		lv := &apisv1alpha1.LocalVolume{}
+		if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: vgvi.VolumeName}, lv); err != nil {
+			if !errors.IsNotFound(err) {
+				log.WithError(err).Error("Failed to query localvolume")
+			} else {
+				log.Info("Not found the localvolume")
+			}
+			return mvgvis, err
+		}
+		vgvi.State = hwameistorapi.StateConvert(lv.Status.State)
+
+		for _, replicas := range lv.Spec.Config.Replicas {
+			vgvi.NodeNames = append(vgvi.NodeNames, replicas.Hostname)
+		}
+		vgvis = append(vgvis, vgvi)
+	}
+
+	mvgvis.VolumeGroupVolumeInfos = vgvis
+	return mvgvis, nil
 }

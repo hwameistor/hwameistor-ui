@@ -64,6 +64,8 @@ func (n *PoolController) StoragePoolGet(ctx *gin.Context) {
 // @Router      /pools/storagepools [get]
 func (n *PoolController) StoragePoolList(ctx *gin.Context) {
 
+	// 获取path中的name
+	name := ctx.Query("name")
 	// 获取path中的page
 	page := ctx.Query("page")
 	// 获取path中的pageSize
@@ -72,7 +74,12 @@ func (n *PoolController) StoragePoolList(ctx *gin.Context) {
 	p, _ := strconv.ParseInt(page, 10, 32)
 	ps, _ := strconv.ParseInt(pageSize, 10, 32)
 
-	lds, err := n.m.StoragePoolController().StoragePoolList(int32(p), int32(ps))
+	var queryPage hwameistorapi.QueryPage
+	queryPage.Page = int32(p)
+	queryPage.PageSize = int32(ps)
+	queryPage.PoolName = name
+
+	lds, err := n.m.StoragePoolController().StoragePoolList(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
@@ -88,6 +95,8 @@ func (n *PoolController) StoragePoolList(ctx *gin.Context) {
 // @Param       storagePoolName path string true "storagePoolName"
 // @Param       page query int32 true "page"
 // @Param       pageSize query int32 true "pageSize"
+// @Param       nodeName query string false "nodeName"
+// @Param       state query string false "state"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.StorageNodeListByPool
@@ -106,10 +115,22 @@ func (n *PoolController) StorageNodesGetByPoolName(ctx *gin.Context) {
 	// 获取path中的pageSize
 	pageSize := ctx.Query("pageSize")
 
+	// 获取path中的nodeName
+	nodeName := ctx.Query("nodeName")
+	// 获取path中的pageSize
+	state := ctx.Query("state")
+
 	p, _ := strconv.ParseInt(page, 10, 32)
 	ps, _ := strconv.ParseInt(pageSize, 10, 32)
 
-	sn, err := n.m.StoragePoolController().GetStorageNodeByPoolName(storagePoolName, int32(p), int32(ps))
+	var queryPage hwameistorapi.QueryPage
+	queryPage.NodeName = nodeName
+	queryPage.NodeState = hwameistorapi.NodeStatefuzzyConvert(state)
+	queryPage.PoolName = storagePoolName
+	queryPage.Page = int32(p)
+	queryPage.PageSize = int32(ps)
+
+	sn, err := n.m.StoragePoolController().GetStorageNodeByPoolName(queryPage)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

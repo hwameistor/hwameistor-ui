@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	hwameistorapi "github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
@@ -20,7 +21,8 @@ type IVolumeController interface {
 	VolumeMigrateOperation(ctx *gin.Context)
 	VolumeConvertOperation(ctx *gin.Context)
 	VolumeOperationYamlGet(ctx *gin.Context)
-	GetTargetNodesByTargetNodeType(ctx *gin.Context)
+	GetTargetNodesByManualTargetNodeType(ctx *gin.Context)
+	VolumeListWithSameVolumeGroup(ctx *gin.Context)
 }
 
 // VolumeController
@@ -140,7 +142,6 @@ func (v *VolumeController) VolumeYamlGet(ctx *gin.Context) {
 // @Param       volumeName path string true "volumeName"
 // @Param       volumeReplicaName query string false "volumeReplicaName"
 // @Param       state query string false "state"
-// @Param       synced query string false "synced"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeReplicaList  "成功"
@@ -153,8 +154,6 @@ func (v *VolumeController) VolumeReplicasGet(ctx *gin.Context) {
 	volumeReplicaName := ctx.Query("volumeReplicaName")
 	// 获取path中的state
 	state := ctx.Query("state")
-	// 获取path中的synced
-	synced := ctx.Query("synced")
 
 	if volumeName == "" {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
@@ -165,7 +164,6 @@ func (v *VolumeController) VolumeReplicasGet(ctx *gin.Context) {
 	queryPage.VolumeReplicaName = volumeReplicaName
 	queryPage.VolumeState = hwameistorapi.VolumeStatefuzzyConvert(state)
 	queryPage.VolumeName = volumeName
-	queryPage.Synced = synced
 
 	lvs, err := v.m.VolumeController().GetVolumeReplicas(queryPage)
 	if err != nil {
@@ -272,22 +270,17 @@ func (v *VolumeController) VolumeOperationYamlGet(ctx *gin.Context) {
 
 // VolumeMigrateOperation godoc
 // @Summary 摘要 指定数据卷迁移操作
-// @Description post VolumeMigrateOperation
+// @Description post VolumeMigrateOperation body i.g. body { SrcNode string ,SelectedNode string}
 // @Tags        Volume
 // @Param       volumeName path string true "volumeName"
-// @Param       sourceNodeName query string true "sourceNodeName"
-// @Param       targetNodeName query string true "targetNodeName"
+// @Param       body body api.VolumeMigrateReqBody true "reqBody"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeMigrateRspBody      "成功"
 // @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /volumes/volumeoperation/{volumeName}/migrate [post]
 func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
-	//var volumeMigrateInfo hwameistorapi.VolumeMigrateInfo
-	//ctx.ShouldBind(&volumeMigrateInfo)
 
-	//srcNode := volumeMigrateInfo.SrcNode
-	//selectedNode := volumeMigrateInfo.SelectedNode
 	// 获取path中的name
 	name := ctx.Param("volumeName")
 	fmt.Println("VolumeMigrateOperation name = %v", name)
@@ -297,10 +290,16 @@ func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 		return
 	}
 
-	// 获取path中的sourceNodeName
-	sourceNodeName := ctx.Query("sourceNodeName")
-	// 获取path中的targetNodeName
-	targetNodeName := ctx.Query("targetNodeName")
+	var vmrb hwameistorapi.VolumeMigrateReqBody
+	err := ctx.ShouldBind(&vmrb)
+	if err != nil {
+		fmt.Errorf("Unmarshal err = %v", err)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+
+	sourceNodeName := vmrb.SrcNode
+	targetNodeName := vmrb.SelectedNode
 
 	fmt.Println("VolumeMigrateOperation sourceNodeName = %v, targetNodeName = %v", sourceNodeName, targetNodeName)
 
@@ -319,7 +318,7 @@ func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 // @Summary 摘要 指定数据卷转换操作
 // @Description post VolumeConvertOperation
 // @Tags        Volume
-// @Param       volumeName path string true "volumeName"
+// @Param       body body api.VolumeConvertReqBody true "volumeName"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeConvertRspBody      "成功"
@@ -327,16 +326,25 @@ func (v *VolumeController) VolumeMigrateOperation(ctx *gin.Context) {
 // @Router      /volumes/volumeoperation/{volumeName}/convert [post]
 func (v *VolumeController) VolumeConvertOperation(ctx *gin.Context) {
 
-	// 获取path中的name
-	name := ctx.Param("volumeName")
+	//// 获取path中的name
+	//name := ctx.Param("volumeName")
 
-	fmt.Println("VolumeConvertOperation name = %v", name)
-	if name == "" {
+	var vcrb hwameistorapi.VolumeConvertReqBody
+	err := ctx.ShouldBind(&vcrb)
+	if err != nil {
+		fmt.Errorf("Unmarshal err = %v", err)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	volumeName := vcrb.VolumeName
+
+	fmt.Println("VolumeConvertOperation volumeName = %v", volumeName)
+	if volumeName == "" {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
 
-	volumeConvert, err := v.m.VolumeController().CreateVolumeConvert(name)
+	volumeConvert, err := v.m.VolumeController().CreateVolumeConvert(volumeName)
 	if err != nil {
 		var failRsp hwameistorapi.RspFailBody
 		failRsp.ErrCode = 500
@@ -348,34 +356,47 @@ func (v *VolumeController) VolumeConvertOperation(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, volumeConvert)
 }
 
-// GetTargetNodesByTargetNodeType godoc
-// @Summary 摘要 获取指定目标节点类型节点列表
-// @Description get GetTargetNodesByTargetNodeType  targetNodeType "AutoSelect" "ManualSelect"
+// GetTargetNodesByManualTargetNodeType godoc
+// @Summary 摘要 获取手动目标节点类型节点列表
+// @Description get GetTargetNodesByManualTargetNodeType  targetNodeType default "ManualSelect"
 // @Tags        Volume
-// @Param       targetNodeType path string true "targetNodeType"
-// @Param       sourceNodeName query string true "sourceNodeName"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.TargetNodeList      "成功"
-// @Router      /volumes/volumemigrateoperation/{targetNodeType}/targetNodes [get]
-func (v *VolumeController) GetTargetNodesByTargetNodeType(ctx *gin.Context) {
-	// 获取path中的targetNodeType
-	targetNodeType := ctx.Param("targetNodeType")
+// @Router      /volumes/volumemigrateoperation/targetnodes [get]
+func (v *VolumeController) GetTargetNodesByManualTargetNodeType(ctx *gin.Context) {
 
-	fmt.Println("GetTargetNodesByTargetNodeType targetNodeType = %v", targetNodeType)
-	if targetNodeType == "" || targetNodeType == "ManualSelect" {
-		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
-		return
-	}
-
-	// 获取param中的sourceNodeName
-	sourceNodeName := ctx.Query("sourceNodeName")
-
-	targetNodeList, err := v.m.VolumeController().GetTargetNodesByTargetNodeType(sourceNodeName, targetNodeType)
+	targetNodeList, err := v.m.VolumeController().GetTargetNodesByManualTargetNodeType()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, targetNodeList)
+}
+
+// VolumeListWithSameVolumeGroup godoc
+// @Summary     摘要 获取同一数据卷组中包含数据卷名称列表信息
+// @Description get VolumeListWithSameVolumeGroup
+// @Tags        Volume
+// @Param       volumeName path string true "volumeName"
+// @Accept      application/json
+// @Produce     application/json
+// @Success     200 {object} api.MigrateVolumeGroupVolumeInfos
+// @Router      /volumes/volumemigrateoperation/{volumeName}/volumelist [get]
+func (v *VolumeController) VolumeListWithSameVolumeGroup(ctx *gin.Context) {
+	// 获取path中的name
+	volumeName := ctx.Param("volumeName")
+
+	if volumeName == "" {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	volumeinfos, err := v.m.VolumeController().VolumeListWithSameVolumeGroup(volumeName)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, volumeinfos)
 }

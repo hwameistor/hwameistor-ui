@@ -63,7 +63,12 @@ func (lsnController *LocalStorageNodeController) StorageNodeList(queryPage hwame
 		return nil, err
 	}
 
-	storageNodeList.StorageNodesItemsList.StorageNodes = utils.DataPatination(sns, queryPage.Page, queryPage.PageSize)
+	var storagenodes = []*hwameistorapi.StorageNode{}
+
+	storageNodeList.StorageNodes = utils.DataPatination(sns, queryPage.Page, queryPage.PageSize)
+	if len(sns) == 0 {
+		storageNodeList.StorageNodes = storagenodes
+	}
 
 	var pagination = &hwameistorapi.Pagination{}
 	pagination.Page = queryPage.Page
@@ -97,8 +102,6 @@ func (lsnController *LocalStorageNodeController) ListLocalStorageNode(queryPage 
 			return nil, err
 		}
 
-		var queryPage hwameistorapi.QueryPage
-		queryPage.Name = lsnList.Items[i].Name
 		localdisks, err := lsnController.ListStorageNodeDisks(queryPage)
 		if err != nil {
 			log.WithError(err).Error("Failed to ListStorageNodeDisks")
@@ -183,6 +186,7 @@ func (lsnController *LocalStorageNodeController) convertStorageNode(lsn apisv1al
 // GetStorageNode
 func (lsnController *LocalStorageNodeController) GetStorageNode(nodeName string) (*hwameistorapi.StorageNode, error) {
 	var queryPage hwameistorapi.QueryPage
+	queryPage.NodeName = nodeName
 	sns, err := lsnController.ListLocalStorageNode(queryPage)
 	if err != nil {
 		log.WithError(err).Error("Failed to ListLocalStorageNode")
@@ -207,7 +211,8 @@ func (lsnController *LocalStorageNodeController) GetStorageNodeMigrate(queryPage
 		return nil, err
 	}
 
-	volumeOperationListByNode.VolumeMigrateOperationItemsList.VolumeMigrateOperations = utils.DataPatination(volumeMigrateOperations, queryPage.Page, queryPage.PageSize)
+	var vmos = []*hwameistorapi.VolumeMigrateOperation{}
+	volumeOperationListByNode.VolumeMigrateOperations = utils.DataPatination(volumeMigrateOperations, queryPage.Page, queryPage.PageSize)
 	volumeOperationListByNode.NodeName = queryPage.NodeName
 
 	var pagination = &hwameistorapi.Pagination{}
@@ -215,6 +220,7 @@ func (lsnController *LocalStorageNodeController) GetStorageNodeMigrate(queryPage
 	pagination.PageSize = queryPage.PageSize
 	if len(volumeMigrateOperations) == 0 {
 		pagination.Pages = 0
+		volumeOperationListByNode.VolumeMigrateOperations = vmos
 	} else {
 		pagination.Pages = int32(math.Ceil(float64(len(volumeMigrateOperations)) / float64(queryPage.PageSize)))
 	}
@@ -297,27 +303,31 @@ func (lsnController *LocalStorageNodeController) getAvailableDiskCapacity(nodeNa
 func (lsnController *LocalStorageNodeController) LocalDiskListByNode(queryPage hwameistorapi.QueryPage) (*hwameistorapi.LocalDiskListByNode, error) {
 
 	var localDiskList = &hwameistorapi.LocalDiskListByNode{}
+	var localdisks = []*hwameistorapi.LocalDisk{}
 
 	disks, err := lsnController.ListStorageNodeDisks(queryPage)
 	if err != nil {
 		log.WithError(err).Error("Failed to ListStorageNodeDisks")
 		return nil, err
 	}
+	fmt.Println("LocalDiskListByNode disks = %v", disks)
 
 	var pagination = &hwameistorapi.Pagination{}
 	pagination.Page = queryPage.Page
 	pagination.PageSize = queryPage.PageSize
 	pagination.Total = uint32(len(disks))
 
+	localDiskList.NodeName = queryPage.Name
+
 	if len(disks) == 0 {
+		localDiskList.LocalDisks = localdisks
 		return localDiskList, nil
 	} else {
 		pagination.Pages = int32(math.Ceil(float64(len(disks)) / float64(queryPage.PageSize)))
 	}
 
 	localDiskList.Page = pagination
-	localDiskList.LocalDisksItemsList.LocalDisks = utils.DataPatination(disks, queryPage.Page, queryPage.PageSize)
-	localDiskList.NodeName = queryPage.Name
+	localDiskList.LocalDisks = utils.DataPatination(disks, queryPage.Page, queryPage.PageSize)
 
 	return localDiskList, nil
 }
@@ -333,14 +343,12 @@ func (lsnController *LocalStorageNodeController) ListStorageNodeDisks(queryPage 
 
 	var disks []*hwameistorapi.LocalDisk
 	for i := range diskList.Items {
-		if diskList.Items[i].Spec.NodeName == queryPage.Name {
+		if diskList.Items[i].Spec.NodeName == queryPage.NodeName {
 			var disk = &hwameistorapi.LocalDisk{}
 			disk.DevPath = diskList.Items[i].Spec.DevicePath
-			if diskList.Items[i].Spec.Reserved == true {
-				disk.State = hwameistorapi.LocalDiskReserved
-			} else {
-				disk.State = lsnController.convertLocalDiskState(diskList.Items[i].Status.State)
-			}
+			fmt.Println("diskList.Items[i].Status.State = %v", diskList.Items[i].Status.State)
+			disk.State = lsnController.convertLocalDiskState(diskList.Items[i].Status.State)
+
 			if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameHDD {
 				disk.LocalStoragePooLName = hwameistorapi.PoolNameForHDD
 			} else if diskList.Items[i].Spec.DiskAttributes.Type == hwameistorapi.DiskClassNameSSD {
@@ -348,18 +356,15 @@ func (lsnController *LocalStorageNodeController) ListStorageNodeDisks(queryPage 
 			}
 			disk.Class = diskList.Items[i].Spec.DiskAttributes.Type
 			disk.HasRAID = diskList.Items[i].Spec.HasRAID
+			disk.Reserved = diskList.Items[i].Spec.Reserved
 			disk.TotalCapacityBytes = diskList.Items[i].Spec.Capacity
-			availableCapacityBytes := lsnController.getAvailableDiskCapacity(queryPage.Name, diskList.Items[i].Spec.DevicePath, diskList.Items[i].Spec.DiskAttributes.Type)
+			availableCapacityBytes := lsnController.getAvailableDiskCapacity(queryPage.NodeName, diskList.Items[i].Spec.DevicePath, diskList.Items[i].Spec.DiskAttributes.Type)
 			disk.AvailableCapacityBytes = availableCapacityBytes
 
-			if queryPage.DiskState == hwameistorapi.LocalDiskClaimedAndUnclaimed && (disk.State == hwameistorapi.LocalDiskClaimed || disk.State == hwameistorapi.LocalDiskUnclaimed) {
-				disks = append(disks, disk)
-			} else if queryPage.DiskState != hwameistorapi.LocalDiskUnknown && (disk.State == queryPage.DiskState) {
-				disks = append(disks, disk)
-			} else if queryPage.DiskState == hwameistorapi.LocalDiskReserved && diskList.Items[i].Spec.Reserved == true {
+			fmt.Println("ListStorageNodeDisks queryPage.DiskState = %v", queryPage.DiskState)
+			if queryPage.DiskState == hwameistorapi.LocalDiskEmpty || (queryPage.DiskState != hwameistorapi.LocalDiskUnknown && queryPage.DiskState == disk.State) {
 				disks = append(disks, disk)
 			}
-
 		}
 	}
 
@@ -383,7 +388,7 @@ func (lsnController *LocalStorageNodeController) convertLocalDiskState(state api
 
 	}
 
-	return ""
+	return hwameistorapi.LocalDiskUnknown
 }
 
 // convertDriverStatus

@@ -45,7 +45,7 @@ type StoragePoolUse struct {
 
 // 存储池资源监控
 type StoragePoolUseMetric struct {
-	StoragePoolsUse []StoragePoolUse `json:"storagePoolsUse"`
+	StoragePoolsUse []StoragePoolUse `json:"items"`
 }
 
 // 节点存储使用率
@@ -63,7 +63,7 @@ type NodeStorageUseMetric struct {
 	// 存储池类型 SSD HDD
 	StoragePoolClass string `json:"storagePoolClass"`
 	// 节点存储TOP5 使用率列表 5条列表上限
-	NodeStoragesUse []NodeStorageUse `json:"nodeStoragesUse"`
+	NodeStoragesUse []NodeStorageUse `json:"items"`
 }
 
 // 组件状态
@@ -76,7 +76,7 @@ type ModuleStatus struct {
 
 // 组件状态监控
 type ModuleStatusMetric struct {
-	ModulesStatus []ModuleStatus `json:"modulesStatus"`
+	ModulesStatus []ModuleStatus `json:"items"`
 }
 
 // 操作记录
@@ -176,5 +176,5 @@ func (p NodeStorageUseRatios) Swap(i, j int) {
 
 type NodeStorageUseCollection struct {
 	// 存储节点资源使用率
-	NodeStorageUseRatios []*NodeStorageUseRatio `json:"nodeStorageUseRatios"`
+	NodeStorageUseRatios []*NodeStorageUseRatio `json:"items"`
 }

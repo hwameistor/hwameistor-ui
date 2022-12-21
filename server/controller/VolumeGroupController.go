@@ -10,6 +10,8 @@ import (
 type IVolumeGroupController interface {
 	//RestController
 	VolumeListByVolumeGroup(ctx *gin.Context)
+	//VolumeGroupList
+	VolumeGroupList(ctx *gin.Context)
 }
 
 // VolumeGroupController
@@ -47,4 +49,24 @@ func (v *VolumeGroupController) VolumeListByVolumeGroup(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, vginfos)
+}
+
+// VolumeGroupList godoc
+// @Summary     摘要 获取数据卷组列表
+// @Description get VolumeGroupList
+// @Tags        VolumeGroup
+// @Param       name path string false "name"
+// @Accept      application/json
+// @Produce     application/json
+// @Success     200 {object} api.VolumeGroupList
+// @Router      /volumegroups/volumegroups [get]
+func (v *VolumeGroupController) VolumeGroupList(ctx *gin.Context) {
+
+	vgs, err := v.m.VolumeGroupController().ListVolumeGroup()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, vgs)
 }

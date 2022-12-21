@@ -45,7 +45,7 @@ const (
 	NodeStateUnknown          State = "Unknown"
 	NodeStateReadyAndNotReady State = "ReadyAndNotReady"
 
-	NodeStateHealthy  State = "Healthy"
+	NodeStateHealthy  State = "Ready"
 	NodeStateNotReady State = "NotReady"
 
 	DriverStateEmpty    State = ""
@@ -63,20 +63,18 @@ const (
 	LocalDiskClaimed State = "Claimed"
 	// LocalDiskInUse represents that the disk is in use but not claimed by a LDC
 	LocalDiskInUse State = "Inuse"
-	// LocalDiskReserved represents that the disk will be used in the feature
-	LocalDiskReserved State = "Reserved"
-	// LocalDiskRemoveReserved
-	LocalDiskRemoveReserved State = "RemoveReserved"
 	// LocalDiskEmpty
 	LocalDiskEmpty State = ""
-	// LocalDiskClaimedAndUnclaimed
-	LocalDiskClaimedAndUnclaimed State = "ClaimedAndUnclaimed"
 	// LocalDiskPending
 	LocalDiskPending State = "Pending"
 	// LocalDiskBound
 	LocalDiskBound State = "Bound"
 	// LocalDiskAvailable
 	LocalDiskAvailable State = "Available"
+	// LocalDiskReserved
+	LocalDiskReserved State = "Reserved"
+	// LocalDiskRemoveReserved
+	LocalDiskRemoveReserved State = "RemoveReserved"
 
 	// LocalDiskActive is the state for the disk that is connected
 	LocalDiskActive State = "Active"
@@ -98,14 +96,14 @@ const (
 
 type Pagination struct {
 	// 总共有多少条目，请求时可以不用传递
-	Total uint32 `json:"total,omitempty"`
+	Total uint32 `json:"total"`
 	// 当前页索引，从 1 开始，为 0 时，会自动重置为默认值 constants.DefaultPage
-	Page int32 `json:"page,omitempty"`
+	Page int32 `json:"page"`
 	// 总页数
-	Pages int32 `json:"pages,omitempty"`
+	Pages int32 `json:"pages"`
 	// 每页数据量，为 -1 时表示查询全部，为 0 时会重置为默认值
 	// constants.DefaultPageSize
-	PageSize int32 `json:"pageSize,omitempty"`
+	PageSize int32 `json:"pageSize"`
 	//// 排序规则，支持字符串和数字类型的字段进行排序
 	//Sort string `json:"sort,omitempty"`
 	//// 搜索关键字，支持模糊搜索,精准匹配和高级搜索.
@@ -235,21 +233,14 @@ func NodeStatefuzzyConvert(state string) State {
 	if state == "" {
 		return NodeStateEmpty
 	}
-	if strings.Contains("Offline", state) {
-		return NodeStateOffline
-	}
 	if strings.Contains("Healthy", state) {
 		return NodeStateHealthy
 	}
-	// todo
 	if strings.Contains("Ready", state) {
-		return NodeStateReadyAndNotReady
+		return NodeStateReady
 	}
 	if strings.Contains("NotReady", state) {
 		return NodeStateNotReady
-	}
-	if strings.Contains("Maintain", state) {
-		return NodeStateMaintain
 	}
 
 	return NodeStateUnknown
@@ -279,21 +270,6 @@ func DiskStatefuzzyConvert(state string) State {
 
 	if state == "" {
 		return LocalDiskEmpty
-	}
-	if strings.Contains("Claimed", state) {
-		return LocalDiskClaimedAndUnclaimed
-	}
-	if strings.Contains("Unclaimed", state) {
-		return LocalDiskUnclaimed
-	}
-	if strings.Contains("Released", state) {
-		return LocalDiskReleased
-	}
-	if strings.Contains("InUse", state) {
-		return LocalDiskInUse
-	}
-	if strings.Contains("Reserved", state) {
-		return LocalDiskReserved
 	}
 	if strings.Contains("Bound", state) {
 		return LocalDiskBound

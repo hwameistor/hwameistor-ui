@@ -79,6 +79,11 @@ definitions:
       version:
         type: string
     type: object
+  api.DrbdEnableSettingReqBody:
+    properties:
+      enable:
+        type: boolean
+    type: object
   api.DrbdEnableSettingRspBody:
     properties:
       data:
@@ -98,6 +103,9 @@ definitions:
       localStoragePooLName:
         description: LocalStoragePooLName 存储池名称
         type: string
+      reserved:
+        description: Reserved 是否预留
+        type: boolean
       state:
         description: 'Possible state: Claimed, UnClaimed, Inuse, Released, Reserved
           状态'
@@ -112,25 +120,30 @@ definitions:
   api.LocalDiskListByNode:
     properties:
       items:
-        $ref: '#/definitions/api.LocalDisksItemsList'
-        description: |-
-          // localDisks 节点磁盘列表
-          LocalDisks []*LocalDisk `json:"items,omitempty"`
-          localDisks 节点磁盘列表
+        description: localDisks 节点磁盘列表
+        items:
+          $ref: '#/definitions/api.LocalDisk'
+        type: array
       nodeName:
         description: nodeName 节点名称
         type: string
       pagination:
         $ref: '#/definitions/api.Pagination'
-        description: page 信息
+        description: |-
+          // localDisks 节点磁盘列表
+          LocalDisksItemsList LocalDisksItemsList `json:"items,omitempty"`
+          page 信息
     type: object
-  api.LocalDisksItemsList:
+  api.MigrateVolumeGroupVolumeInfos:
     properties:
-      localDisks:
-        description: localDisks 节点磁盘列表
+      volumeGroupVolumeInfos:
+        description: VolumeGroupVolumeInfo
         items:
-          $ref: '#/definitions/api.LocalDisk'
+          $ref: '#/definitions/api.VolumeGroupVolumeInfo'
         type: array
+      volumeName:
+        description: Name
+        type: string
     type: object
   api.ModuleStatus:
     properties:
@@ -143,14 +156,14 @@ definitions:
     type: object
   api.ModuleStatusMetric:
     properties:
-      modulesStatus:
+      items:
         items:
           $ref: '#/definitions/api.ModuleStatus'
         type: array
     type: object
   api.NodeDiskListByPool:
     properties:
-      localDisks:
+      items:
         description: localDisks 节点磁盘列表
         items:
           $ref: '#/definitions/api.LocalDisk'
@@ -163,6 +176,20 @@ definitions:
         description: page 信息
       storagePoolName:
         description: StoragePoolName 存储池名称
+        type: string
+    type: object
+  api.NodeRemoveReserveReqBody:
+    properties:
+      diskName:
+        type: string
+      nodeName:
+        type: string
+    type: object
+  api.NodeReserveReqBody:
+    properties:
+      diskName:
+        type: string
+      nodeName:
         type: string
     type: object
   api.NodeStorageUse:
@@ -179,7 +206,7 @@ definitions:
     type: object
   api.NodeStorageUseMetric:
     properties:
-      nodeStoragesUse:
+      items:
         description: 节点存储TOP5 使用率列表 5条列表上限
         items:
           $ref: '#/definitions/api.NodeStorageUse'
@@ -285,36 +312,30 @@ definitions:
   api.StorageNodeList:
     properties:
       items:
-        $ref: '#/definitions/api.StorageNodesItemsList'
-        description: |-
-          // StorageNodes
-          StorageNodes []*StorageNode `json:"items,omitempty"`
-          StorageNodesItemsList
-      pagination:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-    type: object
-  api.StorageNodeListByPool:
-    properties:
-      page:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-      storageNodes:
         description: StorageNodes
         items:
           $ref: '#/definitions/api.StorageNode'
         type: array
-      storagePoolName:
-        description: StoragePoolName 存储池名称
-        type: string
+      pagination:
+        $ref: '#/definitions/api.Pagination'
+        description: |-
+          StorageNodesItemsList
+          StorageNodesItemsList StorageNodesItemsList `json:"items,omitempty"`
+          page 信息
     type: object
-  api.StorageNodesItemsList:
+  api.StorageNodeListByPool:
     properties:
-      storageNodes:
-        description: localDisks 节点磁盘列表
+      items:
+        description: StorageNodes
         items:
           $ref: '#/definitions/api.StorageNode'
         type: array
+      page:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
+      storagePoolName:
+        description: StoragePoolName 存储池名称
+        type: string
     type: object
   api.StoragePool:
     properties:
@@ -339,14 +360,14 @@ definitions:
     type: object
   api.StoragePoolList:
     properties:
-      page:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-      storagePools:
+      items:
         description: storagePools
         items:
           $ref: '#/definitions/api.StoragePool'
         type: array
+      page:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.StoragePoolUse:
     properties:
@@ -362,16 +383,13 @@ definitions:
     type: object
   api.StoragePoolUseMetric:
     properties:
-      storagePoolsUse:
+      items:
         items:
           $ref: '#/definitions/api.StoragePoolUse'
         type: array
     type: object
   api.TargetNodeList:
     properties:
-      targetNodeType:
-        description: TargetNodeType
-        type: string
       targetNodes:
         description: TargetNodes
         items:
@@ -417,6 +435,11 @@ definitions:
       volumeName:
         type: string
     type: object
+  api.VolumeConvertReqBody:
+    properties:
+      volumeName:
+        type: string
+    type: object
   api.VolumeConvertRspBody:
     properties:
       data:
@@ -438,6 +461,14 @@ definitions:
           $ref: '#/definitions/api.VolumeGroupVolumeInfo'
         type: array
     type: object
+  api.VolumeGroupList:
+    properties:
+      volumeGroupNames:
+        description: VolumeGroupNames
+        items:
+          type: string
+        type: array
+    type: object
   api.VolumeGroupVolumeInfo:
     properties:
       nodeNames:
@@ -452,19 +483,15 @@ definitions:
         description: VolumeName
         type: string
     type: object
-  api.VolumeItemsList:
-    properties:
-      volumes:
-        description: volumes
-        items:
-          $ref: '#/definitions/api.Volume'
-        type: array
-    type: object
   api.VolumeList:
     properties:
       items:
-        $ref: '#/definitions/api.VolumeItemsList'
-        description: volumes
+        description: |-
+          // volumes
+          VolumeItemsList VolumeItemsList `json:"items,omitempty"`
+        items:
+          $ref: '#/definitions/api.Volume'
+        type: array
       pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
@@ -502,13 +529,12 @@ definitions:
         description: VolumeName 迁移卷名称
         type: string
     type: object
-  api.VolumeMigrateOperationItemsList:
+  api.VolumeMigrateReqBody:
     properties:
-      volumeMigrateOperations:
-        description: VolumeMigrateOperations
-        items:
-          $ref: '#/definitions/api.VolumeMigrateOperation'
-        type: array
+      selectedNode:
+        type: string
+      srcNode:
+        type: string
     type: object
   api.VolumeMigrateRspBody:
     properties:
@@ -518,8 +544,13 @@ definitions:
   api.VolumeOperationByVolume:
     properties:
       items:
-        $ref: '#/definitions/api.VolumeMigrateOperationItemsList'
-        description: VolumeMigrateOperationItemsList
+        description: |-
+          // VolumeMigrateOperationItemsList
+          VolumeMigrateOperationItemsList VolumeMigrateOperationItemsList `json:"items,omitempty"`
+          VolumeMigrateOperations
+        items:
+          $ref: '#/definitions/api.VolumeMigrateOperation'
+        type: array
       volumeName:
         description: VolumeName
         type: string
@@ -527,17 +558,19 @@ definitions:
   api.VolumeOperationListByNode:
     properties:
       items:
-        $ref: '#/definitions/api.VolumeMigrateOperationItemsList'
-        description: |-
-          // VolumeOperations
-          VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
-          VolumeMigrateOperationItemsList
+        description: VolumeOperations
+        items:
+          $ref: '#/definitions/api.VolumeMigrateOperation'
+        type: array
       nodeName:
         description: node name
         type: string
       pagination:
         $ref: '#/definitions/api.Pagination'
-        description: page 信息
+        description: |-
+          // VolumeMigrateOperationItemsList
+          VolumeMigrateOperationItemsList VolumeMigrateOperationItemsList `json:"items,omitempty"`
+          page 信息
     type: object
   api.VolumeReplica:
     properties:
@@ -569,14 +602,14 @@ definitions:
     type: object
   api.VolumeReplicaList:
     properties:
-      volumeName:
-        description: volume name
-        type: string
-      volumeReplicas:
+      items:
         description: VolumeReplicas
         items:
           $ref: '#/definitions/api.VolumeReplica'
         type: array
+      volumeName:
+        description: volume name
+        type: string
     type: object
   api.YamlData:
     properties:
@@ -743,16 +776,12 @@ paths:
       - application/json
       description: post RemoveReserveStorageNodeDisk
       parameters:
-      - description: nodeName
-        in: path
-        name: nodeName
+      - description: reqBody
+        in: body
+        name: body
         required: true
-        type: string
-      - description: diskName
-        in: path
-        name: diskName
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/api.NodeRemoveReserveReqBody'
       produces:
       - application/json
       responses:
@@ -773,16 +802,12 @@ paths:
       - application/json
       description: post ReserveStorageNodeDisk diskname i.g sdb sdc ...
       parameters:
-      - description: nodeName
-        in: path
-        name: nodeName
+      - description: reqBody
+        in: body
+        name: body
         required: true
-        type: string
-      - description: diskName
-        in: path
-        name: diskName
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/api.NodeReserveReqBody'
       produces:
       - application/json
       responses:
@@ -930,6 +955,14 @@ paths:
         name: pageSize
         required: true
         type: integer
+      - description: nodeName
+        in: query
+        name: nodeName
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
       produces:
       - application/json
       responses:
@@ -1047,17 +1080,18 @@ paths:
       summary: 摘要 获取高可用设置
       tags:
       - Setting
-  /settings/highavailabilitysetting/{enabledrbd}:
+  /settings/highavailabilitysetting/drbd:
     post:
       consumes:
       - application/json
       description: post EnableDRBDSetting
       parameters:
-      - description: enabledrbd
-        in: path
-        name: enabledrbd
+      - description: body
+        in: body
+        name: body
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/api.DrbdEnableSettingReqBody'
       produces:
       - application/json
       responses:
@@ -1072,6 +1106,26 @@ paths:
       summary: 摘要 高可用设置
       tags:
       - Setting
+  /volumegroups/volumegroups:
+    get:
+      consumes:
+      - application/json
+      description: get VolumeGroupList
+      parameters:
+      - description: name
+        in: path
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.VolumeGroupList'
+      summary: 摘要 获取数据卷组列表
+      tags:
+      - VolumeGroup
   /volumegroups/volumegroups/{name}:
     get:
       consumes:
@@ -1114,23 +1168,33 @@ paths:
       summary: 摘要 获取数据卷yaml信息
       tags:
       - Volume
-  /volumes/volumemigrateoperation/{targetNodeType}/targetNodes:
+  /volumes/volumemigrateoperation/{volumeName}/volumelist:
     get:
       consumes:
       - application/json
-      description: get GetTargetNodesByTargetNodeType  targetNodeType "AutoSelect"
-        "ManualSelect"
+      description: get VolumeListWithSameVolumeGroup
       parameters:
-      - description: targetNodeType
+      - description: volumeName
         in: path
-        name: targetNodeType
+        name: volumeName
         required: true
         type: string
-      - description: sourceNodeName
-        in: query
-        name: sourceNodeName
-        required: true
-        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.MigrateVolumeGroupVolumeInfos'
+      summary: 摘要 获取同一数据卷组中包含数据卷名称列表信息
+      tags:
+      - Volume
+  /volumes/volumemigrateoperation/targetnodes:
+    get:
+      consumes:
+      - application/json
+      description: get GetTargetNodesByManualTargetNodeType  targetNodeType default
+        "ManualSelect"
       produces:
       - application/json
       responses:
@@ -1138,7 +1202,7 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/api.TargetNodeList'
-      summary: 摘要 获取指定目标节点类型节点列表
+      summary: 摘要 获取手动目标节点类型节点列表
       tags:
       - Volume
   /volumes/volumeoperation/{volumeName}/convert:
@@ -1148,10 +1212,11 @@ paths:
       description: post VolumeConvertOperation
       parameters:
       - description: volumeName
-        in: path
-        name: volumeName
+        in: body
+        name: body
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/api.VolumeConvertReqBody'
       produces:
       - application/json
       responses:
@@ -1170,23 +1235,20 @@ paths:
     post:
       consumes:
       - application/json
-      description: post VolumeMigrateOperation
+      description: post VolumeMigrateOperation body i.g. body { SrcNode string ,SelectedNode
+        string}
       parameters:
       - description: volumeName
         in: path
         name: volumeName
         required: true
         type: string
-      - description: sourceNodeName
-        in: query
-        name: sourceNodeName
+      - description: reqBody
+        in: body
+        name: body
         required: true
-        type: string
-      - description: targetNodeName
-        in: query
-        name: targetNodeName
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/api.VolumeMigrateReqBody'
       produces:
       - application/json
       responses:
@@ -1290,10 +1352,6 @@ paths:
       - description: state
         in: query
         name: state
-        type: string
-      - description: synced
-        in: query
-        name: synced
         type: string
       produces:
       - application/json

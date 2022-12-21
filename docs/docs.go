@@ -259,18 +259,13 @@ const docTemplate = `{
                 "summary": "摘要 解除磁盘预留",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "nodeName",
-                        "name": "nodeName",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "diskName",
-                        "name": "diskName",
-                        "in": "path",
-                        "required": true
+                        "description": "reqBody",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.NodeRemoveReserveReqBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -304,18 +299,13 @@ const docTemplate = `{
                 "summary": "摘要 预留磁盘",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "nodeName",
-                        "name": "nodeName",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "diskName",
-                        "name": "diskName",
-                        "in": "path",
-                        "required": true
+                        "description": "reqBody",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.NodeReserveReqBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -534,6 +524,18 @@ const docTemplate = `{
                         "name": "pageSize",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "nodeName",
+                        "name": "nodeName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -707,7 +709,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/settings/highavailabilitysetting/{enabledrbd}": {
+        "/settings/highavailabilitysetting/drbd": {
             "post": {
                 "description": "post EnableDRBDSetting",
                 "consumes": [
@@ -722,11 +724,13 @@ const docTemplate = `{
                 "summary": "摘要 高可用设置",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "enabledrbd",
-                        "name": "enabledrbd",
-                        "in": "path",
-                        "required": true
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.DrbdEnableSettingReqBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -740,6 +744,37 @@ const docTemplate = `{
                         "description": "失败",
                         "schema": {
                             "$ref": "#/definitions/api.RspFailBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumegroups/volumegroups": {
+            "get": {
+                "description": "get VolumeGroupList",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VolumeGroup"
+                ],
+                "summary": "摘要 获取数据卷组列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeGroupList"
                         }
                     }
                 }
@@ -809,9 +844,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/volumes/volumemigrateoperation/{targetNodeType}/targetNodes": {
+        "/volumes/volumemigrateoperation/targetnodes": {
             "get": {
-                "description": "get GetTargetNodesByTargetNodeType  targetNodeType \"AutoSelect\" \"ManualSelect\"",
+                "description": "get GetTargetNodesByManualTargetNodeType  targetNodeType default \"ManualSelect\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -821,28 +856,44 @@ const docTemplate = `{
                 "tags": [
                     "Volume"
                 ],
-                "summary": "摘要 获取指定目标节点类型节点列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "targetNodeType",
-                        "name": "targetNodeType",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "sourceNodeName",
-                        "name": "sourceNodeName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "摘要 获取手动目标节点类型节点列表",
                 "responses": {
                     "200": {
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/api.TargetNodeList"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volumemigrateoperation/{volumeName}/volumelist": {
+            "get": {
+                "description": "get VolumeListWithSameVolumeGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 获取同一数据卷组中包含数据卷名称列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "volumeName",
+                        "name": "volumeName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.MigrateVolumeGroupVolumeInfos"
                         }
                     }
                 }
@@ -863,11 +914,13 @@ const docTemplate = `{
                 "summary": "摘要 指定数据卷转换操作",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "volumeName",
-                        "name": "volumeName",
-                        "in": "path",
-                        "required": true
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeConvertReqBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -888,7 +941,7 @@ const docTemplate = `{
         },
         "/volumes/volumeoperation/{volumeName}/migrate": {
             "post": {
-                "description": "post VolumeMigrateOperation",
+                "description": "post VolumeMigrateOperation body i.g. body { SrcNode string ,SelectedNode string}",
                 "consumes": [
                     "application/json"
                 ],
@@ -908,18 +961,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "sourceNodeName",
-                        "name": "sourceNodeName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "targetNodeName",
-                        "name": "targetNodeName",
-                        "in": "query",
-                        "required": true
+                        "description": "reqBody",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeMigrateReqBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -1077,12 +1125,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "state",
                         "name": "state",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "synced",
-                        "name": "synced",
                         "in": "query"
                     }
                 ],
@@ -1301,6 +1343,14 @@ const docTemplate = `{
                 }
             }
         },
+        "api.DrbdEnableSettingReqBody": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                }
+            }
+        },
         "api.DrbdEnableSettingRspBody": {
             "type": "object",
             "properties": {
@@ -1328,6 +1378,10 @@ const docTemplate = `{
                     "description": "LocalStoragePooLName 存储池名称",
                     "type": "string"
                 },
+                "reserved": {
+                    "description": "Reserved 是否预留",
+                    "type": "boolean"
+                },
                 "state": {
                     "description": "Possible state: Claimed, UnClaimed, Inuse, Released, Reserved 状态",
                     "type": "string"
@@ -1346,28 +1400,35 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "// localDisks 节点磁盘列表\nLocalDisks []*LocalDisk ` + "`" + `json:\"items,omitempty\"` + "`" + `\nlocalDisks 节点磁盘列表",
-                    "$ref": "#/definitions/api.LocalDisksItemsList"
+                    "description": "localDisks 节点磁盘列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.LocalDisk"
+                    }
                 },
                 "nodeName": {
                     "description": "nodeName 节点名称",
                     "type": "string"
                 },
                 "pagination": {
-                    "description": "page 信息",
+                    "description": "// localDisks 节点磁盘列表\nLocalDisksItemsList LocalDisksItemsList ` + "`" + `json:\"items,omitempty\"` + "`" + `\npage 信息",
                     "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
-        "api.LocalDisksItemsList": {
+        "api.MigrateVolumeGroupVolumeInfos": {
             "type": "object",
             "properties": {
-                "localDisks": {
-                    "description": "localDisks 节点磁盘列表",
+                "volumeGroupVolumeInfos": {
+                    "description": "VolumeGroupVolumeInfo",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/api.LocalDisk"
+                        "$ref": "#/definitions/api.VolumeGroupVolumeInfo"
                     }
+                },
+                "volumeName": {
+                    "description": "Name",
+                    "type": "string"
                 }
             }
         },
@@ -1387,7 +1448,7 @@ const docTemplate = `{
         "api.ModuleStatusMetric": {
             "type": "object",
             "properties": {
-                "modulesStatus": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.ModuleStatus"
@@ -1398,7 +1459,7 @@ const docTemplate = `{
         "api.NodeDiskListByPool": {
             "type": "object",
             "properties": {
-                "localDisks": {
+                "items": {
                     "description": "localDisks 节点磁盘列表",
                     "type": "array",
                     "items": {
@@ -1415,6 +1476,28 @@ const docTemplate = `{
                 },
                 "storagePoolName": {
                     "description": "StoragePoolName 存储池名称",
+                    "type": "string"
+                }
+            }
+        },
+        "api.NodeRemoveReserveReqBody": {
+            "type": "object",
+            "properties": {
+                "diskName": {
+                    "type": "string"
+                },
+                "nodeName": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.NodeReserveReqBody": {
+            "type": "object",
+            "properties": {
+                "diskName": {
+                    "type": "string"
+                },
+                "nodeName": {
                     "type": "string"
                 }
             }
@@ -1439,7 +1522,7 @@ const docTemplate = `{
         "api.NodeStorageUseMetric": {
             "type": "object",
             "properties": {
-                "nodeStoragesUse": {
+                "items": {
                     "description": "节点存储TOP5 使用率列表 5条列表上限",
                     "type": "array",
                     "items": {
@@ -1581,11 +1664,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "// StorageNodes\nStorageNodes []*StorageNode ` + "`" + `json:\"items,omitempty\"` + "`" + `\nStorageNodesItemsList",
-                    "$ref": "#/definitions/api.StorageNodesItemsList"
+                    "description": "StorageNodes",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.StorageNode"
+                    }
                 },
                 "pagination": {
-                    "description": "page 信息",
+                    "description": "StorageNodesItemsList\nStorageNodesItemsList StorageNodesItemsList ` + "`" + `json:\"items,omitempty\"` + "`" + `\npage 信息",
                     "$ref": "#/definitions/api.Pagination"
                 }
             }
@@ -1593,32 +1679,20 @@ const docTemplate = `{
         "api.StorageNodeListByPool": {
             "type": "object",
             "properties": {
-                "page": {
-                    "description": "page 信息",
-                    "$ref": "#/definitions/api.Pagination"
-                },
-                "storageNodes": {
+                "items": {
                     "description": "StorageNodes",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.StorageNode"
                     }
                 },
+                "page": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
+                },
                 "storagePoolName": {
                     "description": "StoragePoolName 存储池名称",
                     "type": "string"
-                }
-            }
-        },
-        "api.StorageNodesItemsList": {
-            "type": "object",
-            "properties": {
-                "storageNodes": {
-                    "description": "localDisks 节点磁盘列表",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.StorageNode"
-                    }
                 }
             }
         },
@@ -1654,16 +1728,16 @@ const docTemplate = `{
         "api.StoragePoolList": {
             "type": "object",
             "properties": {
-                "page": {
-                    "description": "page 信息",
-                    "$ref": "#/definitions/api.Pagination"
-                },
-                "storagePools": {
+                "items": {
                     "description": "storagePools",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.StoragePool"
                     }
+                },
+                "page": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1687,7 +1761,7 @@ const docTemplate = `{
         "api.StoragePoolUseMetric": {
             "type": "object",
             "properties": {
-                "storagePoolsUse": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.StoragePoolUse"
@@ -1698,10 +1772,6 @@ const docTemplate = `{
         "api.TargetNodeList": {
             "type": "object",
             "properties": {
-                "targetNodeType": {
-                    "description": "TargetNodeType",
-                    "type": "string"
-                },
                 "targetNodes": {
                     "description": "TargetNodes",
                     "type": "array",
@@ -1763,6 +1833,14 @@ const docTemplate = `{
                 }
             }
         },
+        "api.VolumeConvertReqBody": {
+            "type": "object",
+            "properties": {
+                "volumeName": {
+                    "type": "string"
+                }
+            }
+        },
         "api.VolumeConvertRspBody": {
             "type": "object",
             "properties": {
@@ -1794,6 +1872,18 @@ const docTemplate = `{
                 }
             }
         },
+        "api.VolumeGroupList": {
+            "type": "object",
+            "properties": {
+                "volumeGroupNames": {
+                    "description": "VolumeGroupNames",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "api.VolumeGroupVolumeInfo": {
             "type": "object",
             "properties": {
@@ -1814,24 +1904,15 @@ const docTemplate = `{
                 }
             }
         },
-        "api.VolumeItemsList": {
-            "type": "object",
-            "properties": {
-                "volumes": {
-                    "description": "volumes",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.Volume"
-                    }
-                }
-            }
-        },
         "api.VolumeList": {
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "volumes",
-                    "$ref": "#/definitions/api.VolumeItemsList"
+                    "description": "// volumes\nVolumeItemsList VolumeItemsList ` + "`" + `json:\"items,omitempty\"` + "`" + `",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Volume"
+                    }
                 },
                 "pagination": {
                     "description": "page 信息",
@@ -1886,15 +1967,14 @@ const docTemplate = `{
                 }
             }
         },
-        "api.VolumeMigrateOperationItemsList": {
+        "api.VolumeMigrateReqBody": {
             "type": "object",
             "properties": {
-                "volumeMigrateOperations": {
-                    "description": "VolumeMigrateOperations",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.VolumeMigrateOperation"
-                    }
+                "selectedNode": {
+                    "type": "string"
+                },
+                "srcNode": {
+                    "type": "string"
                 }
             }
         },
@@ -1910,8 +1990,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "VolumeMigrateOperationItemsList",
-                    "$ref": "#/definitions/api.VolumeMigrateOperationItemsList"
+                    "description": "// VolumeMigrateOperationItemsList\nVolumeMigrateOperationItemsList VolumeMigrateOperationItemsList ` + "`" + `json:\"items,omitempty\"` + "`" + `\nVolumeMigrateOperations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.VolumeMigrateOperation"
+                    }
                 },
                 "volumeName": {
                     "description": "VolumeName",
@@ -1923,15 +2006,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "// VolumeOperations\nVolumeMigrateOperations []*VolumeMigrateOperation ` + "`" + `json:\"items,omitempty\"` + "`" + `\nVolumeMigrateOperationItemsList",
-                    "$ref": "#/definitions/api.VolumeMigrateOperationItemsList"
+                    "description": "VolumeOperations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.VolumeMigrateOperation"
+                    }
                 },
                 "nodeName": {
                     "description": "node name",
                     "type": "string"
                 },
                 "pagination": {
-                    "description": "page 信息",
+                    "description": "// VolumeMigrateOperationItemsList\nVolumeMigrateOperationItemsList VolumeMigrateOperationItemsList ` + "`" + `json:\"items,omitempty\"` + "`" + `\npage 信息",
                     "$ref": "#/definitions/api.Pagination"
                 }
             }
@@ -1972,16 +2058,16 @@ const docTemplate = `{
         "api.VolumeReplicaList": {
             "type": "object",
             "properties": {
-                "volumeName": {
-                    "description": "volume name",
-                    "type": "string"
-                },
-                "volumeReplicas": {
+                "items": {
                     "description": "VolumeReplicas",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.VolumeReplica"
                     }
+                },
+                "volumeName": {
+                    "description": "volume name",
+                    "type": "string"
                 }
             }
         },

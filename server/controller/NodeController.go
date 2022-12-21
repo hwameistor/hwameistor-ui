@@ -92,7 +92,7 @@ func (n *NodeController) StorageNodeList(ctx *gin.Context) {
 	p, _ := strconv.ParseInt(page, 10, 32)
 	ps, _ := strconv.ParseInt(pageSize, 10, 32)
 
-	fmt.Println("StorageNodeList driverState = %v", driverState)
+	fmt.Println("StorageNodeList driverState = %v, nodeName = %v", driverState, nodeName)
 
 	var queryPage hwameistorapi.QueryPage
 	queryPage.Page = int32(p)
@@ -187,7 +187,7 @@ func (n *NodeController) StorageNodeDisksList(ctx *gin.Context) {
 	queryPage.Page = int32(p)
 	queryPage.PageSize = int32(ps)
 	queryPage.DiskState = hwameistorapi.DiskStatefuzzyConvert(state)
-	queryPage.Name = nodeName
+	queryPage.NodeName = nodeName
 
 	lds, err := n.m.StorageNodeController().LocalDiskListByNode(queryPage)
 	if err != nil {
@@ -230,19 +230,28 @@ func (n *NodeController) StorageNodeVolumeOperationYamlGet(ctx *gin.Context) {
 // @Summary 摘要 预留磁盘
 // @Description post ReserveStorageNodeDisk diskname i.g sdb sdc ...
 // @Tags        Node
-// @Param       nodeName path string true "nodeName"
-// @Param       diskName path string true "diskName"
+// @Param       body body api.NodeReserveReqBody true "reqBody"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.DiskReservedRspBody  "成功"
 // @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /nodes/storagenode/{nodeName}/disks/{diskName}/reserve [post]
 func (n *NodeController) ReserveStorageNodeDisk(ctx *gin.Context) {
-	// 获取path中的nodeName
-	nodeName := ctx.Param("nodeName")
+	//// 获取path中的nodeName
+	//nodeName := ctx.Param("nodeName")
+	//
+	//// 获取path中的diskName
+	//diskName := ctx.Param("diskName")
 
-	// 获取path中的diskName
-	diskName := ctx.Param("diskName")
+	var nrrb hwameistorapi.NodeReserveReqBody
+	err := ctx.ShouldBind(&nrrb)
+	if err != nil {
+		fmt.Errorf("Unmarshal err = %v", err)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	nodeName := nrrb.NodeName
+	diskName := nrrb.DiskName
 
 	fmt.Println("ReserveStorageNodeDisk nodeName = %v, diskName = %v", nodeName, diskName)
 
@@ -271,19 +280,28 @@ func (n *NodeController) ReserveStorageNodeDisk(ctx *gin.Context) {
 // @Summary 摘要 解除磁盘预留
 // @Description post RemoveReserveStorageNodeDisk
 // @Tags        Node
-// @Param       nodeName path string true "nodeName"
-// @Param       diskName path string true "diskName"
+// @Param       body body api.NodeRemoveReserveReqBody true "reqBody"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.DiskRemoveReservedRspBody  "成功"
 // @Failure     500 {object}  api.RspFailBody "失败"
 // @Router      /nodes/storagenode/{nodeName}/disks/{diskName}/removereserve [post]
 func (n *NodeController) RemoveReserveStorageNodeDisk(ctx *gin.Context) {
-	// 获取path中的nodeName
-	nodeName := ctx.Param("nodeName")
+	//// 获取path中的nodeName
+	//nodeName := ctx.Param("nodeName")
+	//
+	//// 获取path中的diskName
+	//diskName := ctx.Param("diskName")
 
-	// 获取path中的diskName
-	diskName := ctx.Param("diskName")
+	var nrrrb hwameistorapi.NodeRemoveReserveReqBody
+	err := ctx.ShouldBind(&nrrrb)
+	if err != nil {
+		fmt.Errorf("Unmarshal err = %v", err)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	nodeName := nrrrb.NodeName
+	diskName := nrrrb.DiskName
 
 	if nodeName == "" || diskName == "" {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)

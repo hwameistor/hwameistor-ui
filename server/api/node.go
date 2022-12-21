@@ -34,17 +34,17 @@ type StorageNode struct {
 
 type LocalDisksItemsList struct {
 	// localDisks 节点磁盘列表
-	LocalDisks []*LocalDisk `json:"localDisks,omitempty"`
+	LocalDisks []*LocalDisk `json:"items"`
 }
 
 // LocalDiskListByNode
 type LocalDiskListByNode struct {
 	// nodeName 节点名称
 	NodeName string `json:"nodeName,omitempty"`
-	//// localDisks 节点磁盘列表
-	//LocalDisks []*LocalDisk `json:"items,omitempty"`
 	// localDisks 节点磁盘列表
-	LocalDisksItemsList LocalDisksItemsList `json:"items,omitempty"`
+	LocalDisks []*LocalDisk `json:"items"`
+	//// localDisks 节点磁盘列表
+	//LocalDisksItemsList LocalDisksItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
 }
@@ -52,15 +52,15 @@ type LocalDiskListByNode struct {
 // StorageNodesItemsList
 type StorageNodesItemsList struct {
 	// localDisks 节点磁盘列表
-	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
+	StorageNodes []*StorageNode `json:"items"`
 }
 
 // StorageNodeList
 type StorageNodeList struct {
-	//// StorageNodes
-	//StorageNodes []*StorageNode `json:"items,omitempty"`
+	// StorageNodes
+	StorageNodes []*StorageNode `json:"items"`
 	// StorageNodesItemsList
-	StorageNodesItemsList StorageNodesItemsList `json:"items,omitempty"`
+	//StorageNodesItemsList StorageNodesItemsList `json:"items,omitempty"`
 	// page 信息
 	Page *Pagination `json:"pagination,omitempty"`
 }
@@ -73,10 +73,18 @@ type YamlData struct {
 
 // TargetNodeList
 type TargetNodeList struct {
-	// TargetNodeType
-	TargetNodeType string `json:"targetNodeType,omitempty"`
 	// TargetNodes
 	TargetNodes []string `json:"targetNodes,omitempty"`
+}
+
+type NodeReserveReqBody struct {
+	NodeName string `json:"nodeName,omitempty"`
+	DiskName string `json:"diskName,omitempty"`
+}
+
+type NodeRemoveReserveReqBody struct {
+	NodeName string `json:"nodeName,omitempty"`
+	DiskName string `json:"diskName,omitempty"`
 }
 
 func ToStorageNodeResource(lsn apisv1alpha1.LocalStorageNode) *StorageNode {

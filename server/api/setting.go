@@ -10,6 +10,10 @@ type DrbdEnableSettingRspBody struct {
 	DrbdEnableSetting *DrbdEnableSetting `json:"data,omitempty"`
 }
 
+type DrbdEnableSettingReqBody struct {
+	Enable bool `json:"enable,omitempty"`
+}
+
 type RspFailBody struct {
 	ErrCode int    `json:"errcode"`
 	Desc    string `json:"description"`

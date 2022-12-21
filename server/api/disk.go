@@ -15,6 +15,9 @@ type LocalDisk struct {
 	// HasRAID 是否Raid
 	HasRAID bool `json:"hasRaid,omitempty"`
 
+	// Reserved 是否预留
+	Reserved bool `json:"reserved"`
+
 	// TotalCapacityBytes 总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes,omitempty"`
 

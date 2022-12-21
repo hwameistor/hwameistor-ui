@@ -185,7 +185,11 @@ func (mController *MetricController) OperationListMetric(page, pageSize int32) (
 		operationList = append(operationList, operation)
 	}
 
+	var operations = []hwameistorapi.Operation{}
 	operationMetric.OperationList = utils.DataPatination(operationList, page, pageSize)
+	if len(operationList) == 0 {
+		operationMetric.OperationList = operations
+	}
 
 	var pagination = &hwameistorapi.Pagination{}
 	pagination.Page = page

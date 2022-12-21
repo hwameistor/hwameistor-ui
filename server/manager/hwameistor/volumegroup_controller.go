@@ -10,6 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 )
 
 // VolumeGroupController
@@ -30,12 +31,12 @@ func NewVolumeGroupController(client client.Client, clientset *kubernetes.Client
 }
 
 // ListVolumesByVolumeGroup
-func (lvController *VolumeGroupController) ListVolumesByVolumeGroup(vgName string) (hwameistorapi.VolumeGroup, error) {
+func (vgController *VolumeGroupController) ListVolumesByVolumeGroup(vgName string) (hwameistorapi.VolumeGroup, error) {
 	var vgvis = []hwameistorapi.VolumeGroupVolumeInfo{}
 
 	var vg = hwameistorapi.VolumeGroup{}
 	lvg := &apisv1alpha1.LocalVolumeGroup{}
-	if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: vgName}, lvg); err != nil {
+	if err := vgController.Client.Get(context.TODO(), client.ObjectKey{Name: vgName}, lvg); err != nil {
 		if !errors.IsNotFound(err) {
 			log.WithError(err).Error("Failed to query LocalVolumeGroup")
 		} else {
@@ -56,7 +57,7 @@ func (lvController *VolumeGroupController) ListVolumesByVolumeGroup(vgName strin
 		}
 		fmt.Println("ListVolumesByVolumeGroup vgvi.VolumeName = %v", vgvi.VolumeName)
 		lv := &apisv1alpha1.LocalVolume{}
-		if err := lvController.Client.Get(context.TODO(), client.ObjectKey{Name: vgvi.VolumeName}, lv); err != nil {
+		if err := vgController.Client.Get(context.TODO(), client.ObjectKey{Name: vgvi.VolumeName}, lv); err != nil {
 			if !errors.IsNotFound(err) {
 				log.WithError(err).Error("Failed to query localvolume")
 			} else {
@@ -80,4 +81,25 @@ func (lvController *VolumeGroupController) ListVolumesByVolumeGroup(vgName strin
 	vg.Name = vgName
 
 	return vg, nil
+}
+
+func (vgController *VolumeGroupController) ListVolumeGroup() (*hwameistorapi.VolumeGroupList, error) {
+
+	var vglist = &hwameistorapi.VolumeGroupList{}
+	lvList := &apisv1alpha1.LocalVolumeList{}
+	if err := vgController.Client.List(context.TODO(), lvList); err != nil {
+		log.WithError(err).Error("Failed to list LocalVolumes")
+		return nil, err
+	}
+
+	var vgnames []string
+	for _, lv := range lvList.Items {
+		var vgsnamestr string = strings.Join(vgnames, " ")
+		if lv.Spec.VolumeGroup != "" && !strings.Contains(vgsnamestr, lv.Spec.VolumeGroup) {
+			vgnames = append(vgnames, lv.Spec.VolumeGroup)
+		}
+	}
+	vglist.VolumeGroupNames = vgnames
+
+	return vglist, nil
 }
