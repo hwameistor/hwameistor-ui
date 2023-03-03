@@ -1,0 +1,9 @@
+{
+  "title": "High Availability",
+  "content": "Are you sure you want to convert local volume {name} to highly available deployment?",
+  "helper": "After high availability deployment, the number of copies of the local volume will be set to 2, and this behavior is irreversible, please confirm before proceeding.",
+  "noty": {
+    "success": "Successful”",
+    "error": "Failed, reason: {msg}"
+  }
+}

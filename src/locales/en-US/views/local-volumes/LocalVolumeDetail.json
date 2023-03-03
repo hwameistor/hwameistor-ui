@@ -1,0 +1,16 @@
+{
+  "basicInfo": "Basic Info",
+  "status": "Status",
+  "replicas": "Replicas",
+  "capacity": "Capacity",
+  "convertible": "Convertible",
+  "convertibleStatus": {
+    "open": "Open",
+    "close": "Close"
+  },
+  "namespace": "Namespace",
+  "pvc": "PVC",
+  "created": "Create Time",
+  "volumeReplicas": "Volume Replicas",
+  "actionRecords": "Operations"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "名称",
+  "state": "状态",
+  "volume": "卷名称",
+  "sourceNode": "源节点",
+  "targetNode": "目的节点",
+  "startTime": "开始时间",
+  "endTime": "结束时间",
+  "actions": {
+    "viewYaml": "查看 YAML"
+  }
+}

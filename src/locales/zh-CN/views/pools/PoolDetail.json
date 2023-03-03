@@ -1,0 +1,9 @@
+{
+  "basicInfo": "基本信息",
+  "nodes": "存储节点",
+  "diskType": "磁盘类型",
+  "storageUsage": "存储使用量",
+  "totalCapacity": "总容量",
+  "nodeCount": "节点数",
+  "createTime": "创建时间"
+}

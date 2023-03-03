@@ -1,0 +1,7 @@
+{
+  "name": "Name",
+  "diskType": "Disk Type",
+  "nodes": "Nodes",
+  "storageUsage": "Storage Usage",
+  "createTime": "Create Time"
+}

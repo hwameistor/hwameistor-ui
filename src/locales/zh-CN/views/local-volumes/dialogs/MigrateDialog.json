@@ -1,0 +1,19 @@
+{
+  "title": "迁移本地卷",
+  "volumeGroup": "磁盘组",
+  "sourceNode": "源节点",
+  "targetNode": "目标节点",
+  "manualSelectNode": "选择节点",
+  "sourceNodeHelper": "本地卷副本目前所在节点",
+  "autoSelect": "自动选择",
+  "manualSelect": "手动选择",
+  "migrate": "迁移",
+  "globalAlert": " 本地卷 {name} 同 {names} 挂载在同一 Pod 上，为保障迁移后应用 Pod 正常运行，挂载在同一 Pod 下的 所有本地卷自动\n迁移至同一目标节点。",
+  "localVolumeName": "LV 名称",
+  "state": "状态",
+  "node": "节点",
+  "noty": {
+    "success": "迁移成功",
+    "error": "迁移失败，原因：{msg}"
+  }
+}

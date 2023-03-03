@@ -1,0 +1,10 @@
+{
+  "nodeStatus": "节点状态",
+  "driverStatus": "驱动状态",
+  "HDDUsage": "HDD 存储使用量",
+  "SSDUsage": "SSD 存储使用量",
+  "usedDisk": "已用/总磁盘数",
+  "basicInfo": "基本信息",
+  "migrateRecords": "迁移记录",
+  "localDisk": "磁盘"
+}

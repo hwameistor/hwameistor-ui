@@ -1,0 +1,14 @@
+{
+  "node": {
+    "title": "存储节点",
+    "content": "已经启用并安装 Hwameistor CSI Driver 以及 LDM （Local Disk Manager）的节点，如需使用高可用数据卷，请在对应节点安装 DRDB."
+  },
+  "pool": {
+    "title": "什么是存储池？",
+    "content": ""
+  },
+  "localVolume": {
+    "title": "什么是本地卷？",
+    "content": "已经启用并安装 Hwameistor CSI Driver 以及 LDM （Local Disk Manager）的节点，如需使用高可用数据卷，请在对应节点安装 DRDB. "
+  }
+}

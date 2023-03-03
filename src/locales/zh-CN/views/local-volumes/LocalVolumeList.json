@@ -1,0 +1,15 @@
+{
+  "name": "名称",
+  "status": "状态",
+  "replicas": "副本数",
+  "volumeGroup": "磁盘组",
+  "capacity": "容量",
+  "namespace": "命名空间",
+  "pvc": "绑定 PVC",
+  "created": "创建时间",
+  "actions": {
+    "migrate": "迁移",
+    "convertHA": "转换高可用"
+  },
+  "disableMigrateAlert": "单副本本地卷 {name} 已被应用挂载，无法完成迁移操作。请完成解绑操作后再执行迁移！"
+}

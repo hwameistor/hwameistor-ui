@@ -1,0 +1,19 @@
+{
+  "name": "节点",
+  "driverStatus": "驱动状态",
+  "nodeState": "节点状态",
+  "hddUsage": "HDD 存储使用量",
+  "ssdUsage": "SSD 存储使用量",
+  "freeCapacityBytes": "可分配量",
+  "claimedDisk": "已纳管/总磁盘数（块）",
+  "driverStatues": {
+    "Ready": "运行中",
+    "Maintain": "维护中",
+    "Offline": "离线"
+  },
+  "nodeStates": {
+    "Ready": "运行中",
+    "NotReady": "未就绪",
+    "Unknown": "未知"
+  }
+}

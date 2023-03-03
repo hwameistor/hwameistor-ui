@@ -1,0 +1,19 @@
+{
+  "title": "Migrate Local Volume",
+  "volumeGroup": "VolumeGroup",
+  "sourceNode": "SourceNode",
+  "targetNode": "TargetNode",
+  "manualSelectNode": "SelectNode",
+  "sourceNodeHelper": "The node where the local volume replica is currently located",
+  "autoSelect": "Auto",
+  "manualSelect": "Manual",
+  "migrate": "Migrate",
+  "globalAlert": "",
+  "localVolumeName": "LocalVolumeName",
+  "state": "State",
+  "node": "Node",
+  "noty": {
+    "success": "Migrate success",
+    "error": "Migrate failed, reason: {msg}"
+  }
+}

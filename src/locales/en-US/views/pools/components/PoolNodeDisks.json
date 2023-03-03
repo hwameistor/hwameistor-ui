@@ -1,0 +1,12 @@
+{
+  "devPath": "Dev Path",
+  "status": "Status",
+  "isRaid": "Raid",
+  "diskType": "Disk Type",
+  "availableCapacity": "Available Capacity",
+  "totalCapacity": "Total Capacity",
+  "raid": {
+    "isRaid": "YES",
+    "notRaid": "NO"
+  }
+}

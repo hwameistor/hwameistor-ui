@@ -1,0 +1,14 @@
+{
+  "name": "Name",
+  "status": "Status",
+  "replicas": "Replicas",
+  "volumeGroup": "Volume Group",
+  "capacity": "Capacity",
+  "namespace": "Namespace",
+  "pvc": "PVC",
+  "created": "Create Time",
+  "actions": {
+    "migrate": "Migrate",
+    "convertHA": "High Availability"
+  }
+}
