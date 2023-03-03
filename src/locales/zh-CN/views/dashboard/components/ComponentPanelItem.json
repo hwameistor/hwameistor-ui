@@ -1,0 +1,6 @@
+{
+  "statuses": {
+    "NotReady": "未就绪",
+    "Running": "运行中"
+  }
+}

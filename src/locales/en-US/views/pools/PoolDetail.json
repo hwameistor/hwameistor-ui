@@ -1,0 +1,9 @@
+{
+  "basicInfo": "Basic Info",
+  "nodes": "Storage Nodes",
+  "diskType": "Disk Type",
+  "storageUsage": "Storage Usage",
+  "totalCapacity": "Total Capacity",
+  "nodeCount": "Nodes",
+  "createTime": "Create Time"
+}

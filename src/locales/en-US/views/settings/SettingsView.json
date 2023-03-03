@@ -1,0 +1,10 @@
+{
+  "drbdStatus": {
+    "on": "On",
+    "off": "Off"
+  },
+  "highAvailable": "High Available",
+  "drbdHelper": "DRBD is not installed, click to install",
+  "version": "DRBD Version",
+  "highAvailableSetting": "High Available Setting"
+}

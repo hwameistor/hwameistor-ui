@@ -1,0 +1,13 @@
+{
+  "devPath": "磁盘路径",
+  "status": "状态",
+  "isRaid": "是否 Raid",
+  "diskType": "磁盘类型",
+  "availableCapacity": "可用容量",
+  "totalCapacity": "总容量",
+  "raid": {
+    "isRaid": "是",
+    "notRaid": "否"
+  },
+  "reserved": "是否预留"
+}

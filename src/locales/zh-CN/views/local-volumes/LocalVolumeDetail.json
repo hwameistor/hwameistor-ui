@@ -1,0 +1,16 @@
+{
+  "basicInfo": "基本信息",
+  "status": "状态",
+  "replicas": "副本数",
+  "capacity": "容量",
+  "convertible": "转换高可用模式",
+  "convertibleStatus": {
+    "open": "开启",
+    "close": "关闭"
+  },
+  "namespace": "命名空间",
+  "pvc": "绑定 PVC",
+  "created": "创建时间",
+  "volumeReplicas": "本地卷副本",
+  "actionRecords": "操作记录"
+}

@@ -1,0 +1,12 @@
+{
+  "node": "Node",
+  "status": "Status",
+  "isRaid": "Raid",
+  "disks": "Disks",
+  "availableCapacity": "Available Capacity",
+  "totalCapacity": "Total Capacity",
+  "raid": {
+    "isRaid": "YES",
+    "notRaid": "NO"
+  }
+}

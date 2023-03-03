@@ -1,0 +1,19 @@
+{
+  "name": "Name",
+  "driverStatus": "Driver Status",
+  "nodeState": "Node Status",
+  "hddUsage": "HDD Utilization",
+  "ssdUsage": "SSD Utilization",
+  "freeCapacityBytes": "Free Capacity",
+  "claimedDisk": "Bound/Total Disks",
+  "driverStatues": {
+    "Ready": "Ready",
+    "Maintain": "Maintain",
+    "Offline": "Offline"
+  },
+  "nodeStates": {
+    "Ready": "Ready",
+    "NotReady": "NotReady",
+    "Unknown": "Unknown"
+  }
+}
