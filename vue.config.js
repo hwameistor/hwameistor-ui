@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const daoStyleUnpluginExtend = require('@dao-style/unplugin-extend/webpack');
+const groupMapping = require('@dao-style/extend/dist/group-mapping.json');
 
 module.exports = defineConfig({
   chainWebpack: (config) => {
@@ -30,7 +31,9 @@ module.exports = defineConfig({
           },
         ],
       }),
-      daoStyleUnpluginExtend({}),
+      daoStyleUnpluginExtend({
+        mapping: groupMapping,
+      }),
     ],
   },
 

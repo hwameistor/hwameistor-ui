@@ -14,27 +14,27 @@
     @refresh="handleRefresh"
   >
     <template #td-devPath="{row}">
-      {{ (row as ApiLocalDiskInfo).spec?.devicePath }}
+      {{ row.spec?.devicePath }}
     </template>
 
     <template #td-state="{row}">
-      {{ (row as ApiLocalDiskInfo).status?.claimState }}
+      {{ row.status?.claimState }}
     </template>
 
     <template #td-hasRaid="{row}">
-      {{ $t(`views.pools.components.PoolNodeDisks.raid.${(row as ApiLocalDiskInfo).spec?.isRaid ? 'isRaid' : 'notRaid'}`) }}
+      {{ $t(`views.pools.components.PoolNodeDisks.raid.${row.spec?.isRaid ? 'isRaid' : 'notRaid'}`) }}
     </template>
 
     <template #td-type="{row}">
-      {{ (row as ApiLocalDiskInfo).spec?.diskAttributes?.type }}
+      {{ row.spec?.diskAttributes?.type }}
     </template>
 
     <template #td-availableCapacityBytes="{row}">
-      {{ bytesToUnitDisplay((row as ApiLocalDiskInfo).spec?.capacity) }}
+      {{ bytesToUnitDisplay(row.spec?.capacity) }}
     </template>
 
     <template #td-totalCapacityBytes="{row}">
-      {{ bytesToUnitDisplay((row as ApiLocalDiskInfo).totalCapacityBytes) }}
+      {{ bytesToUnitDisplay(row.totalCapacityBytes) }}
     </template>
   </dao-table>
 </template>
@@ -45,7 +45,7 @@ import { useI18n } from 'vue-i18n';
 import { useQueryTable } from '@dao-style/extend';
 import { Pool } from '@/services/Pool';
 import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
-import type { ApiLocalDiskInfo, PoolsNodesDisksDetailParams } from '@/services/data-contracts';
+import type { PoolsNodesDisksDetailParams } from '@/services/data-contracts';
 
 const props = defineProps({
   pool: {

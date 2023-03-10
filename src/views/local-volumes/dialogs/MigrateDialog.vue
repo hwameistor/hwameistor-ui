@@ -20,21 +20,21 @@
       <dao-table
         id="migrate-local-volume"
         class="mb-[20px]"
-        :data="(volumeGroup?.items ?? []) as Record<string, unknown>[]"
+        :data="volumeGroupItems"
         :columns="columns"
         hide-toolbar
         :page-layout="[]"
       >
         <template #td-name="{row}">
-          {{ (row as V1Alpha1LocalVolume).metadata?.name }}
+          {{ row.metadata?.name }}
         </template>
 
         <template #td-state="{row}">
-          {{ (row as V1Alpha1LocalVolume).status?.state }}
+          {{ row.status?.state }}
         </template>
 
         <template #td-nodes="{row}">
-          {{ (row as V1Alpha1LocalVolume).spec?.accessibility?.nodes?.join(', ') }}
+          {{ row.spec?.accessibility?.nodes?.join(', ') }}
         </template>
       </dao-table>
     </template>
@@ -138,6 +138,7 @@ const VolumeApi = new Volume();
 
 const { t } = useI18n();
 const volumeGroup = ref<ApiVolumeGroup>();
+const volumeGroupItems = ref<V1Alpha1LocalVolume[]>([]);
 const nodes = ref<ApiStorageNode[]>([]);
 const sourceNode = ref<string>();
 const targetNode = ref<string>();
@@ -157,8 +158,8 @@ const columns = computed(() => [
   },
 ]);
 
-const volumeNames = computed(() => volumeGroup.value?.items
-  ?.filter((v) => v.metadata?.name !== props.name)
+const volumeNames = computed(() => volumeGroupItems.value
+  .filter((v) => v.metadata?.name !== props.name)
   .map((v) => v.metadata?.name) ?? []);
 
 const targetNodes = computed(() => nodes.value
@@ -189,6 +190,7 @@ const getVolumeGroup = async () => {
   const res = await VolumeGroupApi.volumegroupsDetail(props.volumeGroup);
 
   volumeGroup.value = res.data;
+  volumeGroupItems.value = res.data.items ?? [];
 };
 
 const queryNodes = async () => {

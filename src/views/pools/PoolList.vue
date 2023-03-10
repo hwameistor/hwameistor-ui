@@ -39,15 +39,15 @@
       </template>
 
       <template #td-class="{row}">
-        {{ (row as ApiStoragePool).items?.[0].class }}
+        {{ row.items?.[0].class }}
       </template>
 
       <template #td-nodes="{row}">
-        {{ (row as ApiStoragePool).nodeNames?.length ?? 0 }}
+        {{ row.nodeNames?.length ?? 0 }}
       </template>
 
       <template #td-storageUsage="{row}">
-        {{ getPercent((row as ApiStoragePool).allocatedCapacityBytes, (row as ApiStoragePool).totalCapacityBytes) }}
+        {{ getPercent(row.allocatedCapacityBytes, row.totalCapacityBytes) }}
       </template>
 
       <template #td-createTime="{value}">
@@ -63,7 +63,7 @@ import { useI18n } from 'vue-i18n';
 import { useDateFormat, useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
 import { Pool } from '@/services/Pool';
-import type { ApiStoragePool, PoolsListParams } from '@/services/data-contracts';
+import type { PoolsListParams } from '@/services/data-contracts';
 
 const { t } = useI18n();
 const PoolApi = new Pool();

@@ -15,27 +15,27 @@
       @search="handleSearch"
     >
       <template #td-name="{row}">
-        {{ (row as ApiVolumeMigrateOperation).metadata?.name }}
+        {{ row.metadata?.name }}
       </template>
 
       <template #td-state="{row}">
-        {{ (row as ApiVolumeMigrateOperation).status?.state }}
+        {{ row.status?.state }}
       </template>
 
       <template #td-volumeName="{row}">
-        {{ (row as ApiVolumeMigrateOperation).spec?.volumeName }}
+        {{ row.spec?.volumeName }}
       </template>
 
       <template #td-sourceNode="{row}">
-        {{ (row as ApiVolumeMigrateOperation).spec?.sourceNode }}
+        {{ row.spec?.sourceNode }}
       </template>
 
       <template #td-targetNode="{row}">
-        {{ (row as ApiVolumeMigrateOperation).status?.targetNode ?? '-' }}
+        {{ row.status?.targetNode ?? '-' }}
       </template>
 
       <template #td-startTime="{row}">
-        {{ useDateFormat((row as ApiVolumeMigrateOperation).metadata?.creationTimestamp) }}
+        {{ useDateFormat(row.metadata?.creationTimestamp) }}
       </template>
     </dao-table>
   </div>
@@ -47,7 +47,7 @@ import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useQueryTable, useDateFormat } from '@dao-style/extend';
 import { Node } from '@/services/Node';
-import type { ApiVolumeMigrateOperation, NodesMigratesDetailParams } from '@/services/data-contracts';
+import type { NodesMigratesDetailParams } from '@/services/data-contracts';
 import type { SearchOption, SearchValue } from '@dao-style/core/dist/components/toolbar/types';
 
 const { t } = useI18n();

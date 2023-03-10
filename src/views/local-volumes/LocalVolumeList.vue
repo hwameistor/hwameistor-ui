@@ -22,40 +22,40 @@
         <router-link
           :to="{
             name: 'LocalVolumeDetail',
-            params: { name: (row as ApiVolume).metadata?.name },
+            params: { name: row.metadata?.name },
           }"
           class="list-name-link"
         >
-          {{ (row as ApiVolume).metadata?.name }}
+          {{ row.metadata?.name }}
         </router-link>
       </template>
 
       <template #td-state="{row}">
-        {{ (row as ApiVolume).status?.state }}
+        {{ row.status?.state }}
       </template>
 
       <template #td-replicas="{row}">
-        {{ (row as ApiVolume).spec?.replicaNumber }}
+        {{ row.spec?.replicaNumber }}
       </template>
 
       <template #td-volumeGroup="{row}">
-        {{ (row as ApiVolume).spec?.volumegroup }}
+        {{ row.spec?.volumegroup }}
       </template>
 
       <template #td-requiredCapacityBytes="{row}">
-        {{ bytesToUnitDisplay((row as ApiVolume).spec?.requiredCapacityBytes) }}
+        {{ bytesToUnitDisplay(row.spec?.requiredCapacityBytes) }}
       </template>
 
       <template #td-pvcNamespace="{row}">
-        {{ (row as ApiVolume).spec?.pvcNamespace }}
+        {{ row.spec?.pvcNamespace }}
       </template>
 
       <template #td-pvcName="{row}">
-        {{ (row as ApiVolume).spec?.pvcName }}
+        {{ row.spec?.pvcName }}
       </template>
 
       <template #td-createTime="{row}">
-        {{ useDateFormat((row as ApiVolume).metadata?.creationTimestamp) }}
+        {{ useDateFormat(row.metadata?.creationTimestamp) }}
       </template>
 
       <template #td-action-menu="{row}">
@@ -67,7 +67,7 @@
             {{ $t('views.local-volumes.LocalVolumeList.actions.migrate') }}
             <dao-tooltip
               v-if="isMigrateDisabled(row)"
-              :content="$t('views.local-volumes.LocalVolumeList.disableMigrateAlert', { name: (row as ApiVolume).metadata?.name })"
+              :content="$t('views.local-volumes.LocalVolumeList.disableMigrateAlert', { name: row.metadata?.name })"
               placement="top-end"
               class="ml-[10px]"
             >
@@ -79,7 +79,7 @@
           </div>
         </dao-dropdown-item>
         <dao-dropdown-item
-          v-if="(row as ApiVolume).spec?.replicaNumber === 1 && (row as ApiVolume).spec?.convertible"
+          v-if="row.spec?.replicaNumber === 1 && row.spec?.convertible"
           @click="convertHA(row)"
         >
           {{ $t('views.local-volumes.LocalVolumeList.actions.convertHA') }}
