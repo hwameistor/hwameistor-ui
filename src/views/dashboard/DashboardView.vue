@@ -555,10 +555,6 @@ queryStatus();
   display: none;
 }
 
-.dao-card.dao-card--simple .dao-card-header {
-  height: 22px;
-}
-
 .gauge-chart-percent-label {
   font-size: 26px;
   font-weight: 700;

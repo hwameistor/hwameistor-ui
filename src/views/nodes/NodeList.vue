@@ -22,20 +22,20 @@
         <router-link
           :to="{
             name: 'NodeDetailIndex',
-            params: { name: (row as ApiStorageNode).localStorageNode?.metadata?.name },
+            params: { name: row.localStorageNode?.metadata?.name },
           }"
           class="list-name-link"
         >
-          {{ (row as ApiStorageNode).localStorageNode?.metadata?.name }}
+          {{ row.localStorageNode?.metadata?.name }}
         </router-link>
       </template>
 
       <template #td-driverStatus="{row}">
-        <driver-status :status="(row as ApiStorageNode).localStorageNode?.status?.state" />
+        <driver-status :status="row.localStorageNode?.status?.state" />
       </template>
 
       <template #td-nodeState="{row}">
-        <node-status :status="(row as ApiStorageNode).k8SNodeState" />
+        <node-status :status="row.k8SNodeState" />
       </template>
 
       <template #td-hddUsage="{row}">
@@ -53,7 +53,7 @@
       </template>
 
       <template #td-claimedDisk="{row}">
-        {{ getBoundDiskCount(row) }} / {{ (row as ApiStorageNode).localDiskNode?.status?.totalDisk ?? '-' }}
+        {{ getBoundDiskCount(row) }} / {{ row.localDiskNode?.status?.totalDisk ?? '-' }}
       </template>
     </dao-table>
   </div>

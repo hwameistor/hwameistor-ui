@@ -15,27 +15,27 @@
       @search="handleSearch"
     >
       <template #td-devPath="{row}">
-        {{ (row as ApiLocalDiskInfo).spec?.devicePath }}
+        {{ row.spec?.devicePath }}
       </template>
 
       <template #td-state="{row}">
-        {{ (row as ApiLocalDiskInfo).status?.claimState }}
+        {{ row.status?.claimState }}
       </template>
 
       <template #td-reserved="{row}">
-        {{ $t(`common.${(row as ApiLocalDiskInfo).spec?.reserved ? 'yes' : 'no'}`) }}
+        {{ $t(`common.${row.spec?.reserved ? 'yes' : 'no'}`) }}
       </template>
 
       <template #td-hasRaid="{row}">
-        {{ $t(`views.nodes.NodeDetailLocalDisks.raid.${(row as ApiLocalDiskInfo).spec?.isRaid ? 'isRaid' : 'notRaid'}`) }}
+        {{ $t(`views.nodes.NodeDetailLocalDisks.raid.${row.spec?.isRaid ? 'isRaid' : 'notRaid'}`) }}
       </template>
 
       <template #td-type="{row}">
-        {{ (row as ApiLocalDiskInfo).spec?.diskAttributes?.type }}
+        {{ row.spec?.diskAttributes?.type }}
       </template>
 
       <template #td-availableCapacityBytes="{row}">
-        {{ bytesToUnitDisplay((row as ApiLocalDiskInfo).spec?.capacity) }}
+        {{ bytesToUnitDisplay(row.spec?.capacity) }}
       </template>
 
       <template #td-totalCapacityBytes="{value}">
@@ -44,7 +44,7 @@
 
       <template #td-action-menu="{ row }">
         <dao-dropdown-item
-          v-if="(row as ApiLocalDiskInfo).spec?.reserved"
+          v-if="row.spec?.reserved"
           @click="unreserveDisk(row)"
         >
           {{ $t('views.nodes.NodeDetailLocalDisks.actions.unreserve') }}

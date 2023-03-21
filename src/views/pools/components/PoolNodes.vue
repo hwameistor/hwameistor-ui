@@ -17,10 +17,10 @@
     <template #td-name="{row}">
       <div>
         <div class="pool-node__name">
-          {{ (row as ApiStorageNode).localStorageNode?.metadata?.name }}
+          {{ row.localStorageNode?.metadata?.name }}
         </div>
         <div class="pool-node__ip">
-          {{ (row as ApiStorageNode).localStorageNode?.spec?.storageIP }}
+          {{ row.localStorageNode?.spec?.storageIP }}
         </div>
       </div>
     </template>
@@ -30,21 +30,21 @@
     </template>
 
     <template #td-totalDiskCount="{row}">
-      {{ (row as ApiStorageNode).localDiskNode?.status?.totalDisk }}
+      {{ row.localDiskNode?.status?.totalDisk }}
     </template>
 
     <template #td-availableCapacity="{row}">
-      {{ bytesToUnitDisplay((row as ApiStorageNode).localStorageNode?.status?.pools?.[name].usedCapacityBytes) }}
+      {{ bytesToUnitDisplay(row.localStorageNode?.status?.pools?.[name].usedCapacityBytes) }}
     </template>
 
     <template #td-totalCapacity="{row}">
-      {{ bytesToUnitDisplay((row as ApiStorageNode).localStorageNode?.status?.pools?.[name].totalCapacityBytes) }}
+      {{ bytesToUnitDisplay(row.localStorageNode?.status?.pools?.[name].totalCapacityBytes) }}
     </template>
 
     <template #expand="{row}">
       <pool-node-disks
         :pool="name"
-        :node="(row as ApiStorageNode).localStorageNode?.metadata?.name"
+        :node="row.localStorageNode?.metadata?.name"
       />
     </template>
   </dao-table>
@@ -57,7 +57,7 @@ import { useQueryTable } from '@dao-style/extend';
 import { Pool } from '@/services/Pool';
 import NodeStatus from '@/components/NodeStatus.vue';
 import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
-import type { PoolsNodesDetailParams, ApiStorageNode } from '@/services/data-contracts';
+import type { PoolsNodesDetailParams } from '@/services/data-contracts';
 import { SearchOption, SearchValue } from '@dao-style/core/dist/components/toolbar/types';
 import PoolNodeDisks from './PoolNodeDisks.vue';
 

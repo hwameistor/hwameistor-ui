@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { defineProps, type PropType } from 'vue';
-import { DaoLabelExtend, type LabelColorType } from '@dao-style/extend';
+import { DaoLabelExtend, type LabelExtendColor } from '@dao-style/extend';
 
 defineProps({
   name: {
@@ -28,7 +28,7 @@ defineProps({
   },
 });
 
-const statusColorMap: Record<'NotReady' | 'Running', LabelColorType> = {
+const statusColorMap: Record<'NotReady' | 'Running', LabelExtendColor> = {
   NotReady: 'red',
   Running: 'green',
 };

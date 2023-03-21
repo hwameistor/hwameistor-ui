@@ -40,7 +40,7 @@ import {
 } from 'vue';
 import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue';
 import { refThrottled, useWindowSize } from '@vueuse/core';
-import { Dialog } from '@dao-style/core';
+import { DaoDialog } from '@dao-style/core';
 
 const props = defineProps({
   modelValue: {
@@ -79,7 +79,7 @@ const onCancel = () => {
   emits('reject');
 };
 
-const dialogEl = ref<InstanceType<typeof Dialog>>();
+const dialogEl = ref<InstanceType<typeof DaoDialog>>();
 
 const computedHeight = ref();
 const throttledHeight = refThrottled(computedHeight, 16);

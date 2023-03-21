@@ -8,10 +8,6 @@ import {
   setNotyDefault,
   installer,
 } from '@dao-style/extend';
-import '@dao-style/extend/dist/styles/noty-layout.css';
-import '@dao-style/extend/dist/styles/loading-layout.css';
-import '@dao-style/extend/dist/styles/spinner-dot.css';
-import '@dao-style/extend/dist/styles/spinner-circle.css';
 
 export const noty = createNoty();
 

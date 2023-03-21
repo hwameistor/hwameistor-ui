@@ -10,27 +10,27 @@
     @refresh="queryLocalVolumeReplicas"
   >
     <template #td-name="{row}">
-      {{ (row as ApiVolumeReplica).metadata?.name }}
+      {{ row.metadata?.name }}
     </template>
 
     <template #td-state="{row}">
-      {{ (row as ApiVolumeReplica).status?.state }}
+      {{ row.status?.state }}
     </template>
 
     <template #td-synced="{row}">
-      {{ $t(`views.local-volumes.components.LocalVolumeReplicas.syncStates.${(row as ApiVolumeReplica).status?.synced ? 'synced' : 'notSync'}`) }}
+      {{ $t(`views.local-volumes.components.LocalVolumeReplicas.syncStates.${row.status?.synced ? 'synced' : 'notSync'}`) }}
     </template>
 
     <template #td-nodeName="{row}">
-      {{ (row as ApiVolumeReplica).spec?.nodeName }}
+      {{ row.spec?.nodeName }}
     </template>
 
     <template #td-requiredCapacityBytes="{row}">
-      {{ bytesToUnitDisplay((row as ApiVolumeReplica).spec?.requiredCapacityBytes) }}
+      {{ bytesToUnitDisplay(row.spec?.requiredCapacityBytes) }}
     </template>
 
     <template #td-devicePath="{row}">
-      {{ (row as ApiVolumeReplica).status?.storagePath }}
+      {{ row.status?.storagePath }}
     </template>
   </dao-table>
 </template>

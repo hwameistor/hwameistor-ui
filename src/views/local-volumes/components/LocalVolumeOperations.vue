@@ -10,27 +10,27 @@
     @search="queryLocalVolumeOperations"
   >
     <template #td-name="{row}">
-      {{ (row as ApiVolumeOperation).metadata?.name }}
+      {{ row.metadata?.name }}
     </template>
 
     <template #td-kind="{row}">
-      {{ (row as ApiVolumeOperation).kind }}
+      {{ row.kind }}
     </template>
 
     <template #td-target="{row}">
-      {{ (row as ApiVolumeOperation).spec?.volumeName }}
+      {{ row.spec?.volumeName }}
     </template>
 
     <template #td-state="{row}">
-      {{ (row as ApiVolumeOperation).status?.state }}
+      {{ row.status?.state }}
     </template>
 
     <template #td-description="{row}">
-      {{ (row as ApiVolumeOperation).status?.message }}
+      {{ row.status?.message }}
     </template>
 
     <template #td-startTime="{row}">
-      {{ useDateFormat((row as ApiVolumeOperation).metadata?.creationTimestamp) }}
+      {{ useDateFormat(row.metadata?.creationTimestamp) }}
     </template>
   </dao-table>
 </template>
@@ -55,7 +55,7 @@ const props = defineProps({
 const VolumeAPi = new Volume();
 
 const { t } = useI18n();
-const items = ref<ApiVolumeMigrateOperation[]>([]);
+const items = ref<ApiVolumeOperation[]>([]);
 const search = reactive<Record<string, SearchValue[]>>({});
 const searchOptions = reactive<SearchOption[]>([
   {
