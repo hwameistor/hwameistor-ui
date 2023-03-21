@@ -9,5 +9,10 @@
   "raid": {
     "isRaid": "YES",
     "notRaid": "NO"
+  },
+  "reserved": "Reserved or not",
+  "actions": {
+    "unreserve": "Unreserve",
+    "reserve": "Reserve"
   }
 }
