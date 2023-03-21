@@ -10,5 +10,6 @@
     "viewYaml": "View YAML"
   },
   "eventType": "Event Type",
+  "target": "Target",
   "description": "Description"
 }

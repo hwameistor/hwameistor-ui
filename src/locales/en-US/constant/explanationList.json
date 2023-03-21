@@ -1,14 +1,14 @@
 {
   "node": {
     "title": "Storage Nodes",   
-    "content": "The Nodes which CSI Driver & Local Disk Manager(LDM) have been installed, please installed DRDB to enable HA LV(Local Volume)."
+    "content": "The Nodes which CSI Driver & Local Disk Manager (LDM) have been installed, please installed DRDB to enable HA LV (Local Volume)."
   },
   "pool": {
     "title": "Storage Pool",
-    "content": ""
+    "content": "This is a disk resource pool composed of different disk types (LVM, Disk), where a storage pool contains multiple node storage pools underneath it."
   },
   "localVolume": {
     "title": "Local Volume",
-    "content": ""
+    "content": "The Nodes which CSI Driver & Local Disk Manager (LDM) have been installed, please installed DRDB to enable HA LV (Local Volume)."
   }
 }

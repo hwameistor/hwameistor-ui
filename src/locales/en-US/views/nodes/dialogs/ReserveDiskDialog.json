@@ -1,1 +1,8 @@
-{}
+{
+  "content": "Are you sure to reserve disk {name}? After reserved, this disk cannot be added to the storage pool or used by Pod; after reserved, the disk status is set to \"Reserved\".",
+  "noty": {
+    "error": "Failed to reserve disk",
+    "success": "Reserved disk successfully"
+  },
+  "title": "Reserved disk {name}"
+}

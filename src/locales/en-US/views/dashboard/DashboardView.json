@@ -27,5 +27,6 @@
   "endTime": "End at",
   "storageUsed": "Storage Utilization",
   "localVolume": "Local Volumes",
-  "claimedNodes": "Local Disk Nodes"
+  "claimedNodes": "Local Disk Nodes",
+  "target": "Target"
 }

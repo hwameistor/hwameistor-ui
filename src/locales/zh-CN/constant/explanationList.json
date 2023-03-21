@@ -5,7 +5,7 @@
   },
   "pool": {
     "title": "什么是存储池？",
-    "content": ""
+    "content": "根据不同磁盘类型（LVM,Disk）组成的磁盘资源池，一个存储池下包含多个节点存储池。"
   },
   "localVolume": {
     "title": "什么是本地卷？",

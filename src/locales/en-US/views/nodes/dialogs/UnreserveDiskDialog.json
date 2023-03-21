@@ -1,1 +1,8 @@
-{}
+{
+  "content": "Are you sure to unreserve disk {name}? After unreserved, the disk will be used and allocated by the storage system.",
+  "noty": {
+    "error": "Failed to unreserve",
+    "success": "Unreserved successfully"
+  },
+  "title": "Unreserve disk {name}"
+}
