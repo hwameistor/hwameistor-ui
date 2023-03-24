@@ -479,10 +479,7 @@ const getComponentStatus = (health: string, instance: V1Alpha1DeployStatus): 'No
 const queryStatus = async () => {
   const { data } = await MetricApi.statusList({});
 
-  delete data.installedCRDS;
-  delete data.modulesStatus;
-
-  componentStatus.value = Object.entries(data).map(([, value]) => ({
+  componentStatus.value = Object.values(data.componentStatus ?? {})?.map((value) => ({
     name: value.instances.workloadName,
     status: getComponentStatus(value.health, value.instances),
   }));
