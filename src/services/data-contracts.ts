@@ -92,15 +92,12 @@ export interface ApiModuleState {
 }
 
 export interface ApiModuleStatus {
-  admissionController?: V1Alpha1AdmissionControllerStatus;
-  apiServer?: V1Alpha1ApiServerStatus;
-  evictor?: V1Alpha1EvictorStatus;
+  componentStatus?: V1Alpha1ComponentStatus;
+  diskReserveState?: string;
+  drbdAdapterCreated?: boolean;
+  drbdAdapterCreatedJobNum?: number;
   installedCRDS?: boolean;
-  localDiskManager?: V1Alpha1LocalDiskManagerStatus;
-  localStorage?: V1Alpha1LocalStorageStatus;
-  metrics?: V1Alpha1MetricsStatus;
   modulesStatus?: ApiModuleState[];
-  scheduler?: V1Alpha1SchedulerStatus;
 }
 
 export interface ApiNodeDiskListByPool {
@@ -1253,6 +1250,16 @@ export interface V1Alpha1ApiServerStatus {
   instances?: V1Alpha1DeployStatus;
 }
 
+export interface V1Alpha1ComponentStatus {
+  admissionController?: V1Alpha1AdmissionControllerStatus;
+  apiServer?: V1Alpha1ApiServerStatus;
+  evictor?: V1Alpha1EvictorStatus;
+  exporter?: V1Alpha1ExporterStatus;
+  localDiskManager?: V1Alpha1LocalDiskManagerStatus;
+  localStorage?: V1Alpha1LocalStorageStatus;
+  scheduler?: V1Alpha1SchedulerStatus;
+}
+
 export interface V1Alpha1DeployStatus {
   availablePodCount?: number;
   desiredPodCount?: number;
@@ -1298,7 +1305,22 @@ export interface V1Alpha1DiskAttributes {
   vendor?: string;
 }
 
+export interface V1Alpha1DiskClaimDescription {
+  /** Capacity of the disk in bytes */
+  capacity?: number;
+  /**
+   * DiskType represents the type of drive like SSD, HDD etc.,
+   * +optional
+   */
+  diskType?: string;
+}
+
 export interface V1Alpha1EvictorStatus {
+  health?: string;
+  instances?: V1Alpha1DeployStatus;
+}
+
+export interface V1Alpha1ExporterStatus {
   health?: string;
   instances?: V1Alpha1DeployStatus;
 }
@@ -1355,6 +1377,26 @@ export interface V1Alpha1LocalDisk {
   metadata?: V1ObjectMeta;
   spec?: V1Alpha1LocalDiskSpec;
   status?: V1Alpha1LocalDiskStatus;
+}
+
+export interface V1Alpha1LocalDiskClaimSpec {
+  /**
+   * Description of the disk to be claimed
+   * +optional
+   */
+  description?: V1Alpha1DiskClaimDescription;
+  /**
+   * DiskRefs represents which disks are assigned to the LocalDiskClaim
+   * +optional
+   */
+  diskRefs?: V1ObjectReference[];
+  /**
+   * +kubebuilder:validation:Required
+   * NodeName represents where disk has to be claimed.
+   */
+  nodeName?: string;
+  /** Owner represents which system owns this claim(e.g. local-storage, local-disk-manager) */
+  owner?: string;
 }
 
 export interface V1Alpha1LocalDiskManagerStatus {
@@ -1419,6 +1461,11 @@ export interface V1Alpha1LocalDiskSpec {
    * +kubebuilder:validation:Required
    */
   nodeName?: string;
+  /**
+   * Owner represents which system owns this claim(e.g. local-storage, local-disk-manager)
+   * +optional
+   */
+  owner?: string;
   /**
    * PartitionInfo contains partition information
    * +optional
@@ -1556,6 +1603,11 @@ export interface V1Alpha1LocalStorageNodeStatus {
    * +optional
    */
   conditions?: V1Alpha1LocalStorageNodeCondition[];
+  /**
+   * PoolExtendRecords record why disks are joined in the pool
+   * +optional
+   */
+  poolExtendRecords?: Record<string, V1Alpha1LocalDiskClaimSpec[]>;
   /**
    * There may have multiple storage pools in a node.
    * e.g. HDD_POOL, SSD_POOL, NVMe_POOL
@@ -1769,15 +1821,10 @@ export interface V1Alpha1LocalVolumeStatus {
   state?: V1Alpha1State;
   /** TotalINodes is the total inodes of the volume's filesystem */
   totalInode?: number;
-  /** UsedCapacityBytes is the used capacity in bytes of the volume, which is avaiable only for filesystem */
+  /** UsedCapacityBytes is the used capacity in bytes of the volume, which is available only for filesystem */
   usedCapacityBytes?: number;
   /** UsedInode is the used inodes of the volume's filesystem */
   usedInode?: number;
-}
-
-export interface V1Alpha1MetricsStatus {
-  health?: string;
-  instances?: V1Alpha1DeployStatus;
 }
 
 export interface V1Alpha1PartitionInfo {
@@ -1819,6 +1866,11 @@ export interface V1Alpha1SmartInfo {
 }
 
 export enum V1Alpha1State {
+  MountPointStateEmpty = "",
+  MountPointToBeMounted = "ToBeMounted",
+  MountPointToBeUnMount = "ToBeUnMount",
+  MountPointMounted = "Mounted",
+  MountPointNotReady = "NotReady",
   NodeStateReady = "Ready",
   NodeStateMaintain = "Maintain",
   NodeStateOffline = "Offline",
@@ -1853,11 +1905,6 @@ export enum V1Alpha1State {
   DiskStateAvailable = "Available",
   DiskStateInUse = "InUse",
   DiskStateOffline = "Offline",
-  MountPointStateEmpty = "",
-  MountPointToBeMounted = "ToBeMounted",
-  MountPointToBeUnMount = "ToBeUnMount",
-  MountPointMounted = "Mounted",
-  MountPointNotReady = "NotReady",
 }
 
 export interface V1Alpha1Topology {
