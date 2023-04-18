@@ -21,6 +21,7 @@ import { useI18n } from 'vue-i18n';
 import { noty } from '@/plugins/dao-style';
 import { Node } from '@/services/Node';
 import { type ApiLocalDiskInfo } from '@/services/data-contracts';
+import { type HttpError } from '@/types/error';
 
 const props = defineProps({
   node: {
@@ -55,7 +56,7 @@ const onConfirm = async () => {
   } catch (error) {
     noty.error({
       title: t('views.nodes.dialogs.UnreserveDiskDialog.noty.error'),
-      content: (error as Record<string, unknown>)?.message as string,
+      content: ((error as HttpError).error).description,
     });
   }
 };

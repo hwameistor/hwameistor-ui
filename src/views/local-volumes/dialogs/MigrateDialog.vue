@@ -119,6 +119,7 @@ import { Node } from '@/services/Node';
 import { Volume } from '@/services/Volume';
 import type { ApiStorageNode, ApiVolumeGroup, V1Alpha1LocalVolume } from '@/services/data-contracts';
 import { noty } from '@/plugins/dao-style';
+import { type HttpError } from '@/types/error';
 
 const props = defineProps({
   name: {
@@ -179,9 +180,8 @@ const onConfirm = async () => {
     });
   } catch (error) {
     noty.error({
-      content: t('views.local-volumes.dialogs.MigrateDialog.noty.error', {
-        msg: (error as Record<string, unknown>)?.message,
-      }),
+      title: t('views.local-volumes.dialogs.MigrateDialog.noty.error'),
+      content: ((error as HttpError).error).description,
     });
   }
 };
