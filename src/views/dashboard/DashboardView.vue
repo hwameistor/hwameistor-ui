@@ -33,7 +33,7 @@
             />
             <gauge-panel-item
               :label="$t('views.dashboard.DashboardView.allocatedCapacity')"
-              :value="bytesToUnitDisplay(nodeMetric.reserved)"
+              :value="bytesToUnitDisplay(nodeMetric.allocated)"
             />
             <gauge-panel-item
               :label="$t('views.dashboard.DashboardView.totalCapacity')"
