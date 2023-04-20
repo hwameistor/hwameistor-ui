@@ -142,8 +142,8 @@ const getBoundDiskCount = () => {
   return boundedDisks.length;
 };
 
-const getPercent = (used?: number, total?: number) => {
-  if (!used || !total) {
+const getPercent = (used: number, total: number) => {
+  if (!total) {
     return '-';
   }
 
