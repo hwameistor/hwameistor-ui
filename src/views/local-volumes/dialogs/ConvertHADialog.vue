@@ -21,6 +21,7 @@ import {
 import { useI18n } from 'vue-i18n';
 import { noty } from '@/plugins/dao-style';
 import { Volume } from '@/services/Volume';
+import { type HttpError } from '@/types/error';
 
 const props = defineProps({
   name: {
@@ -46,9 +47,8 @@ const onConfirm = async () => {
     });
   } catch (error) {
     noty.error({
-      content: t('views.local-volumes.dialogs.ConvertHADialog.noty.error', {
-        msg: (error as Record<string, unknown>)?.message,
-      }),
+      title: t('views.local-volumes.dialogs.ConvertHADialog.noty.error'),
+      content: ((error as HttpError).error).description,
     });
   }
 };

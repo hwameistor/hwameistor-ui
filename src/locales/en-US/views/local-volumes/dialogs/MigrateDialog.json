@@ -14,6 +14,6 @@
   "node": "Node",
   "noty": {
     "success": "Migrate success",
-    "error": "Migrate failed, reason: {msg}"
+    "error": "Migrate failed"
   }
 }

@@ -14,6 +14,6 @@
   "node": "节点",
   "noty": {
     "success": "迁移成功",
-    "error": "迁移失败，原因：{msg}"
+    "error": "迁移失败"
   }
 }
