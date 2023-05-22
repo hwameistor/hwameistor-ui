@@ -165,7 +165,7 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
    *
    * @tags Volume
    * @name VolumesOperationsDetail
-   * @summary 摘要 获取指定数据卷操作记录信息 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed)
+   * @summary 摘要 获取指定数据卷操作记录信息 状态枚举 (Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed)
    * @request GET:/cluster/volumes/{volumeName}/operations
    */
   volumesOperationsDetail = ({ volumeName, ...query }: VolumesOperationsDetailParams, params: RequestParams = {}) =>

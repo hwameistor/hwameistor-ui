@@ -14,7 +14,7 @@ import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class LocalDisk<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
-   * @description get LocalDiskList 状态枚举 （Active、Inactive、Unknown、Pending、Available、Bound)
+   * @description get LocalDiskList 状态枚举 (Active、Inactive、Unknown、Pending、Available、Bound)
    *
    * @tags LocalDisk
    * @name LocaldisksList

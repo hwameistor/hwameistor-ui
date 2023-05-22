@@ -52,9 +52,9 @@
         />
       </template>
 
-      <template #td-claimedDisk="{row}">
+      <!-- <template #td-claimedDisk="{row}">
         {{ getBoundDiskCount(row) }} / {{ row.localDiskNode?.status?.totalDisk ?? '-' }}
-      </template>
+      </template> -->
     </dao-table>
   </div>
 </template>
@@ -145,10 +145,10 @@ const columns = reactive([
     id: 'ssdUsage',
     header: t('views.nodes.NodeList.ssdUsage'),
   },
-  {
-    id: 'claimedDisk',
-    header: t('views.nodes.NodeList.claimedDisk'),
-  },
+  // {
+  //   id: 'claimedDisk',
+  //   header: t('views.nodes.NodeList.claimedDisk'),
+  // },
 ]);
 
 const ListNodes = async ({ page, pageSize }: NodesListParams) => {
@@ -194,9 +194,9 @@ const getDiskTotal = (node: ApiStorageNode, type: 'HDD' | 'SSD') => {
   return sum(bytes);
 };
 
-const getBoundDiskCount = (node: ApiStorageNode) => {
-  const boundedDisks = Object.values(node.localDiskNode?.status?.disks ?? {}).filter((disk) => disk.status === 'Bound');
+// const getBoundDiskCount = (node: ApiStorageNode) => {
+//   const boundedDisks = Object.values(node.localDiskNode?.status?.disks ?? {}).filter((disk) => disk.status === 'Bound');
 
-  return boundedDisks.length;
-};
+//   return boundedDisks.length;
+// };
 </script>
