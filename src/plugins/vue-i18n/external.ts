@@ -1,4 +1,5 @@
 import DaoStyle from '@dao-style/core';
+import { setFetchAcceptLanguage } from '../fetch/request';
 
 export async function loadExternalLanguage(lang: string) {
   const { default: daoStyleExtend } = await import(
@@ -10,7 +11,6 @@ export async function loadExternalLanguage(lang: string) {
   return [daoStyleExtend, daoStyleCore];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function setI18nLanguageExternal(lang: string) {
-  // Do Something
+  setFetchAcceptLanguage(lang);
 }

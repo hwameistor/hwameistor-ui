@@ -25,18 +25,24 @@
     </dao-nav>
 
     <div class="app__body-content">
-      <router-view />
+      <router-view v-if="authInit" />
     </div>
   </div>
   <dialog-wrapper />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { type RouteLocationRaw } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import GlobalHeader from '@/components/GlobalHeader.vue';
-import { DialogWrapper } from '@dao-style/extend';
+import { DialogWrapper, createDialog } from '@dao-style/extend';
+import { Auth } from '@/services/Auth';
+import TOKEN_KEY from '@/constant/token';
+import Cookies from 'js-cookie';
+import replaceFetch from '@/plugins/fetch/index';
+import LoginDialog from '@/components/dialogs/LoginDialog.vue';
+import useAuthStore from '@/store.ts/auth';
 
 type NavRouteType = {
   to: RouteLocationRaw;
@@ -45,6 +51,11 @@ type NavRouteType = {
 }
 
 const { t } = useI18n();
+const AuthApi = new Auth();
+
+const authStore = useAuthStore();
+
+const authInit = ref<boolean>(false);
 
 const navRoutes = computed<NavRouteType[]>(() => [
   {
@@ -73,6 +84,31 @@ const navRoutes = computed<NavRouteType[]>(() => [
     icon: 'icon-setting',
   },
 ]);
+
+const init = async () => {
+  const { data } = await AuthApi.authInfoList();
+
+  authStore.enableAuth = data.enabled ?? false;
+
+  if (!data.enabled) {
+    authInit.value = true;
+
+    return;
+  }
+
+  const token = Cookies.get(TOKEN_KEY);
+
+  if (!token) {
+    const dialog = createDialog(LoginDialog);
+
+    await dialog.show();
+  }
+
+  replaceFetch();
+  authInit.value = true;
+};
+
+init();
 </script>
 
 <style lang="scss">
