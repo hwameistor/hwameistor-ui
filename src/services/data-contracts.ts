@@ -9,6 +9,24 @@
  * ---------------------------------------------------------------
  */
 
+export interface ApiAuthInfoRspBody {
+  enabled?: boolean;
+}
+
+export interface ApiAuthLogoutRspBody {
+  success?: boolean;
+}
+
+export interface ApiAuthReqBody {
+  accessId?: string;
+  secretKey?: string;
+}
+
+export interface ApiAuthRspBody {
+  expireAt?: number;
+  token?: string;
+}
+
 export interface ApiDiskReqBody {
   reserve?: boolean;
 }
@@ -1268,17 +1286,6 @@ export interface V1Alpha1DeployStatus {
   workloadType?: string;
 }
 
-export interface V1Alpha1Disk {
-  /** Capacity */
-  capacity?: number;
-  /** DevPath */
-  devPath?: string;
-  /** DiskType SSD/HDD/NVME... */
-  diskType?: string;
-  /** Status */
-  status?: string;
-}
-
 export interface V1Alpha1DiskAttributes {
   /**
    * DeviceType represents the type of device like
@@ -1429,15 +1436,35 @@ export interface V1Alpha1LocalDiskNode {
 }
 
 export interface V1Alpha1LocalDiskNodeSpec {
-  /** AttachNode represent where disk is attached */
-  attachNode?: string;
+  /** NodeName represent where disk is attached */
+  nodeName?: string;
 }
 
 export interface V1Alpha1LocalDiskNodeStatus {
-  /** AllocatableDisk */
-  allocatableDisk?: number;
-  /** Disks key is the name of LocalDisk */
-  disks?: Record<string, V1Alpha1Disk>;
+  /**
+   * Represents the latest available observations of a localstoragenode's current state.
+   * +optional
+   */
+  conditions?: V1Alpha1StorageNodeCondition[];
+  /** FreeCapacity indicates the free capacity of all the disks */
+  freeCapacity?: number;
+  /** FreeDisk */
+  freeDisk?: number;
+  /**
+   * PoolExtendRecords record why disks are joined in the pool
+   * +optional
+   */
+  poolExtendRecords?: Record<string, V1Alpha1LocalDiskClaimSpec[]>;
+  /**
+   * There may have multiple storage pools in a node.
+   * e.g. HDD_POOL, SSD_POOL, NVMe_POOL
+   * Pools: poolName -> LocalPool
+   */
+  pools?: Record<string, V1Alpha1LocalPool>;
+  /** State of the Local Storage Node/Member: New, Active, Inactive, Failed */
+  state?: V1Alpha1State;
+  /** TotalCapacity indicates the capacity of all the disks */
+  totalCapacity?: number;
   /** TotalDisk */
   totalDisk?: number;
 }
@@ -1567,29 +1594,6 @@ export interface V1Alpha1LocalStorageNode {
   status?: V1Alpha1LocalStorageNodeStatus;
 }
 
-export interface V1Alpha1LocalStorageNodeCondition {
-  /** Last time the condition transitioned from one status to another. */
-  lastTransitionTime?: string;
-  /** The last time this condition was updated. */
-  lastUpdateTime?: string;
-  /** A human-readable message indicating details about the transition. */
-  message?: string;
-  /** The reason for the condition's last transition. */
-  reason?: string;
-  /** Status of the condition, one of True, False, Unknown. */
-  status?: GithubComHwameistorHwameistorPkgApisHwameistorV1Alpha1ConditionStatus;
-  /** Type of localstoragenode condition. */
-  type?: V1Alpha1LocalStorageNodeConditionType;
-}
-
-export enum V1Alpha1LocalStorageNodeConditionType {
-  StorageAvailable = "Available",
-  StorageUnAvailable = "UnAvailable",
-  StorageProgressing = "Progressing",
-  StorageExpandFailure = "StorageExpandFailure",
-  StorageExpandSuccess = "StorageExpandSuccess",
-}
-
 export interface V1Alpha1LocalStorageNodeSpec {
   hostname?: string;
   /** IPv4 address is for HA replication traffic */
@@ -1602,7 +1606,7 @@ export interface V1Alpha1LocalStorageNodeStatus {
    * Represents the latest available observations of a localstoragenode's current state.
    * +optional
    */
-  conditions?: V1Alpha1LocalStorageNodeCondition[];
+  conditions?: V1Alpha1StorageNodeCondition[];
   /**
    * PoolExtendRecords record why disks are joined in the pool
    * +optional
@@ -1866,11 +1870,6 @@ export interface V1Alpha1SmartInfo {
 }
 
 export enum V1Alpha1State {
-  MountPointStateEmpty = "",
-  MountPointToBeMounted = "ToBeMounted",
-  MountPointToBeUnMount = "ToBeUnMount",
-  MountPointMounted = "Mounted",
-  MountPointNotReady = "NotReady",
   NodeStateReady = "Ready",
   NodeStateMaintain = "Maintain",
   NodeStateOffline = "Offline",
@@ -1905,6 +1904,34 @@ export enum V1Alpha1State {
   DiskStateAvailable = "Available",
   DiskStateInUse = "InUse",
   DiskStateOffline = "Offline",
+  MountPointStateEmpty = "",
+  MountPointToBeMounted = "ToBeMounted",
+  MountPointToBeUnMount = "ToBeUnMount",
+  MountPointMounted = "Mounted",
+  MountPointNotReady = "NotReady",
+}
+
+export interface V1Alpha1StorageNodeCondition {
+  /** Last time the condition transitioned from one status to another. */
+  lastTransitionTime?: string;
+  /** The last time this condition was updated. */
+  lastUpdateTime?: string;
+  /** A human-readable message indicating details about the transition. */
+  message?: string;
+  /** The reason for the condition's last transition. */
+  reason?: string;
+  /** Status of the condition, one of True, False, Unknown. */
+  status?: GithubComHwameistorHwameistorPkgApisHwameistorV1Alpha1ConditionStatus;
+  /** Type of localstoragenode condition. */
+  type?: V1Alpha1StorageNodeConditionType;
+}
+
+export enum V1Alpha1StorageNodeConditionType {
+  StorageAvailable = "Available",
+  StorageUnAvailable = "UnAvailable",
+  StorageProgressing = "Progressing",
+  StorageExpandFailure = "ExpandFailure",
+  StorageExpandSuccess = "ExpandSuccess",
 }
 
 export interface V1Alpha1Topology {

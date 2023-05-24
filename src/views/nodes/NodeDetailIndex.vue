@@ -46,10 +46,10 @@
               getDiskTotal('SSD'),
             )"
           />
-          <dao-key-value-layout-item
+          <!-- <dao-key-value-layout-item
             :label="$t('views.nodes.NodeDetailIndex.usedDisk')"
             :value="`${getBoundDiskCount()}/${nodeDetail?.localDiskNode?.status?.totalDisk ?? '-'}`"
-          />
+          /> -->
         </dao-key-value-layout>
       </dao-card-item>
     </dao-card>
@@ -136,11 +136,11 @@ const getDiskTotal = (type: 'HDD' | 'SSD') => {
   return sum(bytes);
 };
 
-const getBoundDiskCount = () => {
-  const boundedDisks = Object.values(nodeDetail.value?.localDiskNode?.status?.disks ?? {}).filter((disk) => disk.status === 'Bound');
+// const getBoundDiskCount = () => {
+//   const boundedDisks = Object.values(nodeDetail.value?.localDiskNode?.status?.disks ?? {}).filter((disk) => disk.status === 'Bound');
 
-  return boundedDisks.length;
-};
+//   return boundedDisks.length;
+// };
 
 const getPercent = (used: number, total: number) => {
   if (!total) {

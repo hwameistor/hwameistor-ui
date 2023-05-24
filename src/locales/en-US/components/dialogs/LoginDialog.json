@@ -1,0 +1,8 @@
+{
+  "login": "Sign in",
+  "username": "Username",
+  "password": "Password",
+  "noty": {
+    "error": "Incorrect username or password."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "login": "登录",
+  "username": "用户名",
+  "password": "密码",
+  "noty": {
+    "error": "用户名或密码错误"
+  }
+}
