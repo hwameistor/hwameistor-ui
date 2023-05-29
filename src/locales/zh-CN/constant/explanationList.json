@@ -9,6 +9,6 @@
   },
   "localVolume": {
     "title": "什么是本地卷？",
-    "content": "已经启用并安装 Hwameistor CSI Driver 以及 LDM （Local Disk Manager）的节点，如需使用高可用数据卷，请在对应节点安装 DRDB. "
+    "content": "本地卷：对应为节点上的 LV（Local Volume）资源，当开启高可用后，一个本地卷对应 2 个数据卷副本"
   }
 }

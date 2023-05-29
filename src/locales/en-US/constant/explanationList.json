@@ -9,6 +9,6 @@
   },
   "localVolume": {
     "title": "Local Volume",
-    "content": "The Nodes which CSI Driver & Local Disk Manager (LDM) have been installed, please installed DRDB to enable HA LV (Local Volume)."
+    "content": "Local volume: Corresponds to the LV (Local Volume) resource on the node. When high availability is enabled, a local volume corresponds to 2 data volume replicas."
   }
 }
