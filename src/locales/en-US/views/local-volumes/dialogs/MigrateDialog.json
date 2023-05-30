@@ -13,7 +13,7 @@
   "state": "State",
   "node": "Node",
   "noty": {
-    "success": "Migrate success",
-    "error": "Migrate failed"
+    "success": "Dispatched migration task successfully",
+    "error": "Failed to dispatch migration task"
   }
 }
