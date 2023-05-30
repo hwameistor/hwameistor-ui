@@ -211,7 +211,7 @@
             :key="node.name"
             class="flex-auto first:mt-0 mt-[4px] h-[42px]"
             :label="node.name"
-            :percent="node[nodeType].percent"
+            :percent="node.percent"
             :percent-label-prefix="nodeType"
           />
         </dao-card-item>
@@ -299,14 +299,12 @@ import ComponentPanelItem from './components/ComponentPanelItem.vue';
 
 type NodeSimpleItem = {
   name: string;
-  SSD: {
-    total: number;
-    percent: number;
-  };
-  HDD: {
-    total: number;
-    percent: number;
-  };
+  percent: number;
+}
+
+type NodesSimpleListByType = {
+  SSD: NodeSimpleItem[];
+  HDD: NodeSimpleItem[];
 }
 
 type PoolSimpleItem = {
@@ -346,12 +344,16 @@ const nodeCountMetric = reactive({
   claimed: 0,
   total: 0,
 });
-const nodesSimpleList = ref<NodeSimpleItem[]>([]);
+const nodesSimpleListByType = ref<NodesSimpleListByType>({
+  SSD: [],
+  HDD: [],
+});
 const nodeType = ref<'SSD' | 'HDD'>('SSD');
-const nodeResource = computed(() => nodesSimpleList.value
-  .filter((node) => node[nodeType.value].total)
-  .sort((b, a) => a[nodeType.value].percent - b[nodeType.value].percent)
-  .slice(0, 5));
+const nodeResource = computed(() => {
+  const nodeSimpleList = nodesSimpleListByType.value[nodeType.value];
+
+  return nodeSimpleList.sort((b, a) => a.percent - b.percent).slice(0, 5);
+});
 const queryNodes = async () => {
   const { data } = await NodeApi.nodesList({
     page: 1,
@@ -368,7 +370,7 @@ const queryNodes = async () => {
     (node) => sum(Object.values(node.localStorageNode?.status?.pools ?? {}).map((pool) => pool.totalCapacityBytes)),
   ));
 
-  nodesSimpleList.value = (data.items ?? []).map((node) => {
+  (data.items ?? []).forEach((node) => {
     const hddUsed = sum(
       Object.values(node.localStorageNode?.status?.pools ?? {})
         .filter((pool) => pool.class === 'HDD')
@@ -387,21 +389,29 @@ const queryNodes = async () => {
     const ssdTotal = sum(
       Object.values(node.localStorageNode?.status?.pools ?? {})
         .filter((pool) => pool.class === 'SSD')
-        .map((pool) => pool.usedCapacityBytes),
+        .map((pool) => pool.totalCapacityBytes),
     );
 
-    return {
-      name: node.localStorageNode?.metadata?.name ?? '',
-      HDD: {
-        total: hddTotal,
-        percent: hddUsed / (hddTotal ?? 1),
-      },
-      SSD: {
-        total: ssdTotal,
-        percent: ssdUsed / (ssdTotal ?? 1),
-      },
-    };
+    const name = node.localStorageNode?.metadata?.name ?? '';
+
+    if (ssdTotal) {
+      nodesSimpleListByType.value.SSD.push({
+        name,
+        percent: ssdUsed / ssdTotal,
+      });
+    }
+
+    if (hddTotal) {
+      nodesSimpleListByType.value.HDD.push({
+        name,
+        percent: hddUsed / hddTotal,
+      });
+    }
   });
+
+  if (!nodesSimpleListByType.value.SSD.length && nodesSimpleListByType.value.HDD.length) {
+    nodeType.value = 'HDD';
+  }
 
   nodeCountMetric.claimed = data.pagination?.total ?? 0;
 };
