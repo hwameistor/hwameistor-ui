@@ -26,6 +26,13 @@ npm run build
 npm run lint
 ```
 
+### Generate SDK
+
+```
+// paste latest swagger.json and change basePath from absolute address to relative address
+npm run generate:sdk
+```
+
 ## License
 
 Copyright (c) 2014-2021 The HwameiStor Authors
