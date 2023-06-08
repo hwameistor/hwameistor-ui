@@ -4,6 +4,7 @@ const daoStyleUnpluginExtend = require('@dao-style/unplugin-extend/webpack');
 const groupMapping = require('@dao-style/extend/dist/group-mapping.json');
 
 module.exports = defineConfig({
+  publicPath: process.env.VUE_APP_PUBLIC_BASE_PATH,
   chainWebpack: (config) => {
     config
       .plugin('html')

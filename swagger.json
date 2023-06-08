@@ -11,7 +11,7 @@
     "version": "1.0"
   },
   "host": "",
-  "basePath": "/apis/hwameistor.io/v1alpha1",
+  "basePath": "apis/hwameistor.io/v1alpha1",
   "paths": {
     "/cluster/auth/auth": {
       "post": {
