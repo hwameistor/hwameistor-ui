@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { createDialog, useDateFormat, useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
@@ -106,7 +106,7 @@ const VolumeAPi = new Volume();
 const { t } = useI18n();
 
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'volumeName',
     label: t('views.local-volumes.LocalVolumeList.name'),
@@ -119,7 +119,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'name',
     header: t('views.local-volumes.LocalVolumeList.name'),

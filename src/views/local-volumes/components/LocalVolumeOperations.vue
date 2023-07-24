@@ -36,7 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps, ref } from 'vue';
+import {
+  reactive, computed, defineProps, ref,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDateFormat } from '@dao-style/extend';
 import { Volume } from '@/services/Volume';
@@ -57,7 +59,7 @@ const VolumeAPi = new Volume();
 const { t } = useI18n();
 const items = ref<ApiVolumeOperation[]>([]);
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'volumeEventName',
     label: t('views.local-volumes.components.LocalVolumeOperations.name'),
@@ -70,7 +72,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'name',
     header: t('views.local-volumes.components.LocalVolumeOperations.name'),

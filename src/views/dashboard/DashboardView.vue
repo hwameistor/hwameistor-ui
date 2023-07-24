@@ -495,7 +495,7 @@ const queryStatus = async () => {
   }));
 };
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'eventName',
     header: t('views.dashboard.DashboardView.eventName'),

@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQueryTable } from '@dao-style/extend';
 import { Pool } from '@/services/Pool';
@@ -62,7 +62,7 @@ const PoolApi = new Pool();
 
 const { t } = useI18n();
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'devPath',
     header: t('views.pools.components.PoolNodeDisks.devPath'),

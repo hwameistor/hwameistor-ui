@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { DaoKeyValueLayout, DaoKeyValueLayoutItem } from '@dao-style/extend';
@@ -91,7 +91,7 @@ const router = useRouter();
 const { t } = useI18n();
 const nodeName = ref<string>(route.params.name as string);
 const nodeDetail = ref<ApiStorageNode>();
-const tabs = reactive<RouteTab[]>([
+const tabs = computed<RouteTab[]>(() => [
   {
     key: 'local-disk',
     routeName: 'NodeDetailLocalDisks',
@@ -105,9 +105,9 @@ const tabs = reactive<RouteTab[]>([
 ]);
 
 const activeTab = computed<RouteTab>(() => {
-  const target = tabs.find((tab) => tab.routeName === router.currentRoute.value.name);
+  const target = tabs.value.find((tab) => tab.routeName === router.currentRoute.value.name);
 
-  return target || tabs[0];
+  return target || tabs.value[0];
 });
 
 const changeTab = (event: Event, routeName: string) => {
