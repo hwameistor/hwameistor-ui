@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDateFormat, useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
@@ -68,7 +68,7 @@ import type { PoolsListParams } from '@/services/data-contracts';
 const { t } = useI18n();
 const PoolApi = new Pool();
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'poolName',
     header: t('views.pools.PoolList.name'),

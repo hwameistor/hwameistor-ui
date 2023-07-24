@@ -36,7 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps, ref } from 'vue';
+import {
+  reactive, computed, defineProps, ref,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
 import { Volume } from '@/services/Volume';
@@ -55,7 +57,7 @@ const VolumeAPi = new Volume();
 const { t } = useI18n();
 const items = ref<ApiVolumeReplica[]>([]);
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'volumeReplicaName',
     label: t('views.local-volumes.components.LocalVolumeReplicas.name'),
@@ -68,7 +70,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'name',
     header: t('views.local-volumes.components.LocalVolumeReplicas.name'),

@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { createDialog, useQueryTable } from '@dao-style/extend';
@@ -80,7 +80,7 @@ const route = useRoute();
 const nodeName = ref<string>(route.params.name as string);
 
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'state',
     label: t('views.nodes.NodeDetailLocalDisks.state'),
@@ -88,7 +88,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'devPath',
     header: t('views.nodes.NodeDetailLocalDisks.devPath'),

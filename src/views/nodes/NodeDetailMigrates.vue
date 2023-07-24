@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useQueryTable, useDateFormat } from '@dao-style/extend';
@@ -55,7 +55,7 @@ const NodeApi = new Node();
 const route = useRoute();
 const nodeName = ref<string>(route.params.name as string);
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'migrateOperationName',
     label: t('views.nodes.NodeDetailMigrates.name'),
@@ -73,7 +73,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'name',
     header: t('views.nodes.NodeDetailMigrates.name'),

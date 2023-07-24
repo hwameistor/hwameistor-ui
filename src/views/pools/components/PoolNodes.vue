@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps } from 'vue';
+import { reactive, computed, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQueryTable } from '@dao-style/extend';
 import { Pool } from '@/services/Pool';
@@ -73,7 +73,7 @@ const PoolApi = new Pool();
 const { t } = useI18n();
 
 const search = reactive<Record<string, SearchValue[]>>({});
-const searchOptions = reactive<SearchOption[]>([
+const searchOptions = computed<SearchOption[]>(() => [
   {
     key: 'nodeName',
     label: t('views.pools.components.PoolNodes.node'),
@@ -86,7 +86,7 @@ const searchOptions = reactive<SearchOption[]>([
   },
 ]);
 
-const columns = reactive([
+const columns = computed(() => [
   {
     id: 'name',
     header: t('views.pools.components.PoolNodes.node'),
