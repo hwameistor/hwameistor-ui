@@ -43,6 +43,7 @@ import Cookies from 'js-cookie';
 import replaceFetch from '@/plugins/fetch/index';
 import LoginDialog from '@/components/dialogs/LoginDialog.vue';
 import useAuthStore from '@/store.ts/auth';
+import { noty } from './plugins/dao-style';
 
 type NavRouteType = {
   to: RouteLocationRaw;
@@ -86,26 +87,32 @@ const navRoutes = computed<NavRouteType[]>(() => [
 ]);
 
 const init = async () => {
-  const { data } = await AuthApi.authInfoList();
+  try {
+    const { data } = await AuthApi.authInfoList();
 
-  authStore.enableAuth = data.enabled ?? false;
+    authStore.enableAuth = data.enabled ?? false;
 
-  if (!data.enabled) {
+    if (!data.enabled) {
+      authInit.value = true;
+
+      return;
+    }
+
+    const token = Cookies.get(TOKEN_KEY);
+
+    if (!token) {
+      const dialog = createDialog(LoginDialog);
+
+      await dialog.show();
+    }
+
+    replaceFetch();
     authInit.value = true;
-
-    return;
+  } catch {
+    noty.error({
+      content: t('App.getInfoFailed'),
+    });
   }
-
-  const token = Cookies.get(TOKEN_KEY);
-
-  if (!token) {
-    const dialog = createDialog(LoginDialog);
-
-    await dialog.show();
-  }
-
-  replaceFetch();
-  authInit.value = true;
 };
 
 init();
