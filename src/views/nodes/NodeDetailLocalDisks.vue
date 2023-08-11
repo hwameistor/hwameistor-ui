@@ -34,9 +34,9 @@
         {{ row.spec?.diskAttributes?.type }}
       </template>
 
-      <template #td-availableCapacityBytes="{row}">
+      <!-- <template #td-availableCapacityBytes="{row}">
         {{ bytesToUnitDisplay(row.spec?.capacity) }}
-      </template>
+      </template> -->
 
       <template #td-totalCapacityBytes="{value}">
         {{ bytesToUnitDisplay(value) }}
@@ -113,10 +113,10 @@ const columns = computed(() => [
     id: 'type',
     header: t('views.nodes.NodeDetailLocalDisks.diskType'),
   },
-  {
-    id: 'availableCapacityBytes',
-    header: t('views.nodes.NodeDetailLocalDisks.availableCapacity'),
-  },
+  // {
+  //   id: 'availableCapacityBytes',
+  //   header: t('views.nodes.NodeDetailLocalDisks.availableCapacity'),
+  // },
   {
     id: 'totalCapacityBytes',
     header: t('views.nodes.NodeDetailLocalDisks.totalCapacity'),
