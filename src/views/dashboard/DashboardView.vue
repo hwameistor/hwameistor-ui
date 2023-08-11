@@ -267,9 +267,9 @@
         {{ useDateFormat(value) }}
       </template>
 
-      <template #td-endTime="{value}">
+      <!-- <template #td-endTime="{value}">
         {{ useDateFormat(value) }}
-      </template>
+      </template> -->
     </dao-table>
   </div>
 </template>
@@ -520,10 +520,10 @@ const columns = reactive([
     id: 'startTime',
     header: t('views.dashboard.DashboardView.startTime'),
   },
-  {
-    id: 'endTime',
-    header: t('views.dashboard.DashboardView.endTime'),
-  },
+  // {
+  //   id: 'endTime',
+  //   header: t('views.dashboard.DashboardView.endTime'),
+  // },
 ]);
 
 const queryOptions = async (req: OperationsListParams) => {
