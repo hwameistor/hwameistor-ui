@@ -11,8 +11,11 @@
 
 import {
   ApiNodeDiskListByPool,
+  ApiRspFailBody,
   ApiStorageNodeListByPool,
   ApiStoragePool,
+  ApiStoragePoolExpansionReqBody,
+  ApiStoragePoolExpansionRspBody,
   ApiStoragePoolList,
   PoolsListParams,
   PoolsNodesDetailParams,
@@ -34,6 +37,23 @@ export class Pool<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
       path: `/cluster/pools`,
       method: "GET",
       query: query,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description expand new disk for storage pool
+   *
+   * @tags Pool
+   * @name PoolsExpandCreate
+   * @summary Storage pool expand
+   * @request POST:/cluster/pools/expand
+   */
+  poolsExpandCreate = (body: ApiStoragePoolExpansionReqBody, params: RequestParams = {}) =>
+    this.request<ApiStoragePoolExpansionRspBody, ApiRspFailBody>({
+      path: `/cluster/pools/expand`,
+      method: "POST",
+      body: body,
       type: ContentType.Json,
       format: "json",
       ...params,

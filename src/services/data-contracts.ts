@@ -129,6 +129,14 @@ export interface ApiNodeDiskListByPool {
   poolName?: string;
 }
 
+export interface ApiNodeUpdateReqBody {
+  enable?: boolean;
+}
+
+export interface ApiNodeUpdateRspBody {
+  success?: boolean;
+}
+
 export interface ApiOperation {
   /** 详细描述 */
   description?: string;
@@ -296,6 +304,18 @@ export interface ApiStoragePool {
   poolName?: string;
   /** TotalCapacityBytes 存储池对应存储总容量 */
   totalCapacityBytes?: number;
+}
+
+export interface ApiStoragePoolExpansionReqBody {
+  /** HDD/SSD/NVME */
+  diskType?: string;
+  nodeName?: string;
+  /** local-storage/local-disk-manager */
+  owner?: string;
+}
+
+export interface ApiStoragePoolExpansionRspBody {
+  success?: boolean;
 }
 
 export interface ApiStoragePoolList {
@@ -954,7 +974,7 @@ export interface V1ObjectMeta {
    */
   clusterName?: string;
   /**
-   * CreationTimestamp is a timestamp representing the server time when this object was
+   * CreationTime is a timestamp representing the server time when this object was
    * created. It is not guaranteed to be set in happens-before order across separate operations.
    * Clients may not set this value. It is represented in RFC3339 form and is in UTC.
    *
@@ -1735,6 +1755,8 @@ export interface V1Alpha1LocalVolumeReplicaSpec {
   requiredCapacityBytes?: number;
   /** VolumeName is the name of the volume, e.g. pvc-fbf3ffc3-66db-4dae-9032-bda3c61b8f85 */
   volumeName?: string;
+  /** VolumeQoS is the QoS of the volume */
+  volumeQoS?: V1Alpha1VolumeQoS;
 }
 
 export interface V1Alpha1LocalVolumeReplicaStatus {
@@ -1800,6 +1822,8 @@ export interface V1Alpha1LocalVolumeSpec {
   replicaNumber?: number;
   /** +kubebuilder:validation:Minimum:=4194304 */
   requiredCapacityBytes?: number;
+  /** VolumeQoS is the QoS of the volume */
+  volumeQoS?: V1Alpha1VolumeQoS;
   /** VolumeGroup is the group name of the local volumes. It is designed for the scheduling and allocating. */
   volumegroup?: string;
 }
@@ -1870,6 +1894,11 @@ export interface V1Alpha1SmartInfo {
 }
 
 export enum V1Alpha1State {
+  MountPointStateEmpty = "",
+  MountPointToBeMounted = "ToBeMounted",
+  MountPointToBeUnMount = "ToBeUnMount",
+  MountPointMounted = "Mounted",
+  MountPointNotReady = "NotReady",
   NodeStateReady = "Ready",
   NodeStateMaintain = "Maintain",
   NodeStateOffline = "Offline",
@@ -1904,11 +1933,6 @@ export enum V1Alpha1State {
   DiskStateAvailable = "Available",
   DiskStateInUse = "InUse",
   DiskStateOffline = "Offline",
-  MountPointStateEmpty = "",
-  MountPointToBeMounted = "ToBeMounted",
-  MountPointToBeUnMount = "ToBeUnMount",
-  MountPointMounted = "Mounted",
-  MountPointNotReady = "NotReady",
 }
 
 export interface V1Alpha1StorageNodeCondition {
@@ -1966,6 +1990,13 @@ export interface V1Alpha1VolumeInfo {
   localvolume?: string;
   /** PersistentVolumeClaimName is the name of the associated PVC */
   pvc?: string;
+}
+
+export interface V1Alpha1VolumeQoS {
+  /** IOPS defines the IOPS of the volume */
+  iops?: string;
+  /** Throughput defines the throughput of the volume */
+  throughput?: string;
 }
 
 export interface V1Alpha1VolumeReplica {
