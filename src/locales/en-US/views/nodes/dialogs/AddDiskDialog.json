@@ -1,0 +1,12 @@
+{
+  "noAvailableDiskType": "There has no unclaimed {type} disk in the node, the adding action can not be done.",
+  "noAvailableOwner": "The owner of the unclaimed disks is not consistent as the chosen owner, the adding action can not be done.",
+  "title": "Add Disk",
+  "content": "The disks which is unclaimed and has the same owner will be scanned and managed by Local Disk Manager. And the different type disk will be auto add into the pool of the same type.",
+  "diskType": "Disk Type",
+  "diskOwner": "Disk Owner",
+  "noty": {
+    "success": "Add Disk Succeed",
+    "error": "Add Disk Failed"
+  }
+}

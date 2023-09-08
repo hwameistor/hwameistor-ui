@@ -18,7 +18,8 @@
   },
   "actions": {
     "disable": "Disable Node",
-    "enable": "Enable Node"
+    "enable": "Enable Node",
+    "addDisk": "Add Disk"
   },
   "disableNode": {
     "noty": {

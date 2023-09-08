@@ -18,7 +18,8 @@
   },
   "actions": {
     "disable": "禁用节点",
-    "enable": "启用节点"
+    "enable": "启用节点",
+    "addDisk": "添加磁盘"
   },
   "disableNode": {
     "noty": {

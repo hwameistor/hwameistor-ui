@@ -1,0 +1,12 @@
+{
+  "title": "添加新磁盘",
+  "content": "节点上 Unclaimed 状态并且 Owner 相同的磁盘，将自动扫描 并加入至 LDM（Local Disk Manager） 管理范围，同时根据磁盘类型（HDD,SSD）自动加入对应的存储池中。",
+  "diskType": "磁盘类型",
+  "diskOwner": "磁盘 Owner",
+  "noAvailableDiskType": "当前节点没有空闲（Unclaimed 状态）{type}  磁盘，无法进行添加磁盘操作。",
+  "noAvailableOwner": "当前节点磁盘 Owner 同所选磁盘 Owner 不匹配，无法进行添加磁盘操作。",
+  "noty": {
+    "error": "添加磁盘失败",
+    "success": "添加磁盘成功"
+  }
+}

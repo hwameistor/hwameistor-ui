@@ -53,6 +53,9 @@
       </template>
 
       <template #td-action-menu="{row}">
+        <dao-dropdown-item @click="addDisk(row)">
+          {{ $t('views.nodes.NodeList.actions.addDisk') }}
+        </dao-dropdown-item>
         <dao-dropdown-item
           v-if="row.localStorageNode?.status?.state !== 'Offline'"
           @click="disableNode(row)"
@@ -84,6 +87,7 @@ import DoubleConfirmDialog from '@/components/dialogs/DoubleConfirmDialog.vue';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
 import NodeStatus from '@/components/NodeStatus.vue';
 import DriverStatus from './components/DriverStatus.vue';
+import AddDiskDialog from './dialogs/AddDiskDialog.vue';
 
 const { t } = useI18n();
 const NodeApi = new Node();
@@ -246,5 +250,13 @@ const enableNode = async (node: ApiStorageNode) => {
   });
 
   handleRefresh();
+};
+
+const addDisk = async (node: ApiStorageNode) => {
+  const dialog = createDialog(AddDiskDialog);
+
+  await dialog.show({
+    name: node.localStorageNode?.metadata?.name ?? '',
+  });
 };
 </script>
