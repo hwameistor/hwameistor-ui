@@ -1,0 +1,8 @@
+{
+  "header": "您确定要删除 {name} 吗？",
+  "content": "您确定要删除 {name} 吗？",
+  "noty": {
+    "success": "删除 {name} 成功",
+    "error": "删除 {name} 失败"
+  }
+}

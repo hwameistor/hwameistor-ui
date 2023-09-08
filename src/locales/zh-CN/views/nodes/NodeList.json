@@ -15,5 +15,30 @@
     "Ready": "运行中",
     "NotReady": "未就绪",
     "Unknown": "未知"
+  },
+  "actions": {
+    "disable": "禁用节点",
+    "enable": "启用节点"
+  },
+  "disableNode": {
+    "noty": {
+      "error": "禁用节点 {name} 失败",
+      "success": "禁用节点 {name} 任务下发成功"
+    }
+  },
+  "enableNode": {
+    "noty": {
+      "error": "启用节点 {name} 失败",
+      "success": "启用节点 {name} 任务下发成功"
+    }
+  },
+  "disableNodeDialog": {
+    "header": "确认禁用存储节点 {name} 吗？",
+    "content": "确定禁用节点  {name} 吗？ 禁用后此节点将从从存储系统中移除，移除前请将对应节点上的数据备份或转移。",
+    "confirmText": "禁用"
+  },
+  "enableNodeDialog": {
+    "header": "确认启用存储节点 {name} 吗？",
+    "content": "确定启用节点 {name} 吗？ 启用后节点上磁盘 将被 Local Storage Manager 纳管。"
   }
 }

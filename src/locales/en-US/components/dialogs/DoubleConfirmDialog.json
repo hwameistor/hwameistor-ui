@@ -1,0 +1,8 @@
+{
+  "content": "Are you sure to delete {name}?",
+  "header": "Are you sure to delete {name}?",
+  "noty": {
+    "error": "Failed to delete {name}",
+    "success": "Delete {name} successfully"
+  }
+}

@@ -52,9 +52,20 @@
         />
       </template>
 
-      <!-- <template #td-claimedDisk="{row}">
-        {{ getBoundDiskCount(row) }} / {{ row.localDiskNode?.status?.totalDisk ?? '-' }}
-      </template> -->
+      <template #td-action-menu="{row}">
+        <dao-dropdown-item
+          v-if="row.localStorageNode?.status?.state !== 'Offline'"
+          @click="disableNode(row)"
+        >
+          {{ $t('views.nodes.NodeList.actions.disable') }}
+        </dao-dropdown-item>
+        <dao-dropdown-item
+          v-else
+          @click="enableNode(row)"
+        >
+          {{ $t('views.nodes.NodeList.actions.enable') }}
+        </dao-dropdown-item>
+      </template>
     </dao-table>
   </div>
 </template>
@@ -63,13 +74,15 @@
 import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { sum } from 'lodash-es';
-import { useQueryTable } from '@dao-style/extend';
+import { createDialog, useQueryTable } from '@dao-style/extend';
 import HeadExplanations from '@/components/HeadExplanations.vue';
 import TdPercent from '@/components/TdPercent.vue';
 import { Node } from '@/services/Node';
 import type { ApiStorageNode, NodesListParams } from '@/services/data-contracts';
 import type { SearchOption, SearchValue } from '@dao-style/core/dist/components/toolbar/types';
-import NodeStatus from '../../components/NodeStatus.vue';
+import DoubleConfirmDialog from '@/components/dialogs/DoubleConfirmDialog.vue';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue';
+import NodeStatus from '@/components/NodeStatus.vue';
 import DriverStatus from './components/DriverStatus.vue';
 
 const { t } = useI18n();
@@ -145,10 +158,12 @@ const columns = computed(() => [
     id: 'ssdUsage',
     header: t('views.nodes.NodeList.ssdUsage'),
   },
-  // {
-  //   id: 'claimedDisk',
-  //   header: t('views.nodes.NodeList.claimedDisk'),
-  // },
+  {
+    id: 'action',
+    header: '',
+    defaultWidth: '60px',
+    resizable: false,
+  },
 ]);
 
 const ListNodes = async ({ page, pageSize }: NodesListParams) => {
@@ -194,9 +209,42 @@ const getDiskTotal = (node: ApiStorageNode, type: 'HDD' | 'SSD') => {
   return sum(bytes);
 };
 
-// const getBoundDiskCount = (node: ApiStorageNode) => {
-//   const boundedDisks = Object.values(node.localDiskNode?.status?.disks ?? {}).filter((disk) => disk.status === 'Bound');
+const changeNodeStatus = async (nodeName: string, enable: boolean) => {
+  await NodeApi.nodesCreate(
+    nodeName,
+    { enable },
+  );
+};
 
-//   return boundedDisks.length;
-// };
+const disableNode = async (node: ApiStorageNode) => {
+  const name = node.localStorageNode?.metadata?.name ?? '';
+  const dialog = createDialog(DoubleConfirmDialog);
+
+  await dialog.show({
+    header: t('views.nodes.NodeList.disableNodeDialog.header', { name }),
+    content: t('views.nodes.NodeList.disableNodeDialog.content', { name }),
+    name,
+    confirmText: t('views.nodes.NodeList.disableNodeDialog.confirmText'),
+    deleteFn: () => changeNodeStatus(name, false),
+    successMessage: t('views.nodes.NodeList.disableNode.noty.success', { name }),
+    errorMessage: t('views.nodes.NodeList.disableNode.noty.error', { name }),
+  });
+
+  handleRefresh();
+};
+
+const enableNode = async (node: ApiStorageNode) => {
+  const name = node.localStorageNode?.metadata?.name ?? '';
+  const dialog = createDialog(ConfirmDialog);
+
+  await dialog.show({
+    header: t('views.nodes.NodeList.enableNodeDialog.header', { name }),
+    content: t('views.nodes.NodeList.enableNodeDialog.content', { name }),
+    confirmFn: () => changeNodeStatus(name, true),
+    successMessage: t('views.nodes.NodeList.enableNode.noty.success', { name }),
+    errorMessage: t('views.nodes.NodeList.enableNode.noty.error', { name }),
+  });
+
+  handleRefresh();
+};
 </script>
