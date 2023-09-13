@@ -9,7 +9,13 @@
  * ---------------------------------------------------------------
  */
 
-import { ApiAuthInfoRspBody, ApiAuthLogoutRspBody, ApiAuthReqBody, ApiAuthRspBody } from "./data-contracts";
+import {
+  ApiAuthInfoRspBody,
+  ApiAuthLogoutRspBody,
+  ApiAuthReqBody,
+  ApiAuthRspBody,
+  ApiRspFailBody,
+} from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Auth<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -22,7 +28,7 @@ export class Auth<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
    * @request POST:/cluster/auth/auth
    */
   authAuthCreate = (body: ApiAuthReqBody, params: RequestParams = {}) =>
-    this.request<ApiAuthRspBody, any>({
+    this.request<ApiAuthRspBody, ApiRspFailBody>({
       path: `/cluster/auth/auth`,
       method: "POST",
       body: body,
@@ -54,7 +60,7 @@ export class Auth<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
    * @request POST:/cluster/auth/logout
    */
   authLogoutCreate = (params: RequestParams = {}) =>
-    this.request<ApiAuthLogoutRspBody, any>({
+    this.request<ApiAuthLogoutRspBody, ApiRspFailBody>({
       path: `/cluster/auth/logout`,
       method: "POST",
       format: "json",

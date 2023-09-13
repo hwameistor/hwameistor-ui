@@ -14,6 +14,8 @@ import {
   ApiLocalDiskInfo,
   ApiLocalDiskListByNode,
   ApiLocalDisksItemsList,
+  ApiNodeUpdateReqBody,
+  ApiNodeUpdateRspBody,
   ApiRspFailBody,
   ApiStorageNode,
   ApiStorageNodeList,
@@ -59,6 +61,23 @@ export class Node<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
     this.request<ApiStorageNode, any>({
       path: `/cluster/nodes/${nodeName}`,
       method: "GET",
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Node
+   * @name NodesCreate
+   * @summary Set node enable/disable
+   * @request POST:/cluster/nodes/{nodeName}
+   */
+  nodesCreate = (nodeName: string, body: ApiNodeUpdateReqBody, params: RequestParams = {}) =>
+    this.request<ApiNodeUpdateRspBody, ApiRspFailBody>({
+      path: `/cluster/nodes/${nodeName}`,
+      method: "POST",
+      body: body,
       type: ContentType.Json,
       format: "json",
       ...params,

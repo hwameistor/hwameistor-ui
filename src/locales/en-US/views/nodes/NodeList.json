@@ -15,5 +15,31 @@
     "Ready": "Ready",
     "NotReady": "NotReady",
     "Unknown": "Unknown"
+  },
+  "actions": {
+    "disable": "Disable Node",
+    "enable": "Enable Node",
+    "addDisk": "Add Disk"
+  },
+  "disableNode": {
+    "noty": {
+      "error": "Disable node {name} failed",
+      "success": "Disable node {name} task to be distributed successfully"
+    }
+  },
+  "enableNode": {
+    "noty": {
+      "error": "Enable node {name} failed",
+      "success": "Enable node {name} task to be distributed successfully"
+    }
+  },
+  "disableNodeDialog": {
+    "header": "Confirm to Disable the Storage Node {name}?",
+    "content": "Please confirm to disable node {name}, the node will be removed from storage system when it is operated successfully. Please backup or migrate the data before the action.",
+    "confirmText": "Disable"
+  },
+  "enableNodeDialog": {
+    "header": "Confirm to Enable the Storage Node {name}",
+    "content": "Please confirm to enable node {name}, the node will be managed by Local Storage Manager."
   }
 }

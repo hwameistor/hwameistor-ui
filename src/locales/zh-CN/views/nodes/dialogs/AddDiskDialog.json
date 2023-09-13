@@ -1,0 +1,15 @@
+{
+  "title": "添加新磁盘",
+  "diskType": "磁盘类型",
+  "diskOwner": "磁盘 Owner",
+  "noAvailableDiskType": "当前节点没有空闲（Unclaimed 状态）{type}  磁盘，无法进行添加磁盘操作。",
+  "noAvailableOwner": "当前节点磁盘 Owner 同所选磁盘 Owner 不匹配，无法进行添加磁盘操作。",
+  "noty": {
+    "error": "添加磁盘失败",
+    "success": "添加磁盘成功"
+  },
+  "warningContent": {
+    "step1": "1.如有特殊需求的磁盘，请在节点详情中进行预留，预留后磁盘不会加入存储池中。",
+    "step2": "2.Unclaimed 状态并且Owner 相同的磁盘，将自动被纳管并加入对应类型（HDD，SSD）的存储池中。"
+  }
+}
