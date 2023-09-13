@@ -103,9 +103,16 @@ init();
     @confirm="onConfirm"
   >
     <dao-message
+      type="warning"
       class="mb-[20px]"
-      :content="$t('views.nodes.dialogs.AddDiskDialog.content')"
-    />
+    >
+      <template #default="{ className }">
+        <div :class="className">
+          <div>{{ $t('views.nodes.dialogs.AddDiskDialog.warningContent.step1') }}</div>
+          <div>{{ $t('views.nodes.dialogs.AddDiskDialog.warningContent.step2') }}</div>
+        </div>
+      </template>
+    </dao-message>
 
     <dao-form>
       <dao-form-item
