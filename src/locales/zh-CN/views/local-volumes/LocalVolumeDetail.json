@@ -8,9 +8,11 @@
     "open": "开启",
     "close": "关闭"
   },
+  "throughput": "吞吐量 / s（QoS）",
   "namespace": "命名空间",
   "pvc": "绑定 PVC",
   "created": "创建时间",
   "volumeReplicas": "本地卷副本",
+  "snapshot": "快照",
   "actionRecords": "操作记录"
 }

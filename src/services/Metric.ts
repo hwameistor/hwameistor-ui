@@ -9,10 +9,34 @@
  * ---------------------------------------------------------------
  */
 
-import { ApiModuleStatus, ApiOperationMetric, OperationsListParams, StatusListParams } from "./data-contracts";
+import {
+  ApiEventList,
+  ApiModuleStatus,
+  ApiOperationMetric,
+  EventsListParams,
+  OperationsListParams,
+  StatusListParams,
+} from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Metric<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * @description EventList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）
+   *
+   * @tags Metric
+   * @name EventsList
+   * @summary 摘要 获取事件列表
+   * @request GET:/cluster/events
+   */
+  eventsList = (query: EventsListParams, params: RequestParams = {}) =>
+    this.request<ApiEventList, any>({
+      path: `/cluster/events`,
+      method: "GET",
+      query: query,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
   /**
    * @description OperationList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）
    *
