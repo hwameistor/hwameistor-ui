@@ -6,6 +6,7 @@
     :columns="columns"
     :page-layout="[]"
     :search-options="searchOptions"
+    no-rounded
     @refresh="queryLocalVolumeOperations"
     @search="queryLocalVolumeOperations"
   >

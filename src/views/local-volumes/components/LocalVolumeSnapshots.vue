@@ -8,6 +8,7 @@
     :page-size="pagination.pageSize"
     :current-page="pagination.page"
     :total="pagination.total"
+    no-rounded
     @page-change="handleChangePage"
     @size-change="handleChangePageSize"
     @refresh="handleRefresh"

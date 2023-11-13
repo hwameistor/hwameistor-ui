@@ -6,6 +6,7 @@
     :search-options="searchOptions"
     :columns="columns"
     :page-layout="[]"
+    no-rounded
     @search="queryLocalVolumeReplicas"
     @refresh="queryLocalVolumeReplicas"
   >
