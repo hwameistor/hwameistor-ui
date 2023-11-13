@@ -45,6 +45,35 @@ export interface ApiDrbdEnableSettingRspBody {
   data?: ApiDrbdEnableSetting;
 }
 
+export interface ApiEvent {
+  /**
+   * APIVersion defines the versioned schema of this representation of an object.
+   * Servers should convert recognized schemas to the latest internal value, and
+   * may reject unrecognized values.
+   * More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+   * +optional
+   */
+  apiVersion?: string;
+  /**
+   * Kind is a string value representing the REST resource this object represents.
+   * Servers may infer this from the endpoint the client submits requests to.
+   * Cannot be updated.
+   * In CamelCase.
+   * More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+   * +optional
+   */
+  kind?: string;
+  metadata?: V1ObjectMeta;
+  spec?: V1Alpha1EventSpec;
+  status?: V1Alpha1EventStatus;
+}
+
+export interface ApiEventList {
+  items?: ApiEvent[];
+  /** page 信息 */
+  pagination?: ApiPagination;
+}
+
 export interface ApiLocalDiskInfo {
   /**
    * APIVersion defines the versioned schema of this representation of an object.
@@ -116,6 +145,7 @@ export interface ApiModuleStatus {
   drbdAdapterCreatedJobNum?: number;
   installedCRDS?: boolean;
   modulesStatus?: ApiModuleState[];
+  phase?: string;
 }
 
 export interface ApiNodeDiskListByPool {
@@ -177,6 +207,35 @@ export interface ApiPagination {
 export interface ApiRspFailBody {
   description?: string;
   errcode?: number;
+}
+
+export interface ApiSnapshot {
+  /**
+   * APIVersion defines the versioned schema of this representation of an object.
+   * Servers should convert recognized schemas to the latest internal value, and
+   * may reject unrecognized values.
+   * More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+   * +optional
+   */
+  apiVersion?: string;
+  /**
+   * Kind is a string value representing the REST resource this object represents.
+   * Servers may infer this from the endpoint the client submits requests to.
+   * Cannot be updated.
+   * In CamelCase.
+   * More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+   * +optional
+   */
+  kind?: string;
+  metadata?: V1ObjectMeta;
+  spec?: V1Alpha1LocalVolumeSnapshotSpec;
+  status?: V1Alpha1LocalVolumeSnapshotStatus;
+}
+
+export interface ApiSnapshotList {
+  items?: ApiSnapshot[];
+  /** page 信息 */
+  pagination?: ApiPagination;
 }
 
 export enum ApiState {
@@ -384,6 +443,11 @@ export interface ApiVolumeConvertRspBody {
   data?: ApiVolumeConvertInfo;
 }
 
+export interface ApiVolumeExpandInfo {
+  targetCapacityBytes?: number;
+  volumeName?: string;
+}
+
 export interface ApiVolumeExpandOperation {
   /**
    * APIVersion defines the versioned schema of this representation of an object.
@@ -405,6 +469,16 @@ export interface ApiVolumeExpandOperation {
   metadata?: V1ObjectMeta;
   spec?: V1Alpha1LocalVolumeExpandSpec;
   status?: V1Alpha1LocalVolumeExpandStatus;
+}
+
+export interface ApiVolumeExpandReqBody {
+  abort?: boolean;
+  /** VolumeName     string `json:"volumeName,omitempty"` */
+  targetCapacity?: string;
+}
+
+export interface ApiVolumeExpandRspBody {
+  data?: ApiVolumeExpandInfo;
 }
 
 export interface ApiVolumeGroup {
@@ -593,6 +667,7 @@ export interface V1ContainerImage {
   /**
    * Names by which this image is known.
    * e.g. ["k8s.gcr.io/hyperkube:v1.0.7", "dockerhub.io/google_containers/hyperkube:v1.0.7"]
+   * +optional
    */
   names?: string[];
   /**
@@ -635,7 +710,21 @@ export interface V1ManagedFieldsEntry {
    */
   operation?: V1ManagedFieldsOperationType;
   /**
-   * Time is timestamp of when these fields were set. It should always be empty if Operation is 'Apply'
+   * Subresource is the name of the subresource used to update that object, or
+   * empty string if the object was updated through the main resource. The
+   * value of this field is used to distinguish between managers, even if they
+   * share the same name. For example, a status update will be distinct from a
+   * regular update using the same manager name.
+   * Note that the APIVersion field is not related to the Subresource field and
+   * it always corresponds to the version of the main resource.
+   */
+  subresource?: string;
+  /**
+   * Time is the timestamp of when the ManagedFields entry was added. The
+   * timestamp will also be updated if a field is added, the manager
+   * changes any of the owned fields value or removes a field. The
+   * timestamp does not update when a field is removed from the entry
+   * because another manager took it over.
    * +optional
    */
   time?: string;
@@ -695,10 +784,10 @@ export interface V1NodeAddress {
 
 export enum V1NodeAddressType {
   NodeHostName = "Hostname",
-  NodeExternalIP = "ExternalIP",
   NodeInternalIP = "InternalIP",
-  NodeExternalDNS = "ExternalDNS",
+  NodeExternalIP = "ExternalIP",
   NodeInternalDNS = "InternalDNS",
+  NodeExternalDNS = "ExternalDNS",
 }
 
 export interface V1NodeCondition {
@@ -811,8 +900,7 @@ export enum V1NodePhase {
 
 export interface V1NodeSpec {
   /**
-   * If specified, the source to get node configuration from
-   * The DynamicKubeletConfig feature gate must be enabled for the Kubelet to use this field
+   * Deprecated: Previously used to specify the source of the node's configuration for the DynamicKubeletConfig feature. This feature is removed from Kubelets as of 1.24 and will be fully removed in 1.26.
    * +optional
    */
   configSource?: V1NodeConfigSource;
@@ -931,7 +1019,7 @@ export interface V1NodeSystemInfo {
   architecture?: string;
   /** Boot ID reported by the node. */
   bootID?: string;
-  /** ContainerRuntime Version reported by the node through runtime remote API (e.g. docker://1.5.0). */
+  /** ContainerRuntime Version reported by the node through runtime remote API (e.g. containerd://1.4.2). */
   containerRuntimeVersion?: string;
   /** Kernel Version reported by the node from 'uname -r' (e.g. 3.16.0-0.bpo.4-amd64). */
   kernelVersion?: string;
@@ -967,14 +1055,17 @@ export interface V1ObjectMeta {
    */
   annotations?: Record<string, string>;
   /**
-   * The name of the cluster which the object belongs to.
-   * This is used to distinguish resources with same name and namespace in different clusters.
-   * This field is not set anywhere right now and apiserver is going to ignore it if set in create or update request.
+   * Deprecated: ClusterName is a legacy field that was always cleared by
+   * the system and never used; it will be removed completely in 1.25.
+   *
+   * The name in the go struct is changed to help clients detect
+   * accidental use.
+   *
    * +optional
    */
   clusterName?: string;
   /**
-   * CreationTime is a timestamp representing the server time when this object was
+   * CreationTimestamp is a timestamp representing the server time when this object was
    * created. It is not guaranteed to be set in happens-before order across separate operations.
    * Clients may not set this value. It is represented in RFC3339 form and is in UTC.
    *
@@ -1042,10 +1133,7 @@ export interface V1ObjectMeta {
    * and may be truncated by the length of the suffix required to make the value
    * unique on the server.
    *
-   * If this field is specified and the generated name exists, the server will
-   * NOT return a 409 - instead, it will either return 201 Created or 500 with Reason
-   * ServerTimeout indicating a unique name could not be found in the time allotted, and the client
-   * should retry (optionally after the time indicated in the Retry-After header).
+   * If this field is specified and the generated name exists, the server will return a 409.
    *
    * Applied only if Name is not specified.
    * More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency
@@ -1125,13 +1213,7 @@ export interface V1ObjectMeta {
    */
   resourceVersion?: string;
   /**
-   * SelfLink is a URL representing this object.
-   * Populated by the system.
-   * Read-only.
-   *
-   * DEPRECATED
-   * Kubernetes will stop propagating this field in 1.20 release and the field is planned
-   * to be removed in 1.21 release.
+   * Deprecated: selfLink is a legacy read-only field that is no longer populated by the system.
    * +optional
    */
   selfLink?: string;
@@ -1205,6 +1287,8 @@ export interface V1OwnerReference {
    * If true, AND if the owner has the "foregroundDeletion" finalizer, then
    * the owner cannot be deleted from the key-value store until this
    * reference is removed.
+   * See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion
+   * for how the garbage collector interacts with this field and enforces the foreground deletion.
    * Defaults to false.
    * To set this field, a user needs "delete" permission of the owner,
    * otherwise 422 (Unprocessable Entity) will be returned.
@@ -1336,11 +1420,49 @@ export interface V1Alpha1DiskClaimDescription {
   /** Capacity of the disk in bytes */
   capacity?: number;
   /**
+   * Match the device path of Localdisk
+   * DevicePaths match all disks if DevicePaths are empty
+   */
+  devicePaths?: string[];
+  /**
    * DiskType represents the type of drive like SSD, HDD etc.,
    * +optional
    */
   diskType?: string;
+  /**
+   * Match the name of Localdisk
+   * LocalDiskNames match all disks if LocalDiskNames are empty
+   */
+  localDiskNames?: string[];
 }
+
+export interface V1Alpha1EventRecord {
+  /** The action is the operation on the resource, such as Migrate a LocalVolume */
+  action?: string;
+  /** The content of the action which is a JSON string */
+  actionContent?: string;
+  /** id is unique */
+  id?: string;
+  /** The state of the action */
+  state?: string;
+  /** The content of the action state which is a JSON string */
+  stateContent?: string;
+  /** The time when does the action happen */
+  time?: string;
+}
+
+export interface V1Alpha1EventSpec {
+  records?: V1Alpha1EventRecord[];
+  /** Name of the resource */
+  resourceName?: string;
+  /**
+   * HwameiStor resource type: Cluster, LocalStorageNode, LocalDiskNode, Pool,  LocalVolume, LocalDiskVolume, LocalDisk,
+   * +kubebuilder:validation:Enum:=Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk
+   */
+  resourceType?: string;
+}
+
+export type V1Alpha1EventStatus = object;
 
 export interface V1Alpha1EvictorStatus {
   health?: string;
@@ -1422,7 +1544,10 @@ export interface V1Alpha1LocalDiskClaimSpec {
    * NodeName represents where disk has to be claimed.
    */
   nodeName?: string;
-  /** Owner represents which system owns this claim(e.g. local-storage, local-disk-manager) */
+  /**
+   * Owner represents which system owns this claim(e.g. local-storage, local-disk-manager)
+   * +kubebuilder:validation:Required
+   */
   owner?: string;
 }
 
@@ -1497,12 +1622,24 @@ export interface V1Alpha1LocalDiskSpec {
    * +optional
    */
   claimRef?: V1ObjectReference;
+  /** DevLinks are symbol links for this device */
+  devLinks?: string[];
   /** DevicePath is the disk path in the OS */
   devicePath?: string;
   /** DiskAttributes has hardware/static attributes of the disk */
   diskAttributes?: V1Alpha1DiskAttributes;
   /** HasRAID identifies if the disk is a raid disk or not */
   isRaid?: boolean;
+  /**
+   * Major represents drive used by the device
+   * +optional
+   */
+  major?: string;
+  /**
+   * Minor is used to distinguish different devices
+   * +optional
+   */
+  minor?: string;
   /**
    * NodeName represents the node where the disk is attached
    * +kubebuilder:validation:Required
@@ -1520,6 +1657,10 @@ export interface V1Alpha1LocalDiskSpec {
   partitionInfo?: V1Alpha1PartitionInfo[];
   /** HasPartition represents if the disk has partitions or not */
   partitioned?: boolean;
+  /** PreDevicePath represents the last device path in the OS */
+  preDevicePath?: string;
+  /** PreNodeName represents the node where the disk was attached */
+  preNodeName?: string;
   /**
    * RAIDInfo contains RAID information
    * +optional
@@ -1719,7 +1860,7 @@ export type V1Alpha1LocalVolumeGroupStatus = object;
 export interface V1Alpha1LocalVolumeMigrateSpec {
   /** +kubebuilder:default:=false */
   abort?: boolean;
-  /** +kubebuilder:default:=false */
+  /** +kubebuilder:default:=true */
   migrateAllVols?: boolean;
   /** source NodeNames */
   sourceNode?: string;
@@ -1737,6 +1878,8 @@ export interface V1Alpha1LocalVolumeMigrateStatus {
   state?: V1Alpha1State;
   /** record the node where the specified replica is migrated to */
   targetNode?: string;
+  /** record all the volumes to be migrated */
+  volumes?: string[];
 }
 
 export interface V1Alpha1LocalVolumeReplicaSpec {
@@ -1785,6 +1928,48 @@ export interface V1Alpha1LocalVolumeReplicaStatus {
    * +kubebuilder:default:=false
    */
   synced?: boolean;
+}
+
+export interface V1Alpha1LocalVolumeSnapshotSpec {
+  /**
+   * NOTE: We only take snapshots on the volume replica exist at the moment!
+   * Accessibility is the topology requirement of the volume snapshot. It describes how to locate and distribute the volume replicas snapshot.
+   */
+  accessibility?: V1Alpha1AccessibilityTopology;
+  /** +kubebuilder:default:=false */
+  delete?: boolean;
+  /**
+   * RequiredCapacityBytes specifies the space reserved for the snapshot
+   * +kubebuilder:validation:Required
+   * +kubebuilder:validation:Minimum:=4194304
+   */
+  requiredCapacityBytes?: number;
+  /**
+   * SourceVolume specifies the source volume of the snapshot
+   * +kubebuilder:validation:Required
+   */
+  sourceVolume?: string;
+}
+
+export interface V1Alpha1LocalVolumeSnapshotStatus {
+  /**
+   * AllocatedCapacityBytes is the real allocated capacity in bytes
+   * In case of HA volume with multiple replicas, the value is equal to the one of a replica's snapshot size
+   */
+  allocatedCapacityBytes?: number;
+  /** Attribute indicates attr on snapshot */
+  attr?: V1Alpha1VolumeSnapshotAttr;
+  /**
+   * CreationTime is the host real snapshot creation time
+   * In case of HA volume with multiple replicas, the value is equal to the one of a replica's snapshot creation time
+   */
+  creationTime?: string;
+  /** Message error message to describe some states */
+  message?: string;
+  /** ReplicaSnapshots represents the actual snapshots of replica */
+  replicaSnapshots?: string[];
+  /** State is the phase of volume replica, e.g. Creating, Ready, NotReady, ToBeDeleted, Deleted */
+  state?: V1Alpha1State;
 }
 
 export interface V1Alpha1LocalVolumeSpec {
@@ -2006,6 +2191,20 @@ export interface V1Alpha1VolumeReplica {
   primary?: boolean;
 }
 
+export interface V1Alpha1VolumeSnapshotAttr {
+  /** Invalid set true if snapshot is expiration */
+  invalid?: boolean;
+  /** Merging set true if snapshot is merging now */
+  merging?: boolean;
+}
+
+export interface EventsListParams {
+  /** page */
+  page: number;
+  /** pageSize */
+  pageSize: number;
+}
+
 export interface NodesListParams {
   /** name */
   name?: string;
@@ -2136,6 +2335,19 @@ export interface PoolsNodesDisksDetailParams {
   poolName: string;
 }
 
+export interface SnapshotsListParams {
+  /** page */
+  page: number;
+  /** pageSize */
+  pageSize: number;
+  /** snapshotName */
+  snapshotName?: string;
+  /** state */
+  state?: string;
+  /** volumeName */
+  volumeName?: string;
+}
+
 export interface StatusListParams {
   /** name */
   name?: string;
@@ -2179,6 +2391,19 @@ export interface VolumesReplicasDetailParams {
   volumeReplicaName?: string;
   /** state */
   state?: string;
+  /** volumeName */
+  volumeName: string;
+}
+
+export interface VolumesSnapshotDetailParams {
+  /** page */
+  page: number;
+  /** pageSize */
+  pageSize: number;
+  /** state */
+  state?: string;
+  /** snapshotName */
+  snapshotName?: string;
   /** volumeName */
   volumeName: string;
 }

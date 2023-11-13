@@ -11,11 +11,14 @@
 
 import {
   ApiRspFailBody,
+  ApiSnapshotList,
   ApiVolume,
   ApiVolumeConvertOperation,
   ApiVolumeConvertReqBody,
   ApiVolumeConvertRspBody,
   ApiVolumeExpandOperation,
+  ApiVolumeExpandReqBody,
+  ApiVolumeExpandRspBody,
   ApiVolumeList,
   ApiVolumeMigrateOperation,
   ApiVolumeMigrateReqBody,
@@ -25,6 +28,7 @@ import {
   VolumesListParams,
   VolumesOperationsDetailParams,
   VolumesReplicasDetailParams,
+  VolumesSnapshotDetailParams,
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
@@ -96,7 +100,7 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
       ...params,
     });
   /**
-   * @description get GetVolumeExpandOperation
+   * @description get GetVolumeExpandOperation 状态枚举 （Submitted、InProgress、Completed、ToBeAborted、Aborted）
    *
    * @tags Volume
    * @name VolumesExpandDetail
@@ -116,13 +120,14 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
    *
    * @tags Volume
    * @name VolumesExpandCreate
-   * @summary 摘要 指定数据卷扩容
+   * @summary 摘要 指定数据卷扩容操作
    * @request POST:/cluster/volumes/{volumeName}/expand
    */
-  volumesExpandCreate = (volumeName: string, params: RequestParams = {}) =>
-    this.request<ApiVolumeConvertOperation, ApiRspFailBody>({
+  volumesExpandCreate = (volumeName: string, body: ApiVolumeExpandReqBody, params: RequestParams = {}) =>
+    this.request<ApiVolumeExpandRspBody, ApiRspFailBody>({
       path: `/cluster/volumes/${volumeName}/expand`,
       method: "POST",
+      body: body,
       type: ContentType.Json,
       format: "json",
       ...params,
@@ -188,6 +193,23 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
   volumesReplicasDetail = ({ volumeName, ...query }: VolumesReplicasDetailParams, params: RequestParams = {}) =>
     this.request<ApiVolumeReplicaList, any>({
       path: `/cluster/volumes/${volumeName}/replicas`,
+      method: "GET",
+      query: query,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description get VolumeSnapshotList
+   *
+   * @tags Volume
+   * @name VolumesSnapshotDetail
+   * @summary 摘要 获取指定数据卷快照操作 快照状态枚举 (Creating, Ready, NotReady, ToBeDeleted, Deleted）
+   * @request GET:/cluster/volumes/{volumeName}/snapshot
+   */
+  volumesSnapshotDetail = ({ volumeName, ...query }: VolumesSnapshotDetailParams, params: RequestParams = {}) =>
+    this.request<ApiSnapshotList, ApiRspFailBody>({
+      path: `/cluster/volumes/${volumeName}/snapshot`,
       method: "GET",
       query: query,
       type: ContentType.Json,

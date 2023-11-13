@@ -8,9 +8,11 @@
     "open": "Open",
     "close": "Close"
   },
+  "throughput": "Throughput per second (QoS)",
   "namespace": "Namespace",
   "pvc": "PVC",
   "created": "Create Time",
   "volumeReplicas": "Volume Replicas",
+  "snapshot": "Snapshot",
   "actionRecords": "Operations"
 }

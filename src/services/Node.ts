@@ -117,6 +117,23 @@ export class Node<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
       ...params,
     });
   /**
+   * @description post SetStorageNodeDiskOwner devicePath i.g /dev/sdb /dev/sdc ...
+   *
+   * @tags Node
+   * @name NodesDisksOwnerCreate
+   * @summary 摘要 更新磁盘owner
+   * @request POST:/cluster/nodes/{nodeName}/disks/{devicePath}/owner
+   */
+  nodesDisksOwnerCreate = (nodeName: string, devicePath: string, body: ApiDiskReqBody, params: RequestParams = {}) =>
+    this.request<ApiDiskReqBody, ApiRspFailBody>({
+      path: `/cluster/nodes/${nodeName}/disks/${devicePath}/owner`,
+      method: "POST",
+      body: body,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * @description get GetStorageNodeDisk diskname i.g sdb sdc ...
    *
    * @tags Node
