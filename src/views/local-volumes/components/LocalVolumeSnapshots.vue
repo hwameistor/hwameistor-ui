@@ -64,6 +64,29 @@ const searchOptions = computed<SearchOption[]>(() => [
     key: 'state',
     label: t('views.local-volumes.components.LocalVolumeSnapshots.status'),
     single: true,
+    values: [
+      {
+        label: 'Creating',
+        value: 'Creating',
+      },
+      {
+        label: 'Ready',
+        value: 'Ready',
+      },
+      {
+        label: 'NotReady',
+        value: 'NotReady',
+      },
+      {
+        label: 'ToBeDeleted',
+        value: 'ToBeDeleted',
+      },
+      {
+        label: 'Deleted',
+        value: 'Deleted',
+      },
+    ],
+    enum: true,
   },
 ]);
 
