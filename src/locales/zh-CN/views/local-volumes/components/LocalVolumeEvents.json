@@ -1,0 +1,7 @@
+{
+  "actionType": "操作类型",
+  "status": "状态",
+  "operateTime": "操作时间",
+  "eventContent": "操作内容",
+  "view": "查看"
+}

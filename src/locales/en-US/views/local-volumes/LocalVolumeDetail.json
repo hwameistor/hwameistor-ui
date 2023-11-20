@@ -14,5 +14,5 @@
   "created": "Create Time",
   "volumeReplicas": "Volume Replicas",
   "snapshot": "Snapshot",
-  "actionRecords": "Operations"
+  "events": "Audit Log"
 }
