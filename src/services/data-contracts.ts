@@ -68,8 +68,14 @@ export interface ApiEvent {
   status?: V1Alpha1EventStatus;
 }
 
-export interface ApiEventList {
-  items?: ApiEvent[];
+export interface ApiEventAction {
+  eventRecord?: V1Alpha1EventRecord;
+  resourceName?: string;
+  resourceType?: string;
+}
+
+export interface ApiEventActionList {
+  items?: ApiEventAction[];
   /** page 信息 */
   pagination?: ApiPagination;
 }
@@ -2203,6 +2209,12 @@ export interface EventsListParams {
   page: number;
   /** pageSize */
   pageSize: number;
+  /** resourceName */
+  resourceName?: string;
+  /** resourceType */
+  resourceType?: string;
+  /** sort */
+  sort?: string;
 }
 
 export interface NodesListParams {
@@ -2292,6 +2304,13 @@ export interface OperationsListParams {
   pageSize: number;
 }
 
+export interface OperationsOperationNameListParams {
+  /** eventType */
+  eventType: string;
+  /** operationName */
+  operationName: string;
+}
+
 export interface PoolsListParams {
   /** name */
   name?: string;
@@ -2375,6 +2394,19 @@ export interface VolumesListParams {
   fuzzy?: boolean;
   /** sort */
   sort?: boolean;
+}
+
+export interface VolumesEventsDetailParams {
+  /** page */
+  page: number;
+  /** pageSize */
+  pageSize: number;
+  /** action */
+  action?: string;
+  /** sort */
+  sort?: string;
+  /** volumeName */
+  volumeName: string;
 }
 
 export interface VolumesOperationsDetailParams {

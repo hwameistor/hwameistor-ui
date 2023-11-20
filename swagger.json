@@ -11,7 +11,7 @@
     "version": "1.0"
   },
   "host": "",
-  "basePath": "apis/hwameistor.io/v1alpha1",
+  "basePath": "/apis/hwameistor.io/v1alpha1",
   "paths": {
     "/cluster/auth/auth": {
       "post": {
@@ -162,7 +162,7 @@
     },
     "/cluster/events": {
       "get": {
-        "description": "EventList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）",
+        "description": "EventList 排序  resourceType枚举（Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk）  sort枚举 （time、name、type）",
         "consumes": [
           "application/json"
         ],
@@ -172,7 +172,7 @@
         "tags": [
           "Metric"
         ],
-        "summary": "摘要 获取事件列表",
+        "summary": "摘要 获取审计日志",
         "parameters": [
           {
             "type": "integer",
@@ -187,13 +187,63 @@
             "name": "pageSize",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "resourceName",
+            "name": "resourceName",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "resourceType",
+            "name": "resourceType",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "sort",
+            "name": "sort",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/api.EventList"
+              "$ref": "#/definitions/api.EventActionList"
+            }
+          }
+        }
+      }
+    },
+    "/cluster/events/:eventName": {
+      "get": {
+        "description": "EventGet",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Metric"
+        ],
+        "summary": "摘要 获取指定事件",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "eventName",
+            "name": "eventName",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Event"
             }
           }
         }
@@ -931,6 +981,45 @@
         }
       }
     },
+    "/cluster/operations/:operationName": {
+      "get": {
+        "description": "OperationGet eventType枚举 (Migrate、Expand、Convert)",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Metric"
+        ],
+        "summary": "摘要 获取指定操作记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "operationName",
+            "name": "operationName",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "eventType",
+            "name": "eventType",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Operation"
+            }
+          }
+        }
+      }
+    },
     "/cluster/pools": {
       "get": {
         "description": "list StoragePools",
@@ -1529,6 +1618,64 @@
         }
       }
     },
+    "/cluster/volumes/{volumeName}/events": {
+      "get": {
+        "description": "get VolumeOperation",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Volume"
+        ],
+        "summary": "摘要 获取指定数据卷审计日志  sort=time ,先不做按操作查询",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "volumeName",
+            "name": "volumeName",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "page",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "pageSize",
+            "name": "pageSize",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "action",
+            "name": "action",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "sort",
+            "name": "sort",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.EventActionList"
+            }
+          }
+        }
+      }
+    },
     "/cluster/volumes/{volumeName}/expand": {
       "get": {
         "description": "get GetVolumeExpandOperation 状态枚举 （Submitted、InProgress、Completed、ToBeAborted、Aborted）",
@@ -1947,13 +2094,27 @@
         }
       }
     },
-    "api.EventList": {
+    "api.EventAction": {
+      "type": "object",
+      "properties": {
+        "eventRecord": {
+          "$ref": "#/definitions/v1alpha1.EventRecord"
+        },
+        "resourceName": {
+          "type": "string"
+        },
+        "resourceType": {
+          "type": "string"
+        }
+      }
+    },
+    "api.EventActionList": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/api.Event"
+            "$ref": "#/definitions/api.EventAction"
           }
         },
         "pagination": {
