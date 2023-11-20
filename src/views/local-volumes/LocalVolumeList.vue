@@ -79,6 +79,12 @@
           </div>
         </dao-dropdown-item>
         <dao-dropdown-item
+          :disabled="row.status?.state !== 'Ready'"
+          @click="expand(row)"
+        >
+          {{ $t('views.local-volumes.LocalVolumeList.actions.expand') }}
+        </dao-dropdown-item>
+        <dao-dropdown-item
           v-if="row.spec?.replicaNumber === 1 && row.spec?.convertible"
           @click="convertHA(row)"
         >
@@ -100,6 +106,7 @@ import type { VolumesListParams, ApiVolume } from '@/services/data-contracts';
 import type { SearchOption, SearchValue } from '@dao-style/core/dist/components/toolbar/types';
 import ConvertHADialog from './dialogs/ConvertHADialog.vue';
 import MigrateDialog from './dialogs/MigrateDialog.vue';
+import ExpandDialog from './dialogs/ExpandDialog.vue';
 
 const VolumeAPi = new Volume();
 
@@ -205,6 +212,16 @@ const convertHA = async (row: ApiVolume) => {
 
   await dialog.show({
     name: row.metadata?.name,
+  });
+
+  handleRefresh();
+};
+
+const expand = async (row: ApiVolume) => {
+  const dialog = createDialog(ExpandDialog);
+
+  await dialog.show({
+    volume: row,
   });
 
   handleRefresh();

@@ -1,0 +1,14 @@
+{
+  "title": "扩容",
+  "availableCapacity": "节点可用容量为 {count} G",
+  "helper": "LV 本地卷扩容后，PVC 中的容量配置一并进行修改",
+  "currentCapacity": "当前容量",
+  "targetCapacity": "目标容量",
+  "mustPositiveInteger": "目标容量必须大于 0",
+  "targetLowThanOriginal": "目标容量必须大于当前容量",
+  "moreThanAvailable": "目标容量必须小于等于可用容量",
+  "noty": {
+    "success": "扩容成功",
+    "error": "扩容失败"
+  }
+}
