@@ -1,0 +1,9 @@
+{
+  "actionType": "Action Type",
+  "resourceName": "Resource Name",
+  "resourceType": "Resource Type",
+  "status": "Status",
+  "operateTime": "Time",
+  "eventContent": "Action Content",
+  "view": "View"
+}
