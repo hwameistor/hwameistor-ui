@@ -9,7 +9,8 @@
   "created": "创建时间",
   "actions": {
     "migrate": "迁移",
-    "convertHA": "转换高可用"
+    "convertHA": "转换高可用",
+    "expand": "扩容"
   },
   "disableMigrateAlert": "单副本本地卷 {name} 已被应用挂载，无法完成迁移操作。请完成解绑操作后再执行迁移！"
 }

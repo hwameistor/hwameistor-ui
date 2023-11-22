@@ -9,7 +9,8 @@
   "created": "Create Time",
   "actions": {
     "migrate": "Migrate",
-    "convertHA": "High Availability"
+    "convertHA": "High Availability",
+    "expand": "Expand"
   },
   "disableMigrateAlert": "The single-replica local volume {name} is already mounted by an application and cannot complete the migration process. Please unbind it before migration!"
 }

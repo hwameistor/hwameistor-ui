@@ -1,0 +1,14 @@
+{
+  "title": "Expand",
+  "availableCapacity": "The available capacity of the node is {count} G",
+  "helper": "After the local volume is expanded, the capacity configuration in the PVC will also be modified.",
+  "currentCapacity": "Current Capacity",
+  "targetCapacity": "Target Capacity",
+  "mustPositiveInteger": "Target capacity must be greater than 0",
+  "targetLowThanOriginal": "Target capacity must be greater than current capacity",
+  "moreThanAvailable": "Target capacity must be less than or equal to available capacity",
+  "noty": {
+    "error": "Expansion Failed",
+    "success": "Expansion Successful"
+  }
+}
