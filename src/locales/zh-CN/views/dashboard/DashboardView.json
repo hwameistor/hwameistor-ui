@@ -18,15 +18,8 @@
   "viewDetail": "查看详细信息",
   "ssdStorage": "SSD 存储池",
   "hddStorage": "HDD 存储池",
-  "operationRecords": "操作记录",
-  "eventName": "事件名称",
-  "eventType": "事件类型",
-  "status": "状态",
-  "description": "详细描述",
-  "startTime": "开始时间",
-  "endTime": "结束时间",
   "storageUsed": "存储使用",
   "localVolume": "本地卷",
   "claimedNodes": "纳管节点数",
-  "target": "操作对象"
+  "events": "审计日志"
 }

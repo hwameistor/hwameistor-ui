@@ -18,15 +18,8 @@
   "viewDetail": "View Details",
   "ssdStorage": "SSD Storage Pool",
   "hddStorage": "HDD Storage Pool",
-  "operationRecords": "Operations",
-  "eventName": "Events Name",
-  "eventType": "Type",
-  "status": "Status",
-  "description": "Description",
-  "startTime": "Started at",
-  "endTime": "End at",
   "storageUsed": "Storage Utilization",
   "localVolume": "Local Volumes",
   "claimedNodes": "Local Disk Nodes",
-  "target": "Target"
+  "events": "Audit Log"
 }

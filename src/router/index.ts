@@ -11,8 +11,8 @@ import PoolDetail from '@/views/pools/PoolDetail.vue';
 import LocalVolumeList from '@/views/local-volumes/LocalVolumeList.vue';
 import LocalVolumeDetail from '@/views/local-volumes/LocalVolumeDetail.vue';
 import LocalVolumeReplicas from '@/views/local-volumes/components/LocalVolumeReplicas.vue';
-import LocalVolumeOperations from '@/views/local-volumes/components/LocalVolumeOperations.vue';
 import LocalVolumeSnapshots from '@/views/local-volumes/components/LocalVolumeSnapshots.vue';
+import LocalVolumeEvents from '@/views/local-volumes/components/LocalVolumeEvents.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -99,9 +99,9 @@ const routes: Array<RouteRecordRaw> = [
             component: LocalVolumeSnapshots,
           },
           {
-            path: 'operations',
-            name: 'LocalVolumeOperations',
-            component: LocalVolumeOperations,
+            path: 'events',
+            name: 'LocalVolumeEvents',
+            component: LocalVolumeEvents,
           },
         ],
       },

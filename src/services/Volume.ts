@@ -10,6 +10,7 @@
  */
 
 import {
+  ApiEventActionList,
   ApiRspFailBody,
   ApiSnapshotList,
   ApiVolume,
@@ -25,6 +26,7 @@ import {
   ApiVolumeMigrateRspBody,
   ApiVolumeOperationByVolume,
   ApiVolumeReplicaList,
+  VolumesEventsDetailParams,
   VolumesListParams,
   VolumesOperationsDetailParams,
   VolumesReplicasDetailParams,
@@ -95,6 +97,23 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
       path: `/cluster/volumes/${volumeName}/convert`,
       method: "POST",
       body: body,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description get VolumeOperation
+   *
+   * @tags Volume
+   * @name VolumesEventsDetail
+   * @summary 摘要 获取指定数据卷审计日志  sort=time ,先不做按操作查询
+   * @request GET:/cluster/volumes/{volumeName}/events
+   */
+  volumesEventsDetail = ({ volumeName, ...query }: VolumesEventsDetailParams, params: RequestParams = {}) =>
+    this.request<ApiEventActionList, any>({
+      path: `/cluster/volumes/${volumeName}/events`,
+      method: "GET",
+      query: query,
       type: ContentType.Json,
       format: "json",
       ...params,

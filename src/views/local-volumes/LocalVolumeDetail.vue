@@ -123,9 +123,9 @@ const tabs = computed<RouteTab[]>(() => [
     display: t('views.local-volumes.LocalVolumeDetail.snapshot'),
   },
   {
-    key: 'operations',
-    routeName: 'LocalVolumeOperations',
-    display: t('views.local-volumes.LocalVolumeDetail.actionRecords'),
+    key: 'events',
+    routeName: 'LocalVolumeEvents',
+    display: t('views.local-volumes.LocalVolumeDetail.events'),
   },
 ]);
 

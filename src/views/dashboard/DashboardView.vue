@@ -236,53 +236,22 @@
     <div class="dao-card dao-card--simple mt-[16px]">
       <div class="dao-card-header">
         <div class="dao-card-header-item dao-card-header-title">
-          {{ $t('views.dashboard.DashboardView.operationRecords') }}
+          {{ $t('views.dashboard.DashboardView.events') }}
         </div>
       </div>
     </div>
 
-    <dao-table
-      id="dashboard-operation-records"
-      :data="state.items"
-      :columns="columns"
-      :page-size="pagination.pageSize"
-      :current-page="pagination.page"
-      :total="pagination.total"
-      @page-change="handleChangePage"
-      @size-change="handleChangePageSize"
-      @refresh="handleRefresh"
-    >
-      <template #search>
-        <dao-input
-          v-model="filterData.name"
-          type="search"
-          block
-          borderless
-          @keyup.enter="handleSearch"
-          @after-reset="handleSearch"
-        />
-      </template>
-
-      <template #td-startTime="{value}">
-        {{ useDateFormat(value) }}
-      </template>
-
-      <!-- <template #td-endTime="{value}">
-        {{ useDateFormat(value) }}
-      </template> -->
-    </dao-table>
+    <event-list />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useQueryTable, useDateFormat } from '@dao-style/extend';
 import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
 import { Node } from '@/services/Node';
 import { sum } from 'lodash-es';
 import { Volume } from '@/services/Volume';
-import type { OperationsListParams, V1Alpha1DeployStatus } from '@/services/data-contracts';
+import type { V1Alpha1DeployStatus } from '@/services/data-contracts';
 import { Metric } from '@/services/Metric';
 import { Pool } from '@/services/Pool';
 import { LocalDisk } from '@/services/LocalDisk';
@@ -291,6 +260,7 @@ import GaugeChart from './components/GaugeChart.vue';
 import GaugePanelItem from './components/GaugePanelItem.vue';
 import PercentPanelItem from './components/PercentPanelItem.vue';
 import ComponentPanelItem from './components/ComponentPanelItem.vue';
+import EventList from './components/EventList.vue';
 
 // type ResourceItem = {
 //   name: string;
@@ -323,8 +293,6 @@ const MetricApi = new Metric();
 const PoolApi = new Pool();
 const LocalDiskApi = new LocalDisk();
 const LocalDiskNodeApi = new LocalDiskNode();
-
-const { t } = useI18n();
 
 const getPercent = (numerator: number, denominator: number) => {
   if (!denominator) {
@@ -494,60 +462,6 @@ const queryStatus = async () => {
     status: getComponentStatus(value.health, value.instances),
   }));
 };
-
-const columns = computed(() => [
-  {
-    id: 'eventName',
-    header: t('views.dashboard.DashboardView.eventName'),
-  },
-  {
-    id: 'eventType',
-    header: t('views.dashboard.DashboardView.eventType'),
-  },
-  {
-    id: 'localVolumeName',
-    header: t('views.dashboard.DashboardView.target'),
-  },
-  {
-    id: 'status',
-    header: t('views.dashboard.DashboardView.status'),
-  },
-  {
-    id: 'description',
-    header: t('views.dashboard.DashboardView.description'),
-  },
-  {
-    id: 'startTime',
-    header: t('views.dashboard.DashboardView.startTime'),
-  },
-  // {
-  //   id: 'endTime',
-  //   header: t('views.dashboard.DashboardView.endTime'),
-  // },
-]);
-
-const queryOptions = async (req: OperationsListParams) => {
-  const { data } = await MetricApi.operationsList({
-    ...req,
-  });
-
-  return data;
-};
-
-const [{
-  state,
-  pagination,
-  handleChangePage,
-  handleChangePageSize,
-  handleRefresh,
-}, {
-  filterData,
-  handleSearch,
-}] = useQueryTable(queryOptions, {
-  page: 1,
-  pageSize: 10,
-  name: '',
-});
 
 queryNodes();
 queryLocalNodes();
