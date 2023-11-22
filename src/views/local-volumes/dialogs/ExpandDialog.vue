@@ -146,7 +146,7 @@ const handleConfirm = async () => {
 getAvailableCapacity();
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .input-label {
   margin-bottom: 5px;
   font-size: 13px;
