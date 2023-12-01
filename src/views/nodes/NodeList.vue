@@ -149,10 +149,12 @@ const columns = computed(() => [
   {
     id: 'driverStatus',
     header: t('views.nodes.NodeList.driverStatus'),
+    ellipsis: false,
   },
   {
     id: 'nodeState',
     header: t('views.nodes.NodeList.nodeState'),
+    ellipsis: false,
   },
   {
     id: 'hddUsage',
