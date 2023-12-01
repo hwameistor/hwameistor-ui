@@ -14,5 +14,5 @@
   "created": "创建时间",
   "volumeReplicas": "本地卷副本",
   "snapshot": "快照",
-  "events": "审计日志"
+  "events": "操作日志"
 }
