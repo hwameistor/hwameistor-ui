@@ -2,7 +2,7 @@
   "name": "Name",
   "status": "Status",
   "syncState": "Sync State",
-  "node": "Nod",
+  "node": "Node",
   "capacity": "Capacity",
   "device": "Device",
   "syncStates": {
