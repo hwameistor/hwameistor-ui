@@ -30,7 +30,7 @@
     </template>
 
     <template #td-totalDiskCount="{row}">
-      {{ row.localDiskNode?.status?.totalDisk }}
+      {{ row.localDiskNode?.status?.totalDisk ?? '-' }}
     </template>
 
     <template #td-availableCapacity="{row}">
@@ -96,7 +96,7 @@ const columns = computed(() => [
     header: t('views.pools.components.PoolNodes.status'),
   },
   {
-    id: 'disks',
+    id: 'totalDiskCount',
     header: t('views.pools.components.PoolNodes.disks'),
   },
   {
