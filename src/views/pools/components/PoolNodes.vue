@@ -90,10 +90,12 @@ const columns = computed(() => [
   {
     id: 'name',
     header: t('views.pools.components.PoolNodes.node'),
+    ellipsis: false,
   },
   {
     id: 'k8SNodeState',
     header: t('views.pools.components.PoolNodes.status'),
+    ellipsis: false,
   },
   {
     id: 'disks',
