@@ -87,8 +87,8 @@
             <gauge-chart
               :used="diskMetric.bound"
               :total="diskMetric.total"
-              used-color="#4BB0ED"
-              unused-color="#E4E7ED"
+              used-color="#4FD886"
+              unused-color="#FF6161"
               :count="diskMetric.bound"
               :label="$t('views.dashboard.DashboardView.boundedDisk')"
             />
