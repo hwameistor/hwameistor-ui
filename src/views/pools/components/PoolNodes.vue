@@ -29,10 +29,6 @@
       <node-status :status="value" />
     </template>
 
-    <template #td-totalDiskCount="{row}">
-      {{ row.localDiskNode?.status?.totalDisk ?? '-' }}
-    </template>
-
     <template #td-availableCapacity="{row}">
       {{ bytesToUnitDisplay(row.localStorageNode?.status?.pools?.[name].usedCapacityBytes) }}
     </template>
@@ -96,7 +92,7 @@ const columns = computed(() => [
     header: t('views.pools.components.PoolNodes.status'),
   },
   {
-    id: 'totalDiskCount',
+    id: 'totalDisk',
     header: t('views.pools.components.PoolNodes.disks'),
   },
   {
