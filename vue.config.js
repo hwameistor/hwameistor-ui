@@ -36,6 +36,18 @@ module.exports = defineConfig({
         mapping: groupMapping,
       }),
     ],
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          'dao-style': {
+            chunks: 'all',
+            name: 'chunk-daoStyle',
+            test: /[\\/]node_modules[\\/]@dao-style[\\/]/,
+          },
+        },
+      },
+    },
   },
 
   pluginOptions: {
