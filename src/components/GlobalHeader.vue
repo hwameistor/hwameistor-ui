@@ -16,11 +16,11 @@
       >
         <dao-option
           value="en-US"
-          label="English"
+          :label="$t('components.GlobalHeader.en-US')"
         />
         <dao-option
           value="zh-CN"
-          label="简体中文"
+          :label="$t('components.GlobalHeader.zh-CN')"
         />
       </dao-select>
 
