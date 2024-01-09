@@ -36,7 +36,7 @@ import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
-   * @description list Volume
+   * @description list Volume 排序sortBy:"time","name","namespace"  sortDir:升序"ASC" 降序"DESC"
    *
    * @tags Volume
    * @name VolumesList

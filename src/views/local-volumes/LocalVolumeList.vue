@@ -9,12 +9,14 @@
       v-model:search="search"
       :data="state.items"
       :columns="columns"
+      :sort="initialSort"
       :search-options="searchOptions"
       :page-size="pagination.pageSize"
       :current-page="pagination.page"
       :total="pagination.total"
       @page-change="handleChangePage"
       @size-change="handleChangePageSize"
+      @sort-change="handleSortChange"
       @refresh="handleRefresh"
       @search="handleSearch"
     >
@@ -124,12 +126,23 @@ const searchOptions = computed<SearchOption[]>(() => [
     label: t('views.local-volumes.LocalVolumeList.status'),
     single: true,
   },
+  {
+    key: 'group',
+    label: t('views.local-volumes.LocalVolumeList.volumeGroup'),
+    single: true,
+  },
+  {
+    key: 'namespace',
+    label: t('views.local-volumes.LocalVolumeList.namespace'),
+    single: true,
+  },
 ]);
 
 const columns = computed(() => [
   {
     id: 'name',
     header: t('views.local-volumes.LocalVolumeList.name'),
+    sortable: true,
   },
   {
     id: 'state',
@@ -150,6 +163,7 @@ const columns = computed(() => [
   {
     id: 'pvcNamespace',
     header: t('views.local-volumes.LocalVolumeList.namespace'),
+    sortable: true,
   },
   {
     id: 'pvcName',
@@ -158,6 +172,7 @@ const columns = computed(() => [
   {
     id: 'createTime',
     header: t('views.local-volumes.LocalVolumeList.created'),
+    sortable: true,
   },
   {
     id: 'action',
@@ -170,31 +185,56 @@ const columns = computed(() => [
 
 const isMigrateDisabled = (row: ApiVolume) => Boolean(row.spec?.replicaNumber === 1 && row.status?.publishedNode);
 
-const queryVolumes = async ({ page, pageSize }: VolumesListParams) => {
+const queryVolumes = async (params: VolumesListParams) => {
   const { data } = await VolumeAPi.volumesList({
-    page,
-    pageSize,
     volumeName: search.volumeName?.[0] as string,
     state: search.state?.[0] as string,
-    fuzzy: true,
-    sort: true,
+    group: search.group?.[0] as string,
+    namespace: search.namespace?.[0] as string,
+    ...params,
   });
 
   return data;
 };
 
-const [{
-  state,
-  pagination,
-  handleChangePage,
-  handleChangePageSize,
-  handleRefresh,
-}, {
-  handleSearch,
-}] = useQueryTable(queryVolumes, {
+const [
+  {
+    state,
+    pagination,
+    handleChangePage,
+    handleChangePageSize,
+    handleRefresh,
+  },
+  {
+    handleSearch,
+    filterData,
+  },
+] = useQueryTable(queryVolumes, {
   page: 1,
   pageSize: 10,
+  sortBy: 'time',
+  sortDir: 'DESC',
 });
+
+const sortMap: Record<string, string> = {
+  createTime: 'time',
+  name: 'name',
+  pvcNamespace: 'namespace',
+};
+
+const initialSort = reactive({
+  id: 'createTime',
+  desc: true,
+});
+
+const handleSortChange = ({ id, desc }: {id: string, desc: boolean}) => {
+  initialSort.id = id;
+  initialSort.desc = desc;
+  filterData.sortBy = sortMap[initialSort.id];
+  filterData.sortDir = initialSort.desc ? 'DESC' : 'ASC';
+
+  handleRefresh();
+};
 
 const migrate = async (row: ApiVolume) => {
   const dialog = createDialog(MigrateDialog);
