@@ -9,6 +9,7 @@
       v-model:search="search"
       :data="state.items"
       :columns="columns"
+      :loading="isLoading"
       :sort="initialSort"
       :search-options="searchOptions"
       :page-size="pagination.pageSize"
@@ -204,6 +205,7 @@ const [
     handleChangePage,
     handleChangePageSize,
     handleRefresh,
+    isLoading,
   },
   {
     handleSearch,
