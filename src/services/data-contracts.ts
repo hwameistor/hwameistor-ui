@@ -310,6 +310,7 @@ export interface ApiStorageNode {
   k8SNodeState?: ApiState;
   localDiskNode?: V1Alpha1LocalDiskNode;
   localStorageNode?: V1Alpha1LocalStorageNode;
+  totalDisk?: number;
 }
 
 export interface ApiStorageNodeList {
@@ -2390,10 +2391,14 @@ export interface VolumesListParams {
   volumeName?: string;
   /** state */
   state?: string;
-  /** fuzzy */
-  fuzzy?: boolean;
-  /** sort */
-  sort?: boolean;
+  /** group */
+  group?: string;
+  /** namespace */
+  namespace?: string;
+  /** sortBy */
+  sortBy?: string;
+  /** sortDir */
+  sortDir?: string;
 }
 
 export interface VolumesEventsDetailParams {
