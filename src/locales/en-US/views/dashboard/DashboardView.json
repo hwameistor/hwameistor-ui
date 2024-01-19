@@ -10,7 +10,6 @@
   "healthy": "Healthy",
   "error": "Error",
   "totalDisk": "Total Disks",
-  "claimedNode": "Local Disk Nodes ",
   "totalNode": "Total Nodes",
   "storagePoolResource": "StoragePool",
   "top5NodeUsage": " Top5 of Utilization of Nodes",
@@ -20,6 +19,5 @@
   "hddStorage": "HDD Storage Pool",
   "storageUsed": "Storage Utilization",
   "localVolume": "Local Volumes",
-  "claimedNodes": "Local Disk Nodes",
   "events": "Operation Log"
 }

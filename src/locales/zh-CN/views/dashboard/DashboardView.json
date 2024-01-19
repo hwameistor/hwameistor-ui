@@ -10,7 +10,6 @@
   "healthy": "健康",
   "error": "错误",
   "totalDisk": "总磁盘数",
-  "claimedNode": "纳管节点",
   "totalNode": "总节点数",
   "storagePoolResource": "存储池资源",
   "top5NodeUsage": "节点存储 TOP5 使用率",
@@ -20,6 +19,5 @@
   "hddStorage": "HDD 存储池",
   "storageUsed": "存储使用",
   "localVolume": "本地卷",
-  "claimedNodes": "纳管节点数",
   "events": "操作日志"
 }

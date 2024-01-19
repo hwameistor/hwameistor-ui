@@ -124,20 +124,25 @@
         <dao-card-item class="h-[275px] flex flex-col justify-between">
           <div class="h-[130px]">
             <gauge-chart
-              :used="nodeCountMetric.claimed"
+              :used="nodeCountMetric.healthy"
               :total="nodeCountMetric.total"
-              used-color="#4BB0ED"
-              unused-color="#E4E7ED"
-              :count="nodeCountMetric.claimed"
-              :label="$t('views.dashboard.DashboardView.claimedNode')"
+              used-color="#4FD886"
+              unused-color="#FF6161"
+              :count="nodeCountMetric.total"
+              :label="$t('views.dashboard.DashboardView.totalNode')"
             />
           </div>
 
           <div>
             <gauge-panel-item
-              :label="$t('views.dashboard.DashboardView.claimedNodes')"
-              mark-color="#4BB0ED"
-              :value="nodeCountMetric.claimed"
+              :label="$t('views.dashboard.DashboardView.healthy')"
+              mark-color="#4FD886"
+              :value="nodeCountMetric.healthy"
+            />
+            <gauge-panel-item
+              :label="$t('views.dashboard.DashboardView.error')"
+              mark-color="#FF6161"
+              :value="nodeCountMetric.total - nodeCountMetric.healthy"
             />
             <gauge-panel-item
               :label="$t('views.dashboard.DashboardView.totalNode')"
@@ -251,7 +256,7 @@ import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
 import { Node } from '@/services/Node';
 import { sum } from 'lodash-es';
 import { Volume } from '@/services/Volume';
-import type { V1Alpha1DeployStatus } from '@/services/data-contracts';
+import { type V1Alpha1DeployStatus, V1Alpha1State } from '@/services/data-contracts';
 import { Metric } from '@/services/Metric';
 import { Pool } from '@/services/Pool';
 import { LocalDisk } from '@/services/LocalDisk';
@@ -309,7 +314,7 @@ const nodeMetric = reactive({
   total: 0,
 });
 const nodeCountMetric = reactive({
-  claimed: 0,
+  healthy: 0,
   total: 0,
 });
 const nodesSimpleListByType = ref<NodesSimpleListByType>({
@@ -380,13 +385,21 @@ const queryNodes = async () => {
   if (!nodesSimpleListByType.value.SSD.length && nodesSimpleListByType.value.HDD.length) {
     nodeType.value = 'HDD';
   }
-
-  nodeCountMetric.claimed = data.pagination?.total ?? 0;
 };
 const queryLocalNodes = async () => {
   const { data } = await LocalDiskNodeApi.localdisknodesList({});
 
   nodeCountMetric.total = data.items?.length ?? 0;
+
+  nodeCountMetric.healthy = data.items?.reduce((pre, cur) => {
+    let count = pre;
+
+    if (cur.status?.state === V1Alpha1State.NodeStateReady) {
+      count += 1;
+    }
+
+    return count;
+  }, 0) ?? 0;
 };
 
 const volumeMetric = reactive({
