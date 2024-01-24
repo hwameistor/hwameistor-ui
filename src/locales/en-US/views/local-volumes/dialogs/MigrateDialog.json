@@ -8,7 +8,7 @@
   "autoSelect": "Auto",
   "manualSelect": "Manual",
   "migrate": "Migrate",
-  "globalAlert": " The local volume {name} and {names} are mounted on the same Pod. To ensure the normal operation of the application Pod after migration, all local volumes mounted under the same Pod are automatically\nmigrated to the same target node.",
+  "globalAlert": " The local volume {name} and {names} are mounted on the same Pod. To ensure the normal operation of the application Pod after migration, all local volumes mounted under the same Pod are automatically migrated to the same target node.",
   "localVolumeName": "LocalVolumeName",
   "state": "State",
   "node": "Node",
