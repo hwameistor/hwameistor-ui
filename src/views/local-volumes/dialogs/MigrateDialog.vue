@@ -51,6 +51,7 @@
           <dao-option
             v-for="node in volumeGroup?.spec?.accessibility?.nodes ?? []"
             :key="node"
+            :disabled="node === disabledNode"
             :value="node"
           />
         </dao-select>
@@ -127,6 +128,10 @@ const props = defineProps({
     default: '',
   },
   volumeGroup: {
+    type: String,
+    default: '',
+  },
+  disabledNode: {
     type: String,
     default: '',
   },

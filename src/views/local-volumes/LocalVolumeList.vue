@@ -244,6 +244,7 @@ const migrate = async (row: ApiVolume) => {
   await dialog.show({
     name: row.metadata?.name,
     volumeGroup: row.spec?.volumegroup,
+    disabledNode: row.status?.publishedNode,
   });
 
   handleRefresh();
