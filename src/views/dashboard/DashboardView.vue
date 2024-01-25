@@ -85,7 +85,7 @@
         <dao-card-item class="h-[275px] flex flex-col justify-between">
           <div class="h-[130px]">
             <gauge-chart
-              :used="diskMetric.bound"
+              :used="diskMetric.health"
               :total="diskMetric.total"
               used-color="#4FD886"
               unused-color="#FF6161"
@@ -430,7 +430,6 @@ const queryDisks = async () => {
   diskMetric.total = data.items?.length ?? 0;
   diskMetric.bound = data.items?.filter((disk) => disk.status?.claimState === 'Bound').length ?? 0;
   diskMetric.health = data.items?.filter((disk) => disk.spec?.state === 'Active').length ?? 0;
-  diskMetric.error = data.items?.filter((disk) => disk.spec?.state !== 'Active').length ?? 0;
   diskMetric.error = diskMetric.total - diskMetric.health;
 
   nodeMetric.reserved = sum(data.items?.filter((disk) => disk.spec?.reserved).map((disk) => disk.spec?.capacity));
