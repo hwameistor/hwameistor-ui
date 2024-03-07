@@ -4,7 +4,8 @@
     "off": "Off"
   },
   "highAvailable": "High Available",
-  "drbdHelper": "DRBD is not installed, click to install",
+  "drbdHelper": "DRBD is not installed, {action}",
+  "action": "click to install",
   "version": "DRBD Version",
   "highAvailableSetting": "High Available Setting"
 }

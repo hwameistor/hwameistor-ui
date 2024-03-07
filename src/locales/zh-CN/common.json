@@ -3,5 +3,6 @@
   "confirm": "确认",
   "close": "关闭",
   "yes": "是",
-  "no": "否"
+  "no": "否",
+  "doc": "https://docs.daocloud.io/{link}"
 }
