@@ -4,7 +4,8 @@
     "off": "未开启"
   },
   "highAvailable": "高可用",
-  "drbdHelper": "DRBD 模块未安装，开始安装",
+  "drbdHelper": "DRBD 模块未安装，{action}",
+  "action": "开始安装",
   "version": "DRBD 版本",
   "highAvailableSetting": "高可用设置"
 }

@@ -1,5 +1,7 @@
-import type { App } from 'vue';
-import { createI18n, LocaleMessages, VueMessageType } from 'vue-i18n';
+import { defineComponent, type App } from 'vue';
+import {
+  createI18n, Translation, LocaleMessages, VueMessageType,
+} from 'vue-i18n';
 import { loadExternalLanguage, setI18nLanguageExternal } from './external';
 
 function getRegisterMap(path: string[], map: Record<string | symbol, unknown>) {
@@ -79,6 +81,8 @@ const i18nPlugin = createI18n({
 });
 
 export default function i18nInstall(app: App) {
+  // eslint-disable-next-line vue/multi-word-component-names
+  app.component('Translation', defineComponent(Translation));
   app.use(i18nPlugin);
 }
 

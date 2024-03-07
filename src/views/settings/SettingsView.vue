@@ -4,7 +4,7 @@
 
     <dao-form-group :title="$t('views.settings.SettingsView.highAvailableSetting')">
       <dao-form
-        v-slot="{classNames}"
+        v-slot="{ classNames }"
         class="bg-white pt-[15px]"
       >
         <dao-form-item :label="$t('views.settings.SettingsView.highAvailable')">
@@ -13,7 +13,25 @@
           </div>
 
           <dao-helper-text v-if="!setting?.enable">
-            {{ $t('views.settings.SettingsView.drbdHelper') }}
+            <translation
+              keypath="views.settings.SettingsView.drbdHelper"
+              scope="global"
+              tag="span"
+            >
+              <template #action>
+                <dao-text-button
+                  :prop="{
+                    type: 'link',
+                    iconRight: 'icon-new-tab',
+                  }"
+                  tag="a"
+                  target="_blank"
+                  :href="$t('common.doc', { link: 'storage/hwameistor/install/drbdinstall/' })"
+                >
+                  {{ $t('views.settings.SettingsView.action') }}
+                </dao-text-button>
+              </template>
+            </translation>
           </dao-helper-text>
         </dao-form-item>
 
