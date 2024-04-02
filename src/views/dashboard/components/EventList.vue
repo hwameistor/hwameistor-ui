@@ -48,7 +48,7 @@
 import { computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQueryTable, useDateFormat, createDialog } from '@dao-style/extend';
-import type { ApiEventAction, OperationsListParams } from '@/services/data-contracts';
+import type { ApiEventAction, EventsListParams } from '@/services/data-contracts';
 import MonacoEditorDialog from '@/components/dialogs/MonacoEditorDialog.vue';
 import type {
   DaoTableSort, SearchOption, SearchValue,
@@ -141,10 +141,9 @@ const sortMap: Record<string, string> = {
   time: 'time',
 };
 
-const queryEvents = async (req: OperationsListParams) => {
+const queryEvents = async (req: EventsListParams) => {
   const { data } = await MetricApi.eventsList({
     ...req,
-    sort: sortMap[sort.value.id],
     resourceName: search.resourceName?.[0] as string,
     resourceType: search.resourceType?.[0] as string,
   });
@@ -160,13 +159,19 @@ const [{
   handleRefresh,
 }, {
   handleSearch,
+  filterData,
 }] = useQueryTable(queryEvents, {
   page: 1,
   pageSize: 10,
-  name: '',
+  sort: 'name',
+  sortDir: 'DESC',
 });
-const sortChangeEvent = () => {
-  sort.value.desc = true;
+
+const sortChangeEvent = ({ id, desc }: { id: string, desc: boolean }) => {
+  sort.value.id = id;
+  sort.value.desc = desc;
+  filterData.sort = sortMap[sort.value.id];
+  filterData.sortDir = sort.value.desc ? 'DESC' : 'ASC';
 
   handleRefresh();
 };

@@ -2216,6 +2216,8 @@ export interface EventsListParams {
   resourceType?: string;
   /** sort */
   sort?: string;
+  /** sortDir */
+  sortDir?: string;
 }
 
 export interface NodesListParams {
@@ -2410,6 +2412,8 @@ export interface VolumesEventsDetailParams {
   action?: string;
   /** sort */
   sort?: string;
+  /** sortDir */
+  sortDir?: string;
   /** volumeName */
   volumeName: string;
 }
