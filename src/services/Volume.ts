@@ -36,7 +36,7 @@ import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
-   * @description list Volume 排序sortBy:"time","name","namespace"  sortDir:升序"ASC" 降序"DESC"
+   * @description list Volume sortBy排序:"time","name","namespace"  sortDir:升序"ASC" 降序"DESC" 默认按时间降序
    *
    * @tags Volume
    * @name VolumesList
@@ -106,7 +106,7 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
    *
    * @tags Volume
    * @name VolumesEventsDetail
-   * @summary 摘要 获取指定数据卷审计日志  sort=time ,先不做按操作查询
+   * @summary 摘要 获取指定数据卷审计日志  sort=time, sortDir:升序"ASC" 降序"DESC"
    * @request GET:/cluster/volumes/{volumeName}/events
    */
   volumesEventsDetail = ({ volumeName, ...query }: VolumesEventsDetailParams, params: RequestParams = {}) =>

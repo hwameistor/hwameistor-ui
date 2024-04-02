@@ -3,9 +3,11 @@
     id="local-volume-event-list"
     :data="state.items"
     :columns="columns"
+    :sort="initialSort"
     :page-size="pagination.pageSize"
     :current-page="pagination.page"
     :total="pagination.total"
+    @sort-change="handleSortChange"
     @page-change="handleChangePage"
     @size-change="handleChangePageSize"
     @refresh="handleRefresh"
@@ -47,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+import { ref, computed, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { createDialog, useDateFormat, useQueryTable } from '@dao-style/extend';
 import { Volume } from '@/services/Volume';
@@ -56,6 +58,7 @@ import type {
   VolumesEventsDetailParams,
 } from '@/services/data-contracts';
 import MonacoEditorDialog from '@/components/dialogs/MonacoEditorDialog.vue';
+import type { DaoTableSort } from '@dao-style/core';
 
 const props = defineProps({
   volume: {
@@ -79,12 +82,18 @@ const columns = computed(() => [
   {
     id: 'time',
     header: t('views.local-volumes.components.LocalVolumeEvents.operateTime'),
+    sortable: true,
   },
   {
     id: 'content',
     header: t('views.local-volumes.components.LocalVolumeEvents.eventContent'),
   },
 ]);
+
+const initialSort = ref<DaoTableSort>({
+  id: 'time',
+  desc: true,
+});
 
 const queryEvents = async (req: VolumesEventsDetailParams) => {
   const { data } = await VolumeAPi.volumesEventsDetail({
@@ -107,9 +116,19 @@ const [{
   page: 1,
   pageSize: 10,
   sort: 'time',
+  sortDir: 'DESC',
   volumeName: props.volume,
-  action: '',
 });
+
+const handleSortChange = ({ id, desc }: { id: string, desc: boolean }) => {
+  initialSort.value.id = id;
+  initialSort.value.desc = desc;
+
+  filterData.sort = id;
+  filterData.sortDir = initialSort.value.desc ? 'DESC' : 'ASC';
+
+  handleRefresh();
+};
 
 const viewEventContent = (row: ApiEventAction) => {
   const dialog = createDialog(MonacoEditorDialog);
