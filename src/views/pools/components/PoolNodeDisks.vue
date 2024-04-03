@@ -9,6 +9,7 @@
     :total="pagination.total"
     compact
     hide-toolbar
+    :loading="isLoading"
     @page-change="handleChangePage"
     @size-change="handleChangePageSize"
     @refresh="handleRefresh"
@@ -109,6 +110,7 @@ const [{
   handleChangePage,
   handleChangePageSize,
   handleRefresh,
+  isLoading,
 }] = useQueryTable(queryPoolNodeDisks, {
   page: 1,
   pageSize: 10,

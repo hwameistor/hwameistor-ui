@@ -13,6 +13,7 @@
       :page-size="pagination.pageSize"
       :current-page="pagination.page"
       :total="pagination.total"
+      :loading="isLoading"
       @page-change="handleChangePage"
       @size-change="handleChangePageSize"
       @refresh="handleRefresh"
@@ -192,6 +193,7 @@ const [{
   handleChangePage,
   handleChangePageSize,
   handleRefresh,
+  isLoading,
 }, {
   handleSearch,
 }] = useQueryTable(ListNodes, {

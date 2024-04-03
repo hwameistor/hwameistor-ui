@@ -13,6 +13,7 @@
       key: 'resourceName',
       single: true,
     }"
+    :loading="isLoading"
     @page-change="handleChangePage"
     @size-change="handleChangePageSize"
     @refresh="handleRefresh"
@@ -157,6 +158,7 @@ const [{
   handleChangePage,
   handleChangePageSize,
   handleRefresh,
+  isLoading,
 }, {
   handleSearch,
   filterData,
