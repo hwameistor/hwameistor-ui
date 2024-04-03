@@ -4,7 +4,7 @@
 
     <div class="flex mx-[-10px]">
       <dao-card
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
         type="headless"
       >
         <dao-card-item class="h-[275px] flex flex-col justify-between">
@@ -44,7 +44,7 @@
       </dao-card>
 
       <dao-card
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
         type="headless"
       >
         <dao-card-item class="h-[275px] flex flex-col justify-between">
@@ -79,7 +79,7 @@
       </dao-card>
 
       <dao-card
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
         type="headless"
       >
         <dao-card-item class="h-[275px] flex flex-col justify-between">
@@ -118,7 +118,7 @@
       </dao-card>
 
       <dao-card
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
         type="headless"
       >
         <dao-card-item class="h-[275px] flex flex-col justify-between">
@@ -157,7 +157,7 @@
       <dao-card
         type="simple"
         :title="$t('views.dashboard.DashboardView.storagePoolResource')"
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
       >
         <dao-card-item class="px-[10px] h-[255px] !overflow-visible">
           <percent-panel-item
@@ -173,7 +173,7 @@
       <dao-card
         type="simple"
         :title="$t('views.dashboard.DashboardView.top5NodeUsage')"
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
       >
         <template #action>
           <dao-select
@@ -210,7 +210,7 @@
           </router-link>
         </template>
 
-        <dao-card-item class="px-[10px] h-[229px] !overflow-visible">
+        <dao-card-item class="px-[10px] h-[215px] !overflow-visible">
           <percent-panel-item
             v-for="node in nodeResource"
             :key="node.name"
@@ -225,7 +225,7 @@
       <dao-card
         type="simple"
         :title="$t('views.dashboard.DashboardView.componentStatus')"
-        class="flex-1 mx-[10px] overflow-hidden"
+        class="flex-1 mx-[10px]"
       >
         <dao-card-item class="px-[10px] h-[255px] !overflow-auto">
           <component-panel-item

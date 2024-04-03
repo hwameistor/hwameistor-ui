@@ -7,6 +7,7 @@
     :columns="columns"
     :page-layout="[]"
     no-rounded
+    :loading="isLoading"
     @search="queryLocalVolumeReplicas"
     @refresh="queryLocalVolumeReplicas"
   >
@@ -98,7 +99,10 @@ const columns = computed(() => [
   },
 ]);
 
+const isLoading = ref(false);
+
 const queryLocalVolumeReplicas = async () => {
+  isLoading.value = true;
   const { data } = await VolumeAPi.volumesReplicasDetail({
     volumeName: props.volume,
     volumeReplicaName: search.volumeReplicaName?.[0] as string,
@@ -106,6 +110,7 @@ const queryLocalVolumeReplicas = async () => {
   });
 
   items.value = data.volumeReplicas ?? [];
+  isLoading.value = false;
 };
 
 queryLocalVolumeReplicas();
