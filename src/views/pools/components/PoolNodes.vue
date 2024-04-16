@@ -31,7 +31,7 @@
     </template>
 
     <template #td-availableCapacity="{row}">
-      {{ bytesToUnitDisplay(row.localStorageNode?.status?.pools?.[name].usedCapacityBytes) }}
+      {{ bytesToUnitDisplay(row.localStorageNode?.status?.pools?.[name].freeCapacityBytes) }}
     </template>
 
     <template #td-totalCapacity="{row}">
