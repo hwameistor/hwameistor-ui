@@ -24,7 +24,7 @@ import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Metric<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
-   * @description EventList 排序  resourceType枚举（Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk）  sort枚举 （time、name、type） sortDir:升序"ASC" 降序"DESC"
+   * @description EventList 排序  resourceType枚举（Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk）  sort枚举 （time、name、type）
    *
    * @tags Metric
    * @name EventsList

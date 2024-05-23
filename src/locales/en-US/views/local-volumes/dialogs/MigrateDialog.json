@@ -12,6 +12,9 @@
   "localVolumeName": "LocalVolumeName",
   "state": "State",
   "node": "Node",
+  "schedulingPolicies": "Scheduling Policy",
+  "affinity": "Affinity-based scheduling",
+  "random": "Random scheduling",
   "noty": {
     "success": "Dispatched migration task successfully",
     "error": "Failed to dispatch migration task"

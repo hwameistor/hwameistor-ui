@@ -12,6 +12,9 @@
   "localVolumeName": "LV 名称",
   "state": "状态",
   "node": "节点",
+  "schedulingPolicies": "调度策略",
+  "affinity": "亲和性调度",
+  "random": "随机",
   "noty": {
     "success": "迁移任务下发成功",
     "error": "迁移任务下发失败"

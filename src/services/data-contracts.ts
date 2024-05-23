@@ -525,6 +525,7 @@ export interface ApiVolumeList {
 }
 
 export interface ApiVolumeMigrateInfo {
+  replicaAffinity?: string;
   selectedNode?: string;
   srcNode?: string;
   volumeName?: string;
@@ -555,6 +556,7 @@ export interface ApiVolumeMigrateOperation {
 
 export interface ApiVolumeMigrateReqBody {
   abort?: boolean;
+  replicaAffinity?: string;
   selectedNode?: string;
   srcNode?: string;
 }
@@ -2086,11 +2088,6 @@ export interface V1Alpha1SmartInfo {
 }
 
 export enum V1Alpha1State {
-  MountPointStateEmpty = "",
-  MountPointToBeMounted = "ToBeMounted",
-  MountPointToBeUnMount = "ToBeUnMount",
-  MountPointMounted = "Mounted",
-  MountPointNotReady = "NotReady",
   NodeStateReady = "Ready",
   NodeStateMaintain = "Maintain",
   NodeStateOffline = "Offline",
@@ -2125,6 +2122,11 @@ export enum V1Alpha1State {
   DiskStateAvailable = "Available",
   DiskStateInUse = "InUse",
   DiskStateOffline = "Offline",
+  MountPointStateEmpty = "",
+  MountPointToBeMounted = "ToBeMounted",
+  MountPointToBeUnMount = "ToBeUnMount",
+  MountPointMounted = "Mounted",
+  MountPointNotReady = "NotReady",
 }
 
 export interface V1Alpha1StorageNodeCondition {
