@@ -92,6 +92,24 @@
           />
         </dao-select>
       </dao-form-item>
+      <dao-form-item
+        :label="$t('views.local-volumes.dialogs.MigrateDialog.schedulingPolicies')"
+        wrapper-type="radio"
+      >
+        <dao-radio-group
+          v-model="policy"
+          :vertical="false"
+        >
+          <dao-radio
+            value="need"
+            :label="$t('views.local-volumes.dialogs.MigrateDialog.affinity')"
+          />
+          <dao-radio
+            value="forbid"
+            :label="$t('views.local-volumes.dialogs.MigrateDialog.random')"
+          />
+        </dao-radio-group>
+      </dao-form-item>
     </dao-form>
 
     <template #footer>
@@ -149,6 +167,7 @@ const nodes = ref<ApiStorageNode[]>([]);
 const sourceNode = ref<string>();
 const targetNode = ref<string>();
 const targetNodeType = ref<'auto' | 'manual'>('auto');
+const policy = ref('need');
 const columns = computed(() => [
   {
     id: 'name',
@@ -177,6 +196,7 @@ const onConfirm = async () => {
     await VolumeApi.volumesMigrateCreate(props.name, {
       selectedNode: targetNodeType.value === 'manual' ? targetNode.value : undefined,
       srcNode: sourceNode.value,
+      replicaAffinity: policy.value,
     });
 
     emits('resolve');

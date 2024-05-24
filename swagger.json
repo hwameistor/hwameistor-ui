@@ -162,7 +162,7 @@
     },
     "/cluster/events": {
       "get": {
-        "description": "EventList 排序  resourceType枚举（Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk）  sort枚举 （time、name、type） sortDir:升序\"ASC\" 降序\"DESC\"",
+        "description": "EventList 排序  resourceType枚举（Cluster;StorageNode;DiskNode;Pool;Volume;DiskVolume;Disk）  sort枚举 （time、name、type）",
         "consumes": [
           "application/json"
         ],
@@ -1648,7 +1648,7 @@
         "tags": [
           "Volume"
         ],
-        "summary": "摘要 获取指定数据卷审计日志  sort=time, sortDir:升序\"ASC\" 降序\"DESC\"",
+        "summary": "摘要 获取指定数据卷审计日志  sort=time ,先不做按操作查询",
         "parameters": [
           {
             "type": "string",
@@ -2982,6 +2982,9 @@
     "api.VolumeMigrateInfo": {
       "type": "object",
       "properties": {
+        "replicaAffinity": {
+          "type": "string"
+        },
         "selectedNode": {
           "type": "string"
         },
@@ -3020,6 +3023,9 @@
       "properties": {
         "abort": {
           "type": "boolean"
+        },
+        "replicaAffinity": {
+          "type": "string"
         },
         "selectedNode": {
           "type": "string"
@@ -5090,11 +5096,6 @@
     "v1alpha1.State": {
       "type": "string",
       "enum": [
-        "",
-        "ToBeMounted",
-        "ToBeUnMount",
-        "Mounted",
-        "NotReady",
         "Ready",
         "Maintain",
         "Offline",
@@ -5128,14 +5129,14 @@
         "Failed",
         "Available",
         "InUse",
-        "Offline"
+        "Offline",
+        "",
+        "ToBeMounted",
+        "ToBeUnMount",
+        "Mounted",
+        "NotReady"
       ],
       "x-enum-varnames": [
-        "MountPointStateEmpty",
-        "MountPointToBeMounted",
-        "MountPointToBeUnMount",
-        "MountPointMounted",
-        "MountPointNotReady",
         "NodeStateReady",
         "NodeStateMaintain",
         "NodeStateOffline",
@@ -5169,7 +5170,12 @@
         "OperationStateFailed",
         "DiskStateAvailable",
         "DiskStateInUse",
-        "DiskStateOffline"
+        "DiskStateOffline",
+        "MountPointStateEmpty",
+        "MountPointToBeMounted",
+        "MountPointToBeUnMount",
+        "MountPointMounted",
+        "MountPointNotReady"
       ]
     },
     "v1alpha1.StorageNodeCondition": {

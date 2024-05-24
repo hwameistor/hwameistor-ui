@@ -106,7 +106,7 @@ export class Volume<SecurityDataType = unknown> extends HttpClient<SecurityDataT
    *
    * @tags Volume
    * @name VolumesEventsDetail
-   * @summary 摘要 获取指定数据卷审计日志  sort=time, sortDir:升序"ASC" 降序"DESC"
+   * @summary 摘要 获取指定数据卷审计日志  sort=time ,先不做按操作查询
    * @request GET:/cluster/volumes/{volumeName}/events
    */
   volumesEventsDetail = ({ volumeName, ...query }: VolumesEventsDetailParams, params: RequestParams = {}) =>
