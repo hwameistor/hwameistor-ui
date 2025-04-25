@@ -256,7 +256,7 @@ import { bytesToUnitDisplay } from '@/utils/bytesToUnit';
 import { Node } from '@/services/Node';
 import { sum } from 'lodash-es';
 import { Volume } from '@/services/Volume';
-import { type V1Alpha1DeployStatus, V1Alpha1State } from '@/services/data-contracts';
+import { ApiState, V1Alpha1State } from '@/services/data-contracts';
 import { Metric } from '@/services/Metric';
 import { Pool } from '@/services/Pool';
 import { LocalDisk } from '@/services/LocalDisk';
@@ -451,28 +451,14 @@ const queryPools = async () => {
 };
 
 const componentStatus = ref<ComponentItem[]>([]);
-const getComponentStatus = (health: string, instance: V1Alpha1DeployStatus): 'NotReady' | 'Running' => {
-  if (instance.workloadType === 'DaemonSet') {
-    if (instance.desiredPodCount && instance.desiredPodCount === instance.availablePodCount) {
-      return 'Running';
-    }
-
-    return 'NotReady';
-  }
-
-  if (instance.workloadType === 'Deployment') {
-    return health === 'Normal' ? 'Running' : 'NotReady';
-  }
-
-  return 'NotReady';
-};
 const queryStatus = async () => {
   const { data } = await MetricApi.statusList({});
 
-  componentStatus.value = Object.values(data.componentStatus ?? {})?.map((value) => ({
-    name: value.instances.workloadName,
-    status: getComponentStatus(value.health, value.instances),
-  }));
+  componentStatus.value = data.modulesStatus?.map((item) => ({
+    name: item.name ?? '',
+    // 针对 MetricApi.statusList 接口的返回状态，只会有 ModuleStatusRunning、 ModuleStatusNotReady 两种状态
+    status: item.state === ApiState.ModuleStatusRunning ? 'Running' : 'NotReady',
+  })) ?? [];
 };
 
 queryNodes();
