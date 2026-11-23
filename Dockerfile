@@ -1,6 +1,4 @@
-FROM nginx:1.30.7-alpine@sha256:bef154735288bc38d99fac41ae63730684bcc661503673a04a0f9bc526ba8598
-
-RUN apk -U upgrade
+FROM nginx:1.30.7
 
 COPY dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
