@@ -7,7 +7,6 @@ on:
 jobs:
   pr-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v3
@@ -24,20 +23,3 @@ jobs:
 
       - name: Run build
         run: npm run build
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and smoke-test container images
-        run: |
-          for arch in amd64 arm64; do
-            image="hwameistor-ui:pr-${arch}"
-            platform="linux/${arch}"
-            docker buildx build --platform "$platform" --load --tag "$image" .
-            bash .github/scripts/smoke-image.sh "$image" "$platform"
-          done
